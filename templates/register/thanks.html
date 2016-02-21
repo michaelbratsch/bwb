@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+    <div class="page-header">
+        <h1>Thank you for registering for a bike!</h1>
+    </div>
+
+    <h2>Via email you received a link you need to click to verify your email
+    address.</h2>
+
+    <h2>Furthermore, you can use this link to check your current status.</h2>
+
+    <h2>Currently, there are a total number of {{ number_in_line }} people
+    waiting for a bike.</h2>
+{% endblock %}

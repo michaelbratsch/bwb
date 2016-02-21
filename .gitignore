@@ -1,0 +1,6 @@
+.project
+.pydevproject
+bwb/email_settings.py
+bwb/secret_key.py
+db.sqlite3
+*.pyc
