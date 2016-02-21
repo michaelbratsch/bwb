@@ -19,7 +19,7 @@ class CandidateForm(ModelForm):
                  "Thank you for registering for a bike.",
                  "To verify your email address and to check your current "
                  "number in line, please click the following link:",
-                 "http://michaelbratsch/pythonanywhere.com/register/"
+                 "http://michaelbratsch.pythonanywhere.com/register/"
                  "current-in-line.html?user_id=%s" % str(identifier),
                  "\nWe hope to see you soon!")
 
