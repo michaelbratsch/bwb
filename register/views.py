@@ -17,10 +17,10 @@ class ContactView(FormView):
         # It should return an HttpResponse.
 
         # Save name and email address
-        new_candidate = form.save(commit = True)
+        new_candidate = form.save(commit=True)
 
         # Create meta data and save it
-        meta_data = CandidateMetaData.create(candidate = new_candidate)
+        meta_data = CandidateMetaData.create(candidate=new_candidate)
         meta_data.save()
 
         form.send_email(meta_data.identifier)
@@ -32,13 +32,13 @@ class ThanksView(View):
     template_name = 'register/thanks.html'
 
     def get(self, request, *args, **kwargs):
-        context_dict  = {'number_in_line' : Candidate.objects.count()}
+        context_dict = {'number_in_line' : Candidate.objects.count()}
         return render(request, self.template_name, context_dict)
 
 class CurrentInLineView(View):
     template_name = 'register/current_in_line.html'
 
-    def getMatchingCandidate(self, identifier):
+    def get_matching_candidate(self, identifier):
         all_candidates = CandidateMetaData.objects.all()
         return [(i+1, x) for i, x in enumerate(all_candidates)
                 if x.identifier == identifier]
@@ -48,7 +48,7 @@ class CurrentInLineView(View):
         identifier = request.GET.get('user_id')
 
         if identifier:
-            matching_candidates = self.getMatchingCandidate(identifier)
+            matching_candidates = self.get_matching_candidate(identifier)
 
             if len(matching_candidates) == 1:
                 number_in_line, candidate = matching_candidates[0]
