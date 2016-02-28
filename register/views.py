@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.views.generic.edit import FormView
 from django.utils import timezone
+from django.http import HttpResponseBadRequest
 
 from register.forms import CandidateForm
 from register.models import Candidate, CandidateMetaData
@@ -37,7 +38,7 @@ class ThanksView(View):
 class CurrentInLineView(View):
     template_name = 'register/current_in_line.html'
 
-    def get_matching_candidate(self, identifier):
+    def getMatchingCandidate(self, identifier):
         all_candidates = CandidateMetaData.objects.all()
         return [(i+1, x) for i, x in enumerate(all_candidates)
                 if x.identifier == identifier]
@@ -45,10 +46,9 @@ class CurrentInLineView(View):
 
     def get(self, request, *args, **kwargs):
         identifier = request.GET.get('user_id')
-        context_dict = {}
 
         if identifier:
-            matching_candidates = self.get_matching_candidate(identifier)
+            matching_candidates = self.getMatchingCandidate(identifier)
 
             if len(matching_candidates) == 1:
                 number_in_line, candidate = matching_candidates[0]
@@ -57,6 +57,9 @@ class CurrentInLineView(View):
                     candidate.email_validated = True
                     candidate.time_of_email_validation = timezone.now()
                     candidate.save()
-                context_dict  = {'number_in_line' : number_in_line}
 
-        return render(request, self.template_name, context_dict)
+                return render(request, self.template_name,
+                              {'number_in_line' : number_in_line})
+
+        return HttpResponseBadRequest()
+

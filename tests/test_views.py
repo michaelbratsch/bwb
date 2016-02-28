@@ -15,9 +15,9 @@ class ViewTestCase(CandidateMetaDataTestBase):
 
 class ThanksViewTestCase(ViewTestCase):
     def test_total_number_in_line(self):
-        match = self.getMatch(url     = '/register/thanks.html',
-                              params  = None,
-                              pattern = 'total number of (\d+) people')
+        match = self.get_match(url     = '/register/thanks.html',
+                               params  = None,
+                               pattern = 'total number of (\d+) people')
         self.assertEquals(len(self.test_candidates), int(match.group(1)))
 
 
@@ -29,8 +29,8 @@ class NumberInLine(ViewTestCase):
 
     def test_all_user_ids(self):
         for num, candidate in enumerate(CandidateMetaData.objects.all()):
-            match = self.getMatch(url     = '/register/current-in-line.html',
-                                  params  = {'user_id' : candidate.identifier},
-                                  pattern = 'Currently you are number (\d+)')
+            match = self.get_match(url     = '/register/current-in-line.html',
+                                   params  = {'user_id' : candidate.identifier},
+                                   pattern = 'Currently you are number (\d+)')
             self.assertEquals(num+1, int(match.group(1)))
 
