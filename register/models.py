@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 import os
+import binascii
 
 class Candidate(models.Model):
     first_name = models.CharField(max_length=100)
@@ -32,12 +33,10 @@ class CandidateMetaData(models.Model):
                                                   blank   = True)
 
     @classmethod
-    def create(cls, candidate, form_data):
-        data_list = [(key, val) for key, val in form_data.iteritems()]
-        data_list.append(os.urandom(10)) # make the hash unique
-        identifier = hash(frozenset(data_list))
-        return cls(identifier = identifier,
+    def create(cls, candidate):
+        identifier = os.urandom(64)
+        return cls(identifier = binascii.b2a_base64(identifier)[:20],
                    candidate  = candidate)
 
     def __str__(self):
-        return " ".join((self.identifier, str(self.candidate)))
+        return " ".join((str(self.candidate), self.identifier))

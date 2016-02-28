@@ -19,14 +19,11 @@ class ContactView(FormView):
         new_candidate = form.save(commit = True)
 
         # Create meta data and save it
-        meta_data = CandidateMetaData.create(
-            candidate = new_candidate,
-            form_data = form.data)
-
+        meta_data = CandidateMetaData.create(candidate = new_candidate)
+        meta_data.save()
 
         form.send_email(meta_data.identifier)
 
-        meta_data.save()
         return super(ContactView, self).form_valid(form)
 
 
