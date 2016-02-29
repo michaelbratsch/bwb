@@ -10,7 +10,7 @@ class ViewTestCase(CandidateMetaDataTestBase):
         response = client.get(url, params)
         self.assertEqual(response.status_code, 200)
 
-        return re.search(pattern, response.content)
+        return re.search(pattern, str(response.content))
 
 
 class ThanksViewTestCase(ViewTestCase):
