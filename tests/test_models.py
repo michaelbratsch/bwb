@@ -1,8 +1,6 @@
 from django.test import TestCase
 from register.models import Candidate, CandidateMetaData
 
-from itertools import product
-
 class CandidateTestBase(TestCase):
     def __init__(self, *args, **kwargs):
         TestCase.__init__(self, *args, **kwargs)

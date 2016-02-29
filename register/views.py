@@ -6,6 +6,7 @@ from django.http import HttpResponseBadRequest
 
 from register.forms import CandidateForm
 from register.models import Candidate, CandidateMetaData
+from register.email import send_register_email
 
 class ContactView(FormView):
     template_name = 'register/index.html'
@@ -17,13 +18,16 @@ class ContactView(FormView):
         # It should return an HttpResponse.
 
         # Save name and email address
-        new_candidate = form.save(commit=True)
+        candidate = form.save(commit=True)
 
         # Create meta data and save it
-        meta_data = CandidateMetaData.create(candidate=new_candidate)
+        meta_data = CandidateMetaData.create(candidate=candidate)
         meta_data.save()
 
-        form.send_email(meta_data.identifier)
+        send_register_email(recipient  = candidate.email,
+                            name       = "%s %s"%(candidate.first_name,
+                                                  candidate.last_name),
+                            identifier = meta_data.identifier)
 
         return super(ContactView, self).form_valid(form)
 
