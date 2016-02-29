@@ -35,8 +35,10 @@ class CandidateMetaData(models.Model):
     @classmethod
     def create(cls, candidate):
         identifier = os.urandom(64)
-        return cls(identifier = binascii.b2a_base64(identifier)[:20],
-                   candidate  = candidate)
+        instance = cls(identifier = binascii.b2a_base64(identifier)[:20],
+                       candidate  = candidate)
+        instance.save()
+        return instance
 
     def __str__(self):
         return " ".join((str(self.candidate), self.identifier))
