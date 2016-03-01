@@ -24,6 +24,8 @@ class CandidateMetaData(models.Model):
     time_of_register = models.DateTimeField(default = timezone.now,
                                             blank   = True)
 
+    received_bicycle = models.BooleanField(default = False)
+
     email_validated          = models.BooleanField(default = False)
     time_of_email_validation = models.DateTimeField(default = timezone.now,
                                                     blank   = True)
@@ -31,6 +33,19 @@ class CandidateMetaData(models.Model):
     win_validated          = models.BooleanField(default = False)
     time_of_win_validation = models.DateTimeField(default = timezone.now,
                                                   blank   = True)
+
+    def validate_email(self):
+        if not self.email_validated:
+            self.email_validated = True
+            self.time_of_email_validation = timezone.now()
+            self.save()
+
+    def number_in_line(self):
+        cls = self.__class__
+        for i, candidate in enumerate(cls.objects.all()):
+            if self == candidate:
+                return i+1
+        assert False, "Could not find object"
 
     @classmethod
     def create(cls, candidate):
@@ -40,5 +55,10 @@ class CandidateMetaData(models.Model):
         instance.save()
         return instance
 
+    @classmethod
+    def candidates_in_line(cls):
+        return cls.objects.count()
+
     def __str__(self):
         return " ".join((str(self.candidate), self.identifier))
+

@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.views.generic.edit import FormView
-from django.utils import timezone
 from django.http import HttpResponseBadRequest
+from django.core.exceptions import ObjectDoesNotExist
 
 from register.forms import CandidateForm
 from register.models import Candidate, CandidateMetaData
@@ -35,34 +35,22 @@ class ThanksView(View):
     template_name = 'register/thanks.html'
 
     def get(self, request, *args, **kwargs):
-        context_dict = {'number_in_line' : Candidate.objects.count()}
+        context_dict = {'number_in_line' : CandidateMetaData.candidates_in_line()}
         return render(request, self.template_name, context_dict)
 
 class CurrentInLineView(View):
     template_name = 'register/current_in_line.html'
 
-    def get_matching_candidate(self, identifier):
-        all_candidates = CandidateMetaData.objects.all()
-        return [(i+1, x) for i, x in enumerate(all_candidates)
-                if x.identifier == identifier]
-
-
     def get(self, request, *args, **kwargs):
         identifier = request.GET.get('user_id')
 
-        if identifier:
-            matching_candidates = self.get_matching_candidate(identifier)
+        try:
+            candidate = CandidateMetaData.objects.get(identifier=identifier)
+        except ObjectDoesNotExist:
+            return HttpResponseBadRequest()
 
-            if len(matching_candidates) == 1:
-                number_in_line, candidate = matching_candidates[0]
+        candidate.validate_email()
 
-                if not candidate.email_validated:
-                    candidate.email_validated = True
-                    candidate.time_of_email_validation = timezone.now()
-                    candidate.save()
-
-                return render(request, self.template_name,
-                              {'number_in_line' : number_in_line})
-
-        return HttpResponseBadRequest()
+        context_dict = {'number_in_line' : candidate.number_in_line()}
+        return render(request, self.template_name, context_dict)
 
