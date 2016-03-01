@@ -1,37 +1,89 @@
-from django.test import Client, TestCase
+from django.core import mail
+
 from register.models import CandidateMetaData
 from tests.test_models import CandidateMetaDataTestBase
 
 import re
 
 class ViewTestCase(CandidateMetaDataTestBase):
-    def get_match(self, url, params, pattern):
-        client = Client()
-        response = client.get(url, params)
+    def get_match(self, pattern, params=None, action=None):
+        if action is None:
+            action = self.client.get
+        response = action(self.url, params)
         self.assertEqual(response.status_code, 200)
 
         return re.search(pattern, str(response.content))
 
 
+class ContactViewTestCase(ViewTestCase):
+    def __init__(self, *args, **kwargs):
+        ViewTestCase.__init__(self, *args, **kwargs)
+        self.url = '/register/'
+
+    def test_get(self):
+        match = self.get_match(pattern = 'Register for a bike')
+        self.assertTrue(bool(match))
+
+        self.assertEqual(mail.outbox, [])
+
+    def test_post(self):
+        email = 'asdf@gmx.de'
+        response = self.client.post(self.url,
+                                    {'first_name' : 'Werner',
+                                     'last_name'  : 'Lorenz',
+                                     'email'      : email})
+        # Http status code 302: URL redirection
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, 'thanks.html')
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], email)
+
+    def test_failed_email_post(self):
+        match = self.get_match(pattern = 'Register for a bike',
+                               params  = {'first_name' : 'Werner',
+                                          'last_name'  : 'Lorenz',
+                                          'email'      : 'asdf'},
+                               action  = self.client.post)
+        self.assertTrue(bool(match))
+
+        self.assertEqual(mail.outbox, [])
+
+    def test_failed_name_post(self):
+        for first_name, last_name in [('', 'Lorenz'), ('Werner', '')]:
+            match = self.get_match(pattern = 'Register for a bike',
+                                   params  = {'first_name' : first_name,
+                                              'last_name'  : last_name,
+                                              'email'      : 'asdf@gmx.de'},
+                                   action  = self.client.post)
+            self.assertTrue(bool(match))
+
+            self.assertEqual(mail.outbox, [])
+
+
 class ThanksViewTestCase(ViewTestCase):
+    def __init__(self, *args, **kwargs):
+        ViewTestCase.__init__(self, *args, **kwargs)
+        self.url = '/register/thanks.html'
+
     def test_total_number_in_line(self):
-        match = self.get_match(url     = '/register/thanks.html',
-                               params  = None,
-                               pattern = 'total number of (\d+) people')
+        match = self.get_match(pattern = 'total number of (\d+) people')
         self.assertEqual(len(self.test_candidates), int(match.group(1)))
 
 
-class NumberInLine(ViewTestCase):
+class CurrentInLineViewTestCase(ViewTestCase):
+    def __init__(self, *args, **kwargs):
+        ViewTestCase.__init__(self, *args, **kwargs)
+        self.url = '/register/current-in-line.html'
+
     def test_wrong_user_id(self):
-        client = Client()
-        response = client.get('/register/current-in-line.html')
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 400)
 
     def test_all_user_ids(self):
         for num, candidate in enumerate(CandidateMetaData.objects.all()):
             self.assertFalse(candidate.email_validated)
-            match = self.get_match(url     = '/register/current-in-line.html',
-                                   params  = {'user_id' : candidate.identifier},
+            match = self.get_match(params  = {'user_id' : candidate.identifier},
                                    pattern = 'Currently you are number (\d+)')
             self.assertEqual(num+1, int(match.group(1)))
 
