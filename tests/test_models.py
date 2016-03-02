@@ -23,10 +23,9 @@ class CandidateTestCase(CandidateTestBase):
 
 class CandidateMetaDataTestBase(CandidateTestBase):
     def setUp(self):
-        for candidate in self.test_candidates:
-            candidate_object = Candidate.objects.create(**candidate)
-            candidate_meta_data_object = CandidateMetaData.create(candidate_object)
-            candidate_meta_data_object.save()
+        for candidate_dict in self.test_candidates:
+            candidate = Candidate.objects.create(**candidate_dict)
+            CandidateMetaData.objects.create(candidate = candidate)
 
 
 class CandidateMetaDataTestCase(CandidateMetaDataTestBase):

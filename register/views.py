@@ -21,7 +21,7 @@ class ContactView(FormView):
         candidate = form.save(commit=True)
 
         # Create meta data and save it
-        meta_data = CandidateMetaData.create(candidate=candidate)
+        meta_data = CandidateMetaData.objects.create(candidate=candidate)
 
         send_register_email(recipient  = candidate.email,
                             name       = "%s %s"%(candidate.first_name,

@@ -12,7 +12,9 @@ class ViewTestCase(CandidateMetaDataTestBase):
         response = action(self.url, params)
         self.assertEqual(response.status_code, 200)
 
-        return re.search(pattern, str(response.content))
+        match = re.search(pattern, str(response.content))
+        self.assertTrue(match)
+        return match
 
 
 class ContactViewTestCase(ViewTestCase):
@@ -21,9 +23,7 @@ class ContactViewTestCase(ViewTestCase):
         self.url = '/register/'
 
     def test_get(self):
-        match = self.get_match(pattern = 'Register for a bike')
-        self.assertTrue(bool(match))
-
+        self.get_match(pattern = 'Register for a bike')
         self.assertEqual(mail.outbox, [])
 
     def test_post(self):
@@ -40,23 +40,21 @@ class ContactViewTestCase(ViewTestCase):
         self.assertEqual(mail.outbox[0].to[0], email)
 
     def test_failed_email_post(self):
-        match = self.get_match(pattern = 'Register for a bike',
-                               params  = {'first_name' : 'Werner',
-                                          'last_name'  : 'Lorenz',
-                                          'email'      : 'asdf'},
-                               action  = self.client.post)
-        self.assertTrue(bool(match))
+        self.get_match(pattern = 'Register for a bike',
+                       params  = {'first_name' : 'Werner',
+                                  'last_name'  : 'Lorenz',
+                                  'email'      : 'asdf'},
+                       action  = self.client.post)
 
         self.assertEqual(mail.outbox, [])
 
     def test_failed_name_post(self):
         for first_name, last_name in [('', 'Lorenz'), ('Werner', '')]:
-            match = self.get_match(pattern = 'Register for a bike',
-                                   params  = {'first_name' : first_name,
-                                              'last_name'  : last_name,
-                                              'email'      : 'asdf@gmx.de'},
-                                   action  = self.client.post)
-            self.assertTrue(bool(match))
+            self.get_match(pattern = 'Register for a bike',
+                           params  = {'first_name' : first_name,
+                                      'last_name'  : last_name,
+                                      'email'      : 'asdf@gmx.de'},
+                           action  = self.client.post)
 
             self.assertEqual(mail.outbox, [])
 

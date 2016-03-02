@@ -19,7 +19,9 @@ class CandidateMetaData(models.Model):
         on_delete   = models.CASCADE,
         primary_key = True,
     )
-    identifier       = models.CharField(max_length=100)
+    identifier = models.CharField(
+        default = lambda : binascii.b2a_base64(os.urandom(64))[:100],
+        max_length = 100)
 
     time_of_register = models.DateTimeField(default = timezone.now,
                                             blank   = True)
@@ -46,14 +48,6 @@ class CandidateMetaData(models.Model):
             if self == candidate:
                 return i+1
         assert False, "Could not find object"
-
-    @classmethod
-    def create(cls, candidate):
-        identifier = os.urandom(64)
-        instance = cls(identifier = binascii.b2a_base64(identifier)[:20],
-                       candidate  = candidate)
-        instance.save()
-        return instance
 
     @classmethod
     def candidates_in_line(cls):
