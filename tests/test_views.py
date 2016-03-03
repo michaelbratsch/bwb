@@ -1,9 +1,11 @@
 from django.core import mail
 
+from hypothesis.strategies import text
+import re
+
 from register.models import CandidateMetaData
 from tests.test_models import CandidateMetaDataTestBase
 
-import re
 
 class ViewTestCase(CandidateMetaDataTestBase):
     def get_match(self, pattern, params=None, action=None):
@@ -27,10 +29,12 @@ class ContactViewTestCase(ViewTestCase):
         self.assertEqual(mail.outbox, [])
 
     def test_post(self):
+        first_name = text(min_size=1, max_size=100).example()
+        last_name = text(min_size=1, max_size=100).example()
         email = 'asdf@gmx.de'
         response = self.client.post(self.url,
-                                    {'first_name' : 'Werner',
-                                     'last_name'  : 'Lorenz',
+                                    {'first_name' : first_name,
+                                     'last_name'  : last_name,
                                      'email'      : email})
         # Http status code 302: URL redirection
         self.assertEqual(response.status_code, 302)
@@ -40,9 +44,11 @@ class ContactViewTestCase(ViewTestCase):
         self.assertEqual(mail.outbox[0].to[0], email)
 
     def test_failed_email_post(self):
+        first_name = text(min_size=1, max_size=100).example()
+        last_name = text(min_size=1, max_size=100).example()
         self.get_match(pattern = 'Register for a bike',
-                       params  = {'first_name' : 'Werner',
-                                  'last_name'  : 'Lorenz',
+                       params  = {'first_name' : first_name,
+                                  'last_name'  : last_name,
                                   'email'      : 'asdf'},
                        action  = self.client.post)
 
