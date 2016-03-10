@@ -1,5 +1,6 @@
 from django.core.mail import send_mail
 
+
 def send_register_email(recipient, name, identifier):
     lines = ("Hello %s,\n" % name,
              "Thank you for registering for a bike.",
@@ -11,9 +12,8 @@ def send_register_email(recipient, name, identifier):
 
     message = "\n".join(lines)
 
-    send_mail(subject        = 'Bwb - Registration',
-              message        = message,
-              from_email     = 'foobar@gmail.com',
-              recipient_list = [recipient],
-              fail_silently  = False)
-
+    send_mail(subject='Bwb - Registration',
+              message=message,
+              from_email='foobar@gmail.com',
+              recipient_list=[recipient],
+              fail_silently=False)

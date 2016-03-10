@@ -4,10 +4,11 @@ from django.utils import timezone
 import os
 import binascii
 
+
 class Candidate(models.Model):
     first_name = models.CharField(max_length=100)
-    last_name  = models.CharField(max_length=100)
-    email      = models.EmailField()
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
 
     def __str__(self):
         return " ".join((self.first_name, self.last_name, self.email))
@@ -16,25 +17,24 @@ class Candidate(models.Model):
 class CandidateMetaData(models.Model):
     candidate = models.OneToOneField(
         Candidate,
-        on_delete   = models.CASCADE,
-        primary_key = True,
+        on_delete=models.CASCADE,
+        primary_key=True,
     )
     identifier = models.CharField(
-        default = lambda : binascii.b2a_base64(os.urandom(64))[:100],
-        max_length = 100)
+        default=lambda: binascii.b2a_base64(os.urandom(64))[:100],
+        max_length=100)
 
-    time_of_register = models.DateTimeField(default = timezone.now,
-                                            blank   = True)
+    time_of_register = models.DateTimeField(default=timezone.now, blank=True)
 
-    received_bicycle = models.BooleanField(default = False)
+    received_bicycle = models.BooleanField(default=False)
 
-    email_validated          = models.BooleanField(default = False)
-    time_of_email_validation = models.DateTimeField(default = timezone.now,
-                                                    blank   = True)
+    email_validated = models.BooleanField(default=False)
+    time_of_email_validation = models.DateTimeField(default=timezone.now,
+                                                    blank=True)
 
-    win_validated          = models.BooleanField(default = False)
-    time_of_win_validation = models.DateTimeField(default = timezone.now,
-                                                  blank   = True)
+    win_validated = models.BooleanField(default=False)
+    time_of_win_validation = models.DateTimeField(default=timezone.now,
+                                                  blank=True)
 
     def validate_email(self):
         if not self.email_validated:
@@ -55,4 +55,3 @@ class CandidateMetaData(models.Model):
 
     def __str__(self):
         return " ".join((str(self.candidate), self.identifier))
-

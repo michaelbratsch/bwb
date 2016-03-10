@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import View
 
+
 class GreetingsView(View):
     template_name = 'index.html'
 

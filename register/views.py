@@ -5,8 +5,9 @@ from django.http import HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
 from register.forms import CandidateForm
-from register.models import Candidate, CandidateMetaData
+from register.models import CandidateMetaData
 from register.email import send_register_email
+
 
 class ContactView(FormView):
     template_name = 'register/index.html'
@@ -23,10 +24,10 @@ class ContactView(FormView):
         # Create meta data and save it
         meta_data = CandidateMetaData.objects.create(candidate=candidate)
 
-        send_register_email(recipient  = candidate.email,
-                            name       = "%s %s"%(candidate.first_name,
-                                                  candidate.last_name),
-                            identifier = meta_data.identifier)
+        send_register_email(recipient=candidate.email,
+                            name="%s %s" % (candidate.first_name,
+                                            candidate.last_name),
+                            identifier=meta_data.identifier)
 
         return super(ContactView, self).form_valid(form)
 
@@ -35,8 +36,10 @@ class ThanksView(View):
     template_name = 'register/thanks.html'
 
     def get(self, request, *args, **kwargs):
-        context_dict = {'number_in_line' : CandidateMetaData.candidates_in_line()}
+        context_dict = {'number_in_line':
+                        CandidateMetaData.candidates_in_line()}
         return render(request, self.template_name, context_dict)
+
 
 class CurrentInLineView(View):
     template_name = 'register/current_in_line.html'
@@ -51,6 +54,5 @@ class CurrentInLineView(View):
 
         candidate.validate_email()
 
-        context_dict = {'number_in_line' : candidate.number_in_line()}
+        context_dict = {'number_in_line': candidate.number_in_line()}
         return render(request, self.template_name, context_dict)
-
