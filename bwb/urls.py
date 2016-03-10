@@ -15,11 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.conf.urls.i18n import i18n_patterns
 
 from .views import GreetingsView
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     url(r'^admin/',    admin.site.urls),
     url(r'^register/', include('register.urls'), name='register'),
     url(r'^$',         GreetingsView.as_view(),  name='index')
-]
+)
