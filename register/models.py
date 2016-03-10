@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 import os
-import binascii
+import hashlib
 
 
 class Candidate(models.Model):
@@ -21,7 +21,7 @@ class CandidateMetaData(models.Model):
         primary_key=True,
     )
     identifier = models.CharField(
-        default=lambda: binascii.b2a_base64(os.urandom(64))[:100],
+        default=lambda: hashlib.sha224(os.urandom(64)).hexdigest()[:20],
         max_length=100)
 
     time_of_register = models.DateTimeField(default=timezone.now, blank=True)
