@@ -1,4 +1,5 @@
 from django.core import mail
+from django.core.urlresolvers import reverse
 
 from hypothesis.strategies import text
 import re
@@ -22,7 +23,7 @@ class ViewTestCase(CandidateMetaDataTestBase):
 class ContactViewTestCase(ViewTestCase):
     def __init__(self, *args, **kwargs):
         ViewTestCase.__init__(self, *args, **kwargs)
-        self.url = '/register/'
+        self.url = reverse('register:index')
 
     def test_get(self):
         self.get_match(pattern='Register for a bike')
@@ -68,7 +69,7 @@ class ContactViewTestCase(ViewTestCase):
 class ThanksViewTestCase(ViewTestCase):
     def __init__(self, *args, **kwargs):
         ViewTestCase.__init__(self, *args, **kwargs)
-        self.url = '/register/thanks.html'
+        self.url = reverse('register:thanks')
 
     def test_total_number_in_line(self):
         match = self.get_match(pattern='total number of (\d+) people')
@@ -78,7 +79,7 @@ class ThanksViewTestCase(ViewTestCase):
 class CurrentInLineViewTestCase(ViewTestCase):
     def __init__(self, *args, **kwargs):
         ViewTestCase.__init__(self, *args, **kwargs)
-        self.url = '/register/current-in-line.html'
+        self.url = reverse('register:current-in-line')
 
     def test_wrong_user_id(self):
         response = self.client.get(self.url)
