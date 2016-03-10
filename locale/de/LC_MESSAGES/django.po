@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-10 15:17+0000\n"
+"POT-Creation-Date: 2016-03-10 22:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: bwb/settings.py:122
+msgid "German"
+msgstr ""
+
+#: bwb/settings.py:123
+msgid "English"
+msgstr ""
 
 #: templates/base.html:12 templates/base.html.py:33
 msgid "Bikes without Borders"
@@ -41,6 +49,51 @@ msgstr ""
 #: templates/index.html:18
 msgid "Click here to register for a bike."
 msgstr "Klicke hier, um dich für ein Fahrrad zu registrieren!"
+
+#: templates/register/current_in_line.html:9
+msgid ""
+"Thank you for validating your\n"
+"        email address."
+msgstr ""
+
+#: templates/register/current_in_line.html:12
+#, python-format
+msgid ""
+"Currently you are number %(number_in_line)s in line\n"
+"    waiting for a bike."
+msgstr ""
+
+#: templates/register/index.html:9
+#, fuzzy
+#| msgid "Click here to register for a bike."
+msgid "Register for a bike!"
+msgstr "Klicke hier, um dich für ein Fahrrad zu registrieren!"
+
+#: templates/register/thanks.html:10
+#, fuzzy
+#| msgid "Click here to register for a bike."
+msgid "Thank you for registering for a bike!"
+msgstr "Klicke hier, um dich für ein Fahrrad zu registrieren!"
+
+#: templates/register/thanks.html:14
+msgid ""
+"Via email you received a link you need to click to\n"
+"    verify your email address."
+msgstr ""
+
+#: templates/register/thanks.html:17
+msgid ""
+"Furthermore, you can use this link to check your\n"
+"    current status."
+msgstr ""
+
+#: templates/register/thanks.html:20
+#, python-format
+msgid ""
+"Currently, there are a\n"
+"    total number of %(number_in_line)s people waiting\n"
+"    for a bike."
+msgstr ""
 
 #, fuzzy
 #~| msgid "Bikes without Borders"

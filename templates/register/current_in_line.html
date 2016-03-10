@@ -6,7 +6,9 @@
 
 {% block body_block %}
     <div class="page-header">
-        <h1>Thank you for validating your email address.</h1>
+        <h1>{% load i18n %}{% blocktrans %}Thank you for validating your
+        email address.{% endblocktrans %}</h1>
     </div>
-    <h1>Currently you are number {{ number_in_line }} in line waiting for a bike.</h1>
+    <h1>{% blocktrans %}Currently you are number {{ number_in_line }} in line
+    waiting for a bike.{% endblocktrans %}</h1>
 {% endblock %}

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
+from django.utils.translation import ugettext_lazy
+
 # SECURITY WARNING: keep the secret key used in production secret!
 from .secret_key import SECRET_KEY
 
@@ -116,6 +118,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
+LANGUAGES = [
+  ('de', ugettext_lazy('German')),
+  ('en', ugettext_lazy('English')),
+]
+
 LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'

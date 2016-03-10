@@ -1,8 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.views.generic.edit import FormView
-from django.http import HttpResponseBadRequest
-from django.core.exceptions import ObjectDoesNotExist
 
 from register.forms import CandidateForm
 from register.models import CandidateMetaData
@@ -47,11 +45,7 @@ class CurrentInLineView(View):
     def get(self, request, *args, **kwargs):
         identifier = request.GET.get('user_id')
 
-        try:
-            candidate = CandidateMetaData.objects.get(identifier=identifier)
-        except ObjectDoesNotExist:
-            return HttpResponseBadRequest()
-
+        candidate = get_object_or_404(CandidateMetaData, identifier=identifier)
         candidate.validate_email()
 
         context_dict = {'number_in_line': candidate.number_in_line()}

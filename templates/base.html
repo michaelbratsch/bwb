@@ -30,7 +30,28 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">{% load i18n %}{% trans "Bikes without Borders" %}</a>
+                    <a class="navbar-brand" href="{% url 'index' %}">{% load i18n %}{% trans "Bikes without Borders" %}</a>
+                </div>
+
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <form action="{% url 'index' %}" method="post" class="navbar-form navbar-right">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <select name="language" class="form-control" onchange="this.form.submit()">
+                                    {% get_current_language as LANGUAGE_CODE %}
+                                    {% get_available_languages as LANGUAGES %}
+                                    {% get_language_info_list for LANGUAGES as languages %}
+                                    {% for language in languages %}
+                                    <option value="{{ language.code }}"
+                                        {% if language.code == LANGUAGE_CODE %} selected="selected" {% endif %}>
+                                        {{ language.name_local }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </ul>
                 </div>
             </div>
         </div>
