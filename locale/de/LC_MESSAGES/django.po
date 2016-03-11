@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-10 22:45+0000\n"
+"POT-Creation-Date: 2016-03-11 10:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: bwb/settings.py:122
+#: bwb/settings.py:119
 msgid "German"
 msgstr ""
 
-#: bwb/settings.py:123
+#: bwb/settings.py:120
 msgid "English"
+msgstr ""
+
+#: register/email.py:18
+#, python-format
+msgid "Hello %(name)s,"
+msgstr ""
+
+#: register/email.py:19
+msgid ""
+"Thank you for registering for a bike.\n"
+"To verify your email address and to check your current number in line, "
+"please click the following link:"
+msgstr ""
+
+#: register/email.py:25
+msgid "We hope to see you soon!"
+msgstr ""
+
+#: register/email.py:30
+msgid "Bwb - Registration"
 msgstr ""
 
 #: templates/base.html:12 templates/base.html.py:33

@@ -22,10 +22,14 @@ class ContactView(FormView):
         # Create meta data and save it
         meta_data = CandidateMetaData.objects.create(candidate=candidate)
 
-        send_register_email(recipient=candidate.email,
-                            name="%s %s" % (candidate.first_name,
-                                            candidate.last_name),
-                            identifier=meta_data.identifier)
+        recipient = {'email': candidate.email,
+                     'name': '%s %s' % (candidate.first_name,
+                                        candidate.last_name),
+                     'identifier': meta_data.identifier}
+        base_url = '{scheme}://{host}'.format(scheme=self.request.scheme,
+                                              host=self.request.get_host())
+        send_register_email(recipient=recipient,
+                            base_url=base_url)
 
         return super(ContactView, self).form_valid(form)
 
