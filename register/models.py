@@ -14,15 +14,17 @@ class Candidate(models.Model):
         return " ".join((self.first_name, self.last_name, self.email))
 
 
+def getHashValue():
+    return hashlib.sha224(os.urandom(64)).hexdigest()[:20]
+
+
 class CandidateMetaData(models.Model):
     candidate = models.OneToOneField(
         Candidate,
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    identifier = models.CharField(
-        default=lambda: hashlib.sha224(os.urandom(64)).hexdigest()[:20],
-        max_length=100)
+    identifier = models.CharField(default=getHashValue, max_length=100)
 
     time_of_register = models.DateTimeField(default=timezone.now, blank=True)
 
