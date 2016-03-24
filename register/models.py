@@ -10,7 +10,8 @@ def getHashValue():
 
 
 class Registration(models.Model):
-    identifier = models.CharField(default=getHashValue, max_length=100)
+    identifier = models.CharField(default=getHashValue, max_length=100,
+                                  unique=True)
 
     time_of_register = models.DateTimeField(default=timezone.now, blank=True)
 

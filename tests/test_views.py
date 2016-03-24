@@ -1,5 +1,4 @@
 from django.core import mail
-from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 from hypothesis import given
@@ -7,16 +6,11 @@ from hypothesis.strategies import text, random_module
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 
 from register.models import Registration, Candidate
-from tests.test_models import CandidateTestBase
-
-
-# filter text that only contains of whitespace
-name_strategy = text(min_size=1, max_size=100).filter(lambda x: x.strip())
+from tests.test_models import name_strategy, email_strategy, candidate_strategy
 
 
 class ContactViewTestCase(HypothesisTestCase):
     url = reverse('register:index')
-    counter = 0
 
     def test_get(self):
         response = self.client.get(self.url)
@@ -25,9 +19,8 @@ class ContactViewTestCase(HypothesisTestCase):
         self.assertEqual(mail.outbox, [])
 
     @given(first_name=name_strategy, last_name=name_strategy,
-           dummy=random_module())
-    def test_post(self, first_name, last_name, dummy):
-        email = 'asdf@gmx.de'
+           email=email_strategy, dummy=random_module())
+    def test_post(self, first_name, last_name, email, dummy):
         response = self.client.post(self.url,
                                     {'first_name': first_name,
                                      'last_name': last_name,
@@ -57,28 +50,25 @@ class ContactViewTestCase(HypothesisTestCase):
     def test_failed_email_post(self, first_name, last_name):
         self.check_failed_post(first_name, last_name, 'asdf')
 
-    @given(name=name_strategy)
-    def test_failed_name_post(self, name):
+    @given(name=name_strategy, email=email_strategy)
+    def test_failed_name_post(self, name, email):
         for first_name, last_name in [('', name), (name, '')]:
-            self.check_failed_post(first_name, last_name, 'asdf@gmx.de')
+            self.check_failed_post(first_name, last_name, email)
 
 
-class ThanksViewTestCase(CandidateTestBase):
-    def __init__(self, *args, **kwargs):
-        super(ThanksViewTestCase, self).__init__(*args, **kwargs)
-        self.url = reverse('register:thanks')
+class ThanksViewTestCase(HypothesisTestCase):
+    url = reverse('register:thanks')
 
-    def test_total_number_in_line(self):
-        text = 'total number of %s people' % len(self.test_candidates)
+    @given(candidate_strategy)
+    def test_total_number_in_line(self, candidate):
+        text = 'total number of %s people' % Candidate.objects.count()
 
         self.assertContains(response=self.client.get(self.url),
                             text=text, count=1)
 
 
-class CurrentInLineViewTestCase(CandidateTestBase):
-    def __init__(self, *args, **kwargs):
-        super(CurrentInLineViewTestCase, self).__init__(*args, **kwargs)
-        self.url = reverse('register:current-in-line')
+class CurrentInLineViewTestCase(HypothesisTestCase):
+    url = reverse('register:current-in-line')
 
     def test_missing_user_id(self):
         response = self.client.get(self.url)
@@ -90,24 +80,25 @@ class CurrentInLineViewTestCase(CandidateTestBase):
         self.assertEqual(response.status_code, 404)
 
     def test_all_user_ids(self):
-        for num, candidate in enumerate(Registration.objects.all()):
-            self.assertFalse(candidate.email_validated)
+        for _ in range(20):
+            candidate_strategy.example()
+
+        for num, registration in enumerate(Registration.objects.all()):
+            self.assertFalse(registration.email_validated)
 
             text = 'Currently you are number ' + str(num+1)
             response = self.client.get(self.url,
-                                       {'user_id': candidate.identifier})
+                                       {'user_id': registration.identifier})
 
             self.assertContains(response=response, text=text, count=1)
 
-            self.assertFalse(candidate.email_validated)
-            candidate.refresh_from_db()
-            self.assertTrue(candidate.email_validated)
+            self.assertFalse(registration.email_validated)
+            registration.refresh_from_db()
+            self.assertTrue(registration.email_validated)
 
 
-class GreetingsViewTestCase(TestCase):
-    def __init__(self, *args, **kwargs):
-        super(GreetingsViewTestCase, self).__init__(*args, **kwargs)
-        self.url = reverse('index')
+class GreetingsViewTestCase(HypothesisTestCase):
+    url = reverse('index')
 
     def test_get(self):
         response = self.client.get(self.url)
