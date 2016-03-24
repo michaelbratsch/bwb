@@ -3,7 +3,7 @@ from django.views.generic import View
 from django.views.generic.edit import FormView
 
 from register.forms import CandidateForm
-from register.models import CandidateMetaData
+from register.models import Registration
 from register.email import send_register_email
 
 
@@ -16,16 +16,18 @@ class ContactView(FormView):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
 
-        # Save name and email address
-        candidate = form.save(commit=True)
+        # Create registration and save it
+        registration = Registration.objects.create()
 
-        # Create meta data and save it
-        meta_data = CandidateMetaData.objects.create(candidate=candidate)
+        # Save name and email address
+        candidate = form.save(commit=False)
+        candidate.registration = registration
+        candidate.save()
 
         recipient = {'email': candidate.email,
                      'name': '%s %s' % (candidate.first_name,
                                         candidate.last_name),
-                     'identifier': meta_data.identifier}
+                     'identifier': registration.identifier}
         base_url = '{scheme}://{host}'.format(scheme=self.request.scheme,
                                               host=self.request.get_host())
         send_register_email(recipient=recipient,
@@ -39,7 +41,7 @@ class ThanksView(View):
 
     def get(self, request, *args, **kwargs):
         context_dict = {'number_in_line':
-                        CandidateMetaData.candidates_in_line()}
+                        Registration.total_candidates_in_line()}
         return render(request, self.template_name, context_dict)
 
 
@@ -49,7 +51,7 @@ class CurrentInLineView(View):
     def get(self, request, *args, **kwargs):
         identifier = request.GET.get('user_id')
 
-        candidate = get_object_or_404(CandidateMetaData, identifier=identifier)
+        candidate = get_object_or_404(Registration, identifier=identifier)
         candidate.validate_email()
 
         context_dict = {'number_in_line': candidate.number_in_line()}

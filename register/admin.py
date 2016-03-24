@@ -1,5 +1,5 @@
 from django.contrib import admin
-from register.models import Candidate, CandidateMetaData
+from register.models import Candidate, Registration
 
 admin.site.register(Candidate)
-admin.site.register(CandidateMetaData)
+admin.site.register(Registration)

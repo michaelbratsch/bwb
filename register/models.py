@@ -5,30 +5,14 @@ import os
 import hashlib
 
 
-class Candidate(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField()
-
-    def __str__(self):
-        return " ".join((self.first_name, self.last_name, self.email))
-
-
 def getHashValue():
     return hashlib.sha224(os.urandom(64)).hexdigest()[:20]
 
 
-class CandidateMetaData(models.Model):
-    candidate = models.OneToOneField(
-        Candidate,
-        on_delete=models.CASCADE,
-        primary_key=True,
-    )
+class Registration(models.Model):
     identifier = models.CharField(default=getHashValue, max_length=100)
 
     time_of_register = models.DateTimeField(default=timezone.now, blank=True)
-
-    received_bicycle = models.BooleanField(default=False)
 
     email_validated = models.BooleanField(default=False)
     time_of_email_validation = models.DateTimeField(default=timezone.now,
@@ -52,8 +36,21 @@ class CandidateMetaData(models.Model):
         assert False, "Could not find object"
 
     @classmethod
-    def candidates_in_line(cls):
+    def total_candidates_in_line(cls):
         return cls.objects.count()
 
     def __str__(self):
         return " ".join((str(self.candidate), self.identifier))
+
+
+class Candidate(models.Model):
+    registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
+
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+
+    received_bicycle = models.BooleanField(default=False)
+
+    def __str__(self):
+        return " ".join((self.first_name, self.last_name, self.email))
