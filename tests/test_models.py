@@ -5,14 +5,14 @@ from hypothesis.extra.django.models import models
 
 from faker import Faker
 
-from register.models import Candidate, Registration, getHashValue
+from register.models import Candidate, Registration, get_hash_value
 
 
 # filter text that only contains of whitespace
 name_strategy = text(min_size=1, max_size=100).filter(lambda x: x.strip())
 email_strategy = builds(target=Faker().email)
 registration_strategy = models(model=Registration,
-                               identifier=builds(getHashValue),
+                               identifier=builds(get_hash_value),
                                email_validated=just(False))
 candidate_strategy = models(model=Candidate,
                             registration=registration_strategy)

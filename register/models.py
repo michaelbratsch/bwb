@@ -5,12 +5,12 @@ import os
 import hashlib
 
 
-def getHashValue():
+def get_hash_value():
     return hashlib.sha224(os.urandom(64)).hexdigest()[:20]
 
 
 class Registration(models.Model):
-    identifier = models.CharField(default=getHashValue, max_length=100,
+    identifier = models.CharField(default=get_hash_value, max_length=100,
                                   unique=True)
 
     time_of_register = models.DateTimeField(default=timezone.now, blank=True)
