@@ -2,32 +2,33 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.views.generic.edit import FormView
 
-from register.forms import CandidateForm
-from register.models import Registration
+from register.forms import RegistrationForm
+from register.models import Registration, Candidate
 from register.email import send_register_email
 
 
 class ContactView(FormView):
     template_name = 'register/index.html'
-    form_class = CandidateForm
+    form_class = RegistrationForm
     success_url = 'thanks.html'
 
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+        email = form.cleaned_data['email']
 
-        # Create registration and save it
-        registration = Registration.objects.create()
+        # Create and save registration and candidate object
+        registration = Registration.objects.create(email=email)
+        candidate = Candidate.objects.create(registration=registration,
+                                             first_name=first_name,
+                                             last_name=last_name)
 
-        # Save name and email address
-        candidate = form.save(commit=False)
-        candidate.registration = registration
-        candidate.save()
-
-        recipient = {'email': candidate.email,
+        recipient = {'email': registration.email,
                      'name': '%s %s' % (candidate.first_name,
                                         candidate.last_name),
-                     'identifier': registration.identifier}
+                     'identifier': candidate.identifier}
         base_url = '{scheme}://{host}'.format(scheme=self.request.scheme,
                                               host=self.request.get_host())
         send_register_email(recipient=recipient,
@@ -41,7 +42,7 @@ class ThanksView(View):
 
     def get(self, request, *args, **kwargs):
         context_dict = {'number_in_line':
-                        Registration.total_candidates_in_line()}
+                        Candidate.candidates_in_line()}
         return render(request, self.template_name, context_dict)
 
 
@@ -51,8 +52,9 @@ class CurrentInLineView(View):
     def get(self, request, *args, **kwargs):
         identifier = request.GET.get('user_id')
 
-        candidate = get_object_or_404(Registration, identifier=identifier)
-        candidate.validate_email()
+        candidate = get_object_or_404(Candidate, identifier=identifier)
+        registration = candidate.registration
+        registration.validate_email()
 
         context_dict = {'number_in_line': candidate.number_in_line()}
         return render(request, self.template_name, context_dict)

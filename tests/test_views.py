@@ -1,4 +1,5 @@
 from django.core import mail
+from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 from hypothesis import given
@@ -56,7 +57,9 @@ class ContactViewTestCase(HypothesisTestCase):
             self.check_failed_post(first_name, last_name, email)
 
 
-class ThanksViewTestCase(HypothesisTestCase):
+# Class is inherited from Django TestCase because it does not flush
+# db after each test case as hypothesis TestCase does
+class ThanksViewTestCase(TestCase):
     url = reverse('register:thanks')
 
     @given(candidate_strategy)
@@ -83,12 +86,16 @@ class CurrentInLineViewTestCase(HypothesisTestCase):
         for _ in range(20):
             candidate_strategy.example()
 
-        for num, registration in enumerate(Registration.objects.all()):
+        print 'candidates ' + str(Candidate.objects.count())
+        print 'registrations' + str(Registration.objects.count())
+
+        for num, candidate in enumerate(Candidate.objects.all()):
+            registration = candidate.registration
             self.assertFalse(registration.email_validated)
 
             text = 'Currently you are number ' + str(num+1)
             response = self.client.get(self.url,
-                                       {'user_id': registration.identifier})
+                                       {'user_id': candidate.identifier})
 
             self.assertContains(response=response, text=text, count=1)
 

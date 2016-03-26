@@ -6,15 +6,17 @@ from hypothesis.extra.django.models import models
 from faker import Faker
 
 from register.models import Candidate, Registration, get_hash_value
+from register.models import max_name_length
 
 
 # filter text that only contains of whitespace
-name_strategy = text(min_size=1, max_size=100).filter(lambda x: x.strip())
+name_strategy = text(min_size=1, max_size=max_name_length).filter(lambda x:
+                                                                  x.strip())
 email_strategy = builds(target=Faker().email)
 registration_strategy = models(model=Registration,
-                               identifier=builds(get_hash_value),
                                email_validated=just(False))
 candidate_strategy = models(model=Candidate,
+                            identifier=builds(get_hash_value),
                             registration=registration_strategy)
 
 
@@ -29,6 +31,6 @@ class RegistrationTestCase(HypothesisTestCase):
         for _ in range(20):
             candidate_strategy.example()
 
-        registrations = Registration.objects.all()
-        identifier_set = set(i.identifier for i in registrations)
-        self.assertEqual(len(identifier_set), Registration.objects.count())
+        candidates = Candidate.objects.all()
+        identifier_set = set(i.identifier for i in candidates)
+        self.assertEqual(len(identifier_set), Candidate.objects.count())
