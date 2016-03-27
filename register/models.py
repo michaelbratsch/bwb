@@ -26,6 +26,12 @@ class Registration(models.Model):
     time_of_registration = models.DateTimeField(default=timezone.now,
                                                 blank=True)
 
+    def get_candidates(self):
+        return self.candidates.all()
+
+    def number_of_candidates(self):
+        return self.candidates.count()
+
     def validate_email(self):
         if not self.email_validated:
             self.email_validated = True
@@ -33,7 +39,8 @@ class Registration(models.Model):
             self.save()
 
     def __str__(self):
-        return " ".join((str(self.candidate), self.email, self.identifier))
+        candidate_names = ["'%s'" % i for i in self.get_candidates()]
+        return " ".join([self.email] + candidate_names)
 
 
 class Candidate(models.Model):
@@ -57,8 +64,8 @@ class Candidate(models.Model):
         assert False, "Could not find object"
 
     @classmethod
-    def candidates_in_line(cls):
+    def total_in_line(cls):
         return cls.objects.count()
 
     def __str__(self):
-        return " ".join((self.first_name, self.last_name))
+        return " ".join((self.first_name, self.last_name, self.identifier))

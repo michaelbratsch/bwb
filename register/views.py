@@ -42,7 +42,7 @@ class ThanksView(View):
 
     def get(self, request, *args, **kwargs):
         context_dict = {'number_in_line':
-                        Candidate.candidates_in_line()}
+                        Candidate.total_in_line()}
         return render(request, self.template_name, context_dict)
 
 

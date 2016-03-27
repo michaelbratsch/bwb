@@ -1,13 +1,13 @@
 from django.core import mail
-from django.test import TestCase
 from django.core.urlresolvers import reverse
 
-from hypothesis import given
-from hypothesis.strategies import text, random_module
+from hypothesis import given, settings, HealthCheck
+from hypothesis.strategies import text, lists, random_module
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 
-from register.models import Registration, Candidate
-from tests.test_models import name_strategy, email_strategy, candidate_strategy
+from register.models import Candidate, Registration
+from tests.test_models import name_strategy, email_strategy, \
+    registration_strategy
 
 
 class ContactViewTestCase(HypothesisTestCase):
@@ -19,6 +19,7 @@ class ContactViewTestCase(HypothesisTestCase):
                             count=1)
         self.assertEqual(mail.outbox, [])
 
+    @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(first_name=name_strategy, last_name=name_strategy,
            email=email_strategy, dummy=random_module())
     def test_post(self, first_name, last_name, email, dummy):
@@ -57,12 +58,11 @@ class ContactViewTestCase(HypothesisTestCase):
             self.check_failed_post(first_name, last_name, email)
 
 
-# Class is inherited from Django TestCase because it does not flush
-# db after each test case as hypothesis TestCase does
-class ThanksViewTestCase(TestCase):
+class ThanksViewTestCase(HypothesisTestCase):
     url = reverse('register:thanks')
 
-    @given(candidate_strategy)
+    @settings(suppress_health_check=[HealthCheck.too_slow])
+    @given(lists(elements=registration_strategy, average_size=3))
     def test_total_number_in_line(self, candidate):
         text = 'total number of %s people' % Candidate.objects.count()
 
@@ -82,22 +82,18 @@ class CurrentInLineViewTestCase(HypothesisTestCase):
         response = self.client.get(self.url, {'user_id': user_id})
         self.assertEqual(response.status_code, 404)
 
-    def test_all_user_ids(self):
-        for _ in range(20):
-            candidate_strategy.example()
-
-        print 'candidates ' + str(Candidate.objects.count())
-        print 'registrations' + str(Registration.objects.count())
-
-        for num, candidate in enumerate(Candidate.objects.all()):
-            registration = candidate.registration
+    @settings(suppress_health_check=[HealthCheck.too_slow])
+    @given(lists(elements=registration_strategy, average_size=3))
+    def test_all_user_ids(self, list_of_registrations):
+        for registration in Registration.objects.all():
             self.assertFalse(registration.email_validated)
+            for candidate in registration.get_candidates():
+                text = 'Currently you are number %s' % \
+                       candidate.number_in_line()
+                response = self.client.get(self.url,
+                                           {'user_id': candidate.identifier})
 
-            text = 'Currently you are number ' + str(num+1)
-            response = self.client.get(self.url,
-                                       {'user_id': candidate.identifier})
-
-            self.assertContains(response=response, text=text, count=1)
+                self.assertContains(response=response, text=text, count=1)
 
             self.assertFalse(registration.email_validated)
             registration.refresh_from_db()
