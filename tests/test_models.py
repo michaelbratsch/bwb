@@ -16,7 +16,6 @@ email_strategy = builds(target=Faker().email)
 
 def generate_with_candidate(registration):
     candidate_strategy = models(model=Candidate,
-                                identifier=builds(get_hash_value),
                                 registration=just(registration))
     return lists(elements=candidate_strategy,
                  min_size=1,
@@ -26,6 +25,7 @@ def generate_with_candidate(registration):
 # this strategy might take some time and it can be necessary to disable
 # the health check for too slow tests
 registration_strategy = models(model=Registration,
+                               identifier=builds(get_hash_value),
                                email_validated=just(False)).flatmap(
                                     generate_with_candidate)
 
@@ -41,6 +41,6 @@ class ModelTestCase(HypothesisTestCase):
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(lists(elements=registration_strategy, average_size=3))
     def test_unique_identifiers(self, list_of_registrations):
-        candidates = Candidate.objects.only('identifier').all()
-        identifier_set = set(i.identifier for i in candidates)
-        self.assertEqual(len(identifier_set), Candidate.objects.count())
+        registrations = Registration.objects.only('identifier').all()
+        identifier_set = set(i.identifier for i in registrations)
+        self.assertEqual(len(identifier_set), Registration.objects.count())

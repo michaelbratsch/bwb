@@ -24,8 +24,8 @@ class ContactViewTestCase(HypothesisTestCase):
            email=email_strategy, dummy=random_module())
     def test_post(self, first_name, last_name, email, dummy):
         response = self.client.post(self.url,
-                                    {'first_name': first_name,
-                                     'last_name': last_name,
+                                    {'first_name_0': first_name,
+                                     'last_name_0': last_name,
                                      'email': email})
 
         # Http status code 302: URL redirection
@@ -41,8 +41,8 @@ class ContactViewTestCase(HypothesisTestCase):
 
     def check_failed_post(self, first_name, last_name, email):
         response = self.client.post(self.url,
-                                    {'first_name': first_name,
-                                     'last_name': last_name,
+                                    {'first_name_0': first_name,
+                                     'last_name_0': last_name,
                                      'email': email})
         self.assertContains(response=response, text='Register for a bike',
                             count=1)
@@ -87,11 +87,12 @@ class CurrentInLineViewTestCase(HypothesisTestCase):
     def test_all_user_ids(self, list_of_registrations):
         for registration in Registration.objects.all():
             self.assertFalse(registration.email_validated)
-            for candidate in registration.get_candidates():
+            for _ in registration.get_candidates():
                 text = 'Currently you are number %s' % \
-                       candidate.number_in_line()
+                       registration.number_in_line()
                 response = self.client.get(self.url,
-                                           {'user_id': candidate.identifier})
+                                           {'user_id':
+                                            registration.identifier})
 
                 self.assertContains(response=response, text=text, count=1)
 

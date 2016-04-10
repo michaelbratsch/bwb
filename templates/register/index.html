@@ -5,28 +5,132 @@
 {% load staticfiles %}
 
 {% block body_block %}
-    <div class="page-header">
-        <h1>{% load i18n %}{% trans "Register for a bike!" %}</h1>
+<div class="page-header">
+    <h1>{% load i18n %}{% trans "Register for a bike!" %}</h1>
+</div>
+<!--<form id="nameForm" method="POST" class="post-form" novalidate="novalidate">-->
+<form id="nameForm" method="POST" class="post-form">
+    {% csrf_token %}
+    <div class="form-group row">
+        <label class="col-xs-3 control-label">
+            {% trans "Name" %}
+        </label>
+        <div class="col-xs-7">
+            <input class="form-control" name="first_name_0" type="text"
+                   maxlength="100" placeholder="first name" required/>
+        </div>
+        <div class="col-xs-12" style="height:10px;"></div>
+        <div class="col-xs-7 col-xs-offset-3">
+            <input class="form-control" name="last_name_0" type="text"
+                   maxlength="100" placeholder="last name" required/>
+        </div>
+        <div class="col-xs-1">
+            <button type="button" class="btn btn-default addButton">
+                <i class="fa fa-plus"></i>
+            </button>
+        </div>
+        <div class="col-xs-12" style="height:10px;"></div>
     </div>
-    <form method="POST" class="post-form">
-        {% csrf_token %}
-        <div class="form-group" >
-            <p class="required"> <label for="id_first_name">First name:</label>
-                <input class="form-control"  id="id_first_name" maxlength="100"
-                 name="first_name" type="text"
-                 placeholder="Enter your first name."/></p>
+    <div class="form-group hide row" id="nameTemplate">
+        <div class="col-xs-7 col-xs-offset-3">
+            <input class="form-control" name="first_name" type="text"
+                   maxlength="100" placeholder="first name" required/>
         </div>
-        <div class="form-group" >
-            <p class="required"> <label for="id_last_name">Last name:</label>
-                <input class="form-control"  id="id_last_name" maxlength="100"
-                 name="last_name" type="text"
-                 placeholder="Enter your last name."/></p>
+        <div class="col-xs-12" style="height:10px;"></div>
+        <div class="col-xs-7 col-xs-offset-3">
+            <input class="form-control" name="last_name" type="text"
+                   maxlength="100" placeholder="last name" required/>
         </div>
-        <div class="form-group" >
-            <p class="required"> <label for="id_email">Email address:</label>
-                <input class="form-control"  id="id_email" name="email"
-                type="email" placeholder="Enter your email."/></p>
+        <div class="col-xs-1">
+            <button type="button" class="btn btn-default removeButton">
+                <i class="fa fa-minus"></i>
+            </button>
         </div>
-        <button type="submit" class="save btn btn-default">Submit</button>
-    </form>
+        <div class="col-xs-12" style="height:10px;"></div>
+    </div>
+    <div class="form-group row">
+        <div class="col-xs-3 control-label">
+            <label for="id_email">
+                {% trans "Contact information" %}
+            </label>
+        </div>
+        <div class="col-xs-7">
+            <p class="required">
+                <input class="form-control contact-group" id="id_email"
+                       name="email" type="email"
+                       placeholder="email address"/>
+            </p>
+        </div>
+        <div class="col-xs-offset-3 col-xs-7">
+            <p class="required">
+                <input class="form-control contact-group" id="id_phone"
+                       name="phone" type="tel"
+                       placeholder="mobile phone number"/>
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-1">
+            <button type="submit" class="save btn btn-default">
+                {% trans "Submit" %}
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+$(document).ready(function() {
+    var nameIndex = 0;
+    var MAX_OPTIONS = 4;
+
+    // Validate form
+    $('#nameForm').validate({
+        rules: {
+            phone: {
+                require_from_group: [1, ".contact-group"]
+            },
+            email: {
+                require_from_group: [1, ".contact-group"]
+            }
+        }
+    })
+
+    $('#nameForm')
+        // Add button click handler
+        .on('click', '.addButton', function() {
+            nameIndex++;
+            var $template = $('#nameTemplate'),
+                $clone    = $template
+                                .clone()
+                                .removeClass('hide')
+                                .removeAttr('id')
+                                .attr('data-name-index', nameIndex)
+                                .insertBefore($template);
+
+            // Update the name attributes
+            $clone
+                .find('[name="first_name"]').attr('name', 'first_name_' + nameIndex).end()
+                .find('[name="last_name"]').attr('name', 'last_name_' + nameIndex).end();
+
+
+            if (nameIndex >= MAX_OPTIONS) {
+                $('#nameForm').find('.addButton').attr('disabled', 'disabled');
+            }
+        })
+
+        // Remove button click handler
+        .on('click', '.removeButton', function() {
+            nameIndex--;
+            var $row  = $(this).parents('.form-group');
+
+            // Remove element containing the fields
+            $row.remove();
+
+            if (nameIndex < MAX_OPTIONS) {
+                $('#nameForm').find('.addButton').removeAttr('disabled');
+            }
+        });
+});
+</script>
+
 {% endblock %}

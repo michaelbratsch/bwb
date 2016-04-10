@@ -14,6 +14,10 @@ def get_hash_value():
 
 
 class Registration(models.Model):
+    identifier = models.CharField(default=get_hash_value,
+                                  max_length=identifier_length,
+                                  unique=True)
+
     email = models.EmailField()
     email_validated = models.BooleanField(default=False)
     time_of_email_validation = models.DateTimeField(default=timezone.now,
@@ -38,18 +42,17 @@ class Registration(models.Model):
             self.time_of_email_validation = timezone.now()
             self.save()
 
+    def number_in_line(self):
+        return max(c.number_in_line() for c in self.get_candidates())
+
     def __str__(self):
         candidate_names = ["'%s'" % i for i in self.get_candidates()]
-        return " ".join([self.email] + candidate_names)
+        return " ".join(candidate_names + [self.identifier, self.email])
 
 
 class Candidate(models.Model):
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE,
                                      related_name='candidates')
-
-    identifier = models.CharField(default=get_hash_value,
-                                  max_length=identifier_length,
-                                  unique=True)
 
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
@@ -68,4 +71,4 @@ class Candidate(models.Model):
         return cls.objects.count()
 
     def __str__(self):
-        return " ".join((self.first_name, self.last_name, self.identifier))
+        return " ".join((self.first_name, self.last_name))

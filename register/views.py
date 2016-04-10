@@ -15,20 +15,26 @@ class ContactView(FormView):
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
-        first_name = form.cleaned_data['first_name']
-        last_name = form.cleaned_data['last_name']
         email = form.cleaned_data['email']
 
         # Create and save registration and candidate object
         registration = Registration.objects.create(email=email)
-        candidate = Candidate.objects.create(registration=registration,
-                                             first_name=first_name,
-                                             last_name=last_name)
+
+        for i in range(5):
+            first_name = form.cleaned_data['first_name_%s' % i]
+            last_name = form.cleaned_data['last_name_%s' % i]
+            if first_name and last_name:
+                Candidate.objects.create(registration=registration,
+                                         first_name=first_name,
+                                         last_name=last_name)
+
+        names = ["%s %s" % (c.first_name, c.last_name)
+                 for c in registration.candidates.all()]
 
         recipient = {'email': registration.email,
-                     'name': '%s %s' % (candidate.first_name,
-                                        candidate.last_name),
-                     'identifier': candidate.identifier}
+                     'name': " ".join(names),
+                     'identifier': registration.identifier}
+
         base_url = '{scheme}://{host}'.format(scheme=self.request.scheme,
                                               host=self.request.get_host())
         send_register_email(recipient=recipient,
@@ -52,9 +58,8 @@ class CurrentInLineView(View):
     def get(self, request, *args, **kwargs):
         identifier = request.GET.get('user_id')
 
-        candidate = get_object_or_404(Candidate, identifier=identifier)
-        registration = candidate.registration
+        registration = get_object_or_404(Registration, identifier=identifier)
         registration.validate_email()
 
-        context_dict = {'number_in_line': candidate.number_in_line()}
+        context_dict = {'number_in_line': registration.number_in_line()}
         return render(request, self.template_name, context_dict)
