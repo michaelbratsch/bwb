@@ -22,5 +22,6 @@ from .views import GreetingsView
 urlpatterns = i18n_patterns(
     url(r'^admin/',    admin.site.urls),
     url(r'^register/', include('register.urls', namespace='register')),
+    url(r'^staff/',    include('staff.urls', namespace='staff')),
     url(r'^$',         GreetingsView.as_view(),  name='index')
 )
