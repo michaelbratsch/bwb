@@ -17,22 +17,10 @@ class RegistrationForm(forms.Form):
     email = forms.EmailField()
 
     class Meta:
-        fields = ['first_name_0', 'last_name_0',
-                  'first_name_1', 'last_name_1',
-                  'first_name_2', 'last_name_2',
-                  'first_name_3', 'last_name_3',
-                  'first_name_4', 'last_name_4',
-                  'email']
-        labels = {
-            'first_name_0': 'First name',
-            'last_name_0': 'Last name',
-            'first_name_1': 'First name',
-            'last_name_1': 'Last name',
-            'first_name_2': 'First name',
-            'last_name_2': 'Last name',
-            'first_name_3': 'First name',
-            'last_name_3': 'Last name',
-            'first_name_4': 'First name',
-            'last_name_4': 'Last name',
-            'email': 'Email address'
-        }
+        fields = ['email']
+        labels = {'email': 'Email address'}
+        for i in range(5):
+            fields.append('first_name_%s' % i)
+            fields.append('last_name_%s' % i)
+            labels['first_name_%s' % i] = 'First_name'
+            labels['last_name_%s' % i] = 'Last_name'

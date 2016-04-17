@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.views.generic.edit import FormView
+from django.utils.translation import ugettext
 
 from register.forms import RegistrationForm
 from register.models import Registration, Candidate
@@ -31,8 +32,9 @@ class ContactView(FormView):
         names = ["%s %s" % (c.first_name, c.last_name)
                  for c in registration.candidates.all()]
 
+        name_link = " " + ugettext('and') + " "
         recipient = {'email': registration.email,
-                     'name': " ".join(names),
+                     'name': name_link.join(names),
                      'identifier': registration.identifier}
 
         base_url = '{scheme}://{host}'.format(scheme=self.request.scheme,

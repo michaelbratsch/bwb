@@ -7,7 +7,7 @@ from hypothesis.extra.django import TestCase as HypothesisTestCase
 
 from register.models import Candidate, Registration
 from tests.test_models import name_strategy, email_strategy, \
-    registration_strategy
+    registration_strategy, name_list_strategy
 
 
 class ContactViewTestCase(HypothesisTestCase):
@@ -20,13 +20,15 @@ class ContactViewTestCase(HypothesisTestCase):
         self.assertEqual(mail.outbox, [])
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
-    @given(first_name=name_strategy, last_name=name_strategy,
+    @given(name_list=name_list_strategy,
            email=email_strategy, dummy=random_module())
-    def test_post(self, first_name, last_name, email, dummy):
-        response = self.client.post(self.url,
-                                    {'first_name_0': first_name,
-                                     'last_name_0': last_name,
-                                     'email': email})
+    def test_post(self, name_list, email, dummy):
+        post_dict = {'email': email}
+        for i, name in enumerate(name_list):
+            first_name, last_name = name
+            post_dict['first_name_%s' % i] = first_name
+            post_dict['last_name_%s' % i] = last_name
+        response = self.client.post(self.url, post_dict)
 
         # Http status code 302: URL redirection
         self.assertEqual(response.status_code, 302)
@@ -35,27 +37,33 @@ class ContactViewTestCase(HypothesisTestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], email)
 
-        last_candidate = Candidate.objects.last()
-        self.assertEqual(first_name.strip(), last_candidate.first_name)
-        self.assertEqual(last_name.strip(), last_candidate.last_name)
+        first_candidate = Candidate.objects.first()
+        self.assertEqual(post_dict['first_name_0'].strip(),
+                         first_candidate.first_name)
+        self.assertEqual(post_dict['last_name_0'].strip(),
+                         first_candidate.last_name)
 
-    def check_failed_post(self, first_name, last_name, email):
-        response = self.client.post(self.url,
-                                    {'first_name_0': first_name,
-                                     'last_name_0': last_name,
-                                     'email': email})
+    def check_failed_post(self, post_dict):
+        response = self.client.post(self.url, post_dict)
         self.assertContains(response=response, text='Register for a bike',
                             count=1)
         self.assertEqual(mail.outbox, [])
 
-    @given(first_name=name_strategy, last_name=name_strategy)
-    def test_failed_email_post(self, first_name, last_name):
-        self.check_failed_post(first_name, last_name, 'asdf')
+    @given(name_list=name_list_strategy)
+    def test_failed_email_post(self, name_list):
+        post_dict = {'email': 'asdf'}
+        for i, name in enumerate(name_list):
+            first_name, last_name = name
+            post_dict['first_name_%s' % i] = first_name
+            post_dict['last_name_%s' % i] = last_name
+        self.check_failed_post(post_dict)
 
     @given(name=name_strategy, email=email_strategy)
     def test_failed_name_post(self, name, email):
         for first_name, last_name in [('', name), (name, '')]:
-            self.check_failed_post(first_name, last_name, email)
+            self.check_failed_post({'first_name_0': first_name,
+                                    'last_name_0': last_name,
+                                    'email': email})
 
 
 class ThanksViewTestCase(HypothesisTestCase):

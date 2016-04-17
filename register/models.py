@@ -13,6 +13,11 @@ def get_hash_value():
     return hashlib.sha224(os.urandom(64)).hexdigest()[:identifier_length]
 
 
+def datetime_min():
+    return timezone.make_aware(timezone.datetime.min,
+                               timezone.get_default_timezone())
+
+
 class Registration(models.Model):
     identifier = models.CharField(default=get_hash_value,
                                   max_length=identifier_length,
@@ -20,15 +25,17 @@ class Registration(models.Model):
 
     email = models.EmailField()
     email_validated = models.BooleanField(default=False)
-    time_of_email_validation = models.DateTimeField(default=timezone.now,
+    time_of_email_validation = models.DateTimeField(default=datetime_min,
                                                     blank=True)
 
     win_validated = models.BooleanField(default=False)
-    time_of_win_validation = models.DateTimeField(default=timezone.now,
+    time_of_win_validation = models.DateTimeField(default=datetime_min,
                                                   blank=True)
 
     time_of_registration = models.DateTimeField(default=timezone.now,
                                                 blank=True)
+
+    general_notes = models.TextField(default='', blank=True)
 
     def get_candidates(self):
         return self.candidates.all()
@@ -59,11 +66,16 @@ class Candidate(models.Model):
 
     received_bicycle = models.BooleanField(default=False)
 
+    general_notes = models.TextField(default='', blank=True)
+
     def number_in_line(self):
         cls = self.__class__
-        for i, candidate in enumerate(cls.objects.all()):
+        i = 0
+        for candidate in cls.objects.all():
+            if not candidate.received_bicycle:
+                i += 1
             if self == candidate:
-                return i+1
+                return i
         assert False, "Could not find object"
 
     @classmethod

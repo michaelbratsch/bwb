@@ -1,5 +1,5 @@
 from hypothesis import given, settings, HealthCheck
-from hypothesis.strategies import text, just, builds, lists
+from hypothesis.strategies import text, just, builds, lists, tuples
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.extra.django.models import models
 
@@ -11,6 +11,11 @@ from register.models import Candidate, Registration, get_hash_value, \
 # filter text that only contains of whitespace
 name_strategy = text(min_size=1, max_size=max_name_length).filter(lambda x:
                                                                   x.strip())
+name_tuple_strategy = tuples(name_strategy, name_strategy)
+name_list_strategy = lists(elements=name_tuple_strategy,
+                           min_size=1,
+                           max_size=5,
+                           average_size=2)
 email_strategy = builds(target=Faker().email)
 
 
