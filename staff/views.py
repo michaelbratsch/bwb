@@ -1,57 +1,48 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import View, FormView
 from django.http import Http404
-from django.views.generic import View
-from django.contrib.auth import authenticate, login
 
-from register.models import Candidate
-from staff.forms import LoginForm
-
-
-class LoginView(View):
-    template_name = 'staff/login.html'
-
-    def get(self, request, *args, **kwags):
-        return render(request, self.template_name)
-
-    def post(self, request, *args, **kwargs):
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user = authenticate(
-                username=form.cleaned_data['username'],
-                password=form.cleaned_data['password'])
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return redirect('staff:index')
-                else:
-                    raise Http404("The password is valid, but the account has"
-                                  " been disabled!")
-        raise Http404("Entered login credentials are not valid.")
+from register.models import Candidate, Bicycle
+from staff.forms import HandoverForm
 
 
 class ManageView(View):
     template_name = 'staff/index.html'
 
     def get(self, request, *args, **kwargs):
-        candidate_objects = Candidate.objects.filter(
-            received_bicycle=False).all()
-
         waiting_candidates = [(cand.first_name, cand.last_name, cand.id)
-                              for cand in candidate_objects]
+                              for cand in Candidate.without_bicycle()]
 
         context_dict = {'waiting_candidates': waiting_candidates}
         return render(request, self.template_name, context_dict)
 
 
-class HandoverView(View):
+class HandoverView(FormView):
     template_name = 'staff/handover.html'
+    form_class = HandoverForm
+    success_url = '/staff'
 
-    def get(self, request, user_id, *args, **kwargs):
-        candidate = get_object_or_404(Candidate, id=user_id)
+    def form_valid(self, form):
+        candidate_id = self.request.POST['candidate_id']
+        bicycle_number = form.cleaned_data['bicycle_number']
+        general_remarks = form.cleaned_data['general_remarks']
 
-        if candidate.received_bicycle:
-            raise Http404("User already has a bicycle.")
+        try:
+            candidate = Candidate.objects.filter(id=candidate_id).get(
+                bicycle__isnull=True)
+        except Candidate.DoesNotExist:
+            raise Http404("This Candidate without a bicycle does not exist.")
+
+        Bicycle.objects.create(candidate=candidate,
+                               bicycle_number=bicycle_number,
+                               general_remarks=general_remarks)
+
+        return super(HandoverView, self).form_valid(form)
+
+    def get(self, request, candidate_id, *args, **kwargs):
+        candidate = get_object_or_404(Candidate, id=candidate_id)
 
         context_dict = {'first_name': candidate.first_name,
-                        'last_name': candidate.last_name}
+                        'last_name': candidate.last_name,
+                        'candidate_id': candidate.id}
         return render(request, self.template_name, context_dict)

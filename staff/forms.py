@@ -1,7 +1,9 @@
 from django import forms
 
+from register.models import Bicycle
 
-class LoginForm(forms.Form):
-    username = forms.CharField(max_length=200)
-    password = forms.CharField(max_length=32,
-                               widget=forms.PasswordInput)
+
+class HandoverForm(forms.ModelForm):
+    class Meta:
+        model = Bicycle
+        fields = ['bicycle_number', 'general_remarks']

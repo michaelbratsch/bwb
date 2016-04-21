@@ -53,9 +53,9 @@
                         </form>
                         {% if user.is_authenticated %}
                             <li><a href="{% url 'staff:index' %}">{% trans "Staff Page" %}</a></li>
-                            <li><a href="{% url 'staff:logout' %}?next=/">{% trans "Logout" %}</a></li>
+                            <li><a href="{% url 'logout' %}?next=/">{% trans "Logout" %}</a></li>
                         {% else %}
-                            <li><a href="{% url 'staff:login' %}">{% trans "Login" %}</a></li>
+                            <li><a href="{% url 'login' %}">{% trans "Login" %}</a></li>
                         {% endif %}
                     </ul>
                 </div>

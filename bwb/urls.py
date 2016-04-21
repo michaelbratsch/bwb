@@ -15,11 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.auth.views import logout, login
 from django.conf.urls.i18n import i18n_patterns
 
 from .views import GreetingsView
 
 urlpatterns = i18n_patterns(
+    url(regex=r'^login/$', view=login, kwargs={'template_name': 'login.html'},
+        name='login'),
+    url(regex=r'^logout/$', view=logout, name='logout'),
     url(r'^admin/',    admin.site.urls),
     url(r'^register/', include('register.urls', namespace='register')),
     url(r'^staff/',    include('staff.urls', namespace='staff')),

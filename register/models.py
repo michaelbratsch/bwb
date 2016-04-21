@@ -3,6 +3,7 @@ from django.utils import timezone
 
 import os
 import hashlib
+from __builtin__ import classmethod
 
 
 max_name_length = 100
@@ -64,10 +65,6 @@ class Candidate(models.Model):
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
 
-    received_bicycle = models.BooleanField(default=False)
-
-    general_notes = models.TextField(default='', blank=True)
-
     def number_in_line(self):
         cls = self.__class__
         i = 0
@@ -82,5 +79,20 @@ class Candidate(models.Model):
     def total_in_line(cls):
         return cls.objects.count()
 
+    @classmethod
+    def without_bicycle(cls):
+        return cls.objects.filter(bicycle__isnull=True).all()
+
     def __str__(self):
         return " ".join((self.first_name, self.last_name))
+
+
+class Bicycle(models.Model):
+    candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
+                                     related_name='bicycle')
+
+    bicycle_number = models.PositiveIntegerField()
+    general_remarks = models.TextField()
+
+    def __str__(self):
+        return str(self.bicycle_number)
