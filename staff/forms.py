@@ -4,6 +4,12 @@ from register.models import Bicycle
 
 
 class HandoverForm(forms.ModelForm):
+    candidate_id = forms.IntegerField(min_value=0)
+
     class Meta:
         model = Bicycle
-        fields = ['bicycle_number', 'general_remarks']
+        fields = ['bicycle_number', 'general_remarks', 'candidate_id']
+
+    def __init__(self, *args, **kwargs):
+        super(HandoverForm, self).__init__(*args, **kwargs)
+        self.fields['general_remarks'].required = False

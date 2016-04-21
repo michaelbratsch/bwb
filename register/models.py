@@ -65,11 +65,17 @@ class Candidate(models.Model):
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
 
+    def received_bicycle(self):
+        try:
+            return self.bicycle is not None
+        except Bicycle.DoesNotExist:
+            return False
+
     def number_in_line(self):
         cls = self.__class__
         i = 0
         for candidate in cls.objects.all():
-            if not candidate.received_bicycle:
+            if not candidate.received_bicycle():
                 i += 1
             if self == candidate:
                 return i
@@ -92,7 +98,7 @@ class Bicycle(models.Model):
                                      related_name='bicycle')
 
     bicycle_number = models.PositiveIntegerField()
-    general_remarks = models.TextField()
+    general_remarks = models.TextField(default='')
 
     def __str__(self):
         return str(self.bicycle_number)

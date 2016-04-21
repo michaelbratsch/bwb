@@ -23,15 +23,13 @@ class HandoverView(FormView):
     success_url = '/staff'
 
     def form_valid(self, form):
-        candidate_id = self.request.POST['candidate_id']
+        candidate_id = form.cleaned_data['candidate_id']
         bicycle_number = form.cleaned_data['bicycle_number']
         general_remarks = form.cleaned_data['general_remarks']
 
-        try:
-            candidate = Candidate.objects.filter(id=candidate_id).get(
-                bicycle__isnull=True)
-        except Candidate.DoesNotExist:
-            raise Http404("This Candidate without a bicycle does not exist.")
+        candidate = get_object_or_404(Candidate, id=candidate_id)
+        if candidate.received_bicycle():
+            raise Http404("This Candidate already has a bicycle.")
 
         Bicycle.objects.create(candidate=candidate,
                                bicycle_number=bicycle_number,
