@@ -1,0 +1,17 @@
+{% if events %}
+    <ul class="nav nav-sidebar">
+        {% for r in events %}
+            {% if r.id == event_id %} 
+                <li class="active">
+            {% else %}
+                <li>
+            {% endif %}
+            <a href="{% url 'staff:event' r.id%}">{{ r.due_date }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <li>
+        <strong >There are no events present.</strong>
+    </li>
+{% endif %}

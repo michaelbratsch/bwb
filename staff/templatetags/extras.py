@@ -1,10 +1,12 @@
 from django import template
-from register.models import Release
+from register.models import Event
 
 register = template.Library()
 
 
-@register.inclusion_tag('staff/releases.html')
-def get_release_list(act_release=None):
-    releases = Release.objects.all()
-    return {'releases': releases, 'act_release': act_release}
+@register.inclusion_tag('staff/event_sidebar.html')
+def get_event_list(event_id=None):
+    events = list(Event.objects.all())
+    events.sort(key=lambda e: e.due_date)
+    return {'events': events,
+            'event_id': event_id}

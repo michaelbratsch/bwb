@@ -19,11 +19,12 @@ def datetime_min():
                                timezone.get_default_timezone())
 
 
-class Release(models.Model):
+class Event(models.Model):
     due_date = models.DateTimeField()
+    is_closed = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.due_date)
+        return str('%s closed:%s' % (self.due_date, self.is_closed))
 
 
 class Registration(models.Model):
@@ -31,8 +32,8 @@ class Registration(models.Model):
                                   max_length=identifier_length,
                                   unique=True)
 
-    release = models.ForeignKey(Release, on_delete=models.CASCADE,
-                                related_name='registrations')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE,
+                              related_name='registrations')
 
     email = models.EmailField()
     email_validated = models.BooleanField(default=False)

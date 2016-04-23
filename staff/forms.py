@@ -13,3 +13,8 @@ class HandoverForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(HandoverForm, self).__init__(*args, **kwargs)
         self.fields['general_remarks'].required = False
+
+
+class EventForm(forms.Form):
+    date = forms.DateField()
+    time = forms.TimeField()

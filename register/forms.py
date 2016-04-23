@@ -15,7 +15,7 @@ class RegistrationForm(forms.Form):
     first_name_4 = forms.CharField(max_length=max_name_length, required=False)
     last_name_4 = forms.CharField(max_length=max_name_length, required=False)
     email = forms.EmailField()
-    release_id = forms.IntegerField(min_value=0)
+    event_id = forms.IntegerField(min_value=0)
 
     class Meta:
         fields = ['email']

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+{% extends 'staff/base_staff.html' %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+<div class="page-header">
+    <h2>
+        {% load i18n %}{% trans "Create a new event for people to register for a new bicycle." %}
+    </h2>
+</div>
+
+<form id="createForm" method="POST" class="post-form">
+    {% csrf_token %}
+    <div class="form-group row">
+        <div class="col-xs-3" style="height:15px;"></div>
+    </div>
+    
+    <div class="form-group row">
+        <label class="col-xs-2 control-label">
+            {% trans "Date of the Event" %}
+        </label>
+        <div class="col-xs-2"> 
+            <input type="date" name="date" required>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <label class="col-xs-2 control-label">
+            {% trans "Time of the Event" %}
+        </label>
+        <div class="col-xs-2"> 
+            <input type="time" name="time" required>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-2" style="height:10px;"></div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-2">
+            <a href="{% url 'staff:index' %}" class="btn btn-info btn-block"
+            role="button">
+                {% trans "Cancel" %}
+            </a>
+        </div>
+        <div class="col-xs-2">
+            <button class="btn btn-info btn-block" type="submit" value="Submit"/>
+                {% trans "Submit" %}
+            </button>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -64,6 +64,19 @@
             </div>
         </div>
 
+        <div class="container-fluid">        
+            <div class="col-sm-3 col-md-2 sidebar">
+                {% block side_block %}
+                {% get_event_list event.id %}
+                {% endblock %}
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <div>
+                    {% block body_block %}{% endblock %}
+                </div>
+            </div>
+        </div>
+
         <!-- Bootstrap core JavaScript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
@@ -74,18 +87,5 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/additional-methods.min.js"></script>
-
-        <div class="container-fluid">        
-            <div class="col-sm-3 col-md-2 sidebar">
-                {% block side_block %}
-                {% get_release_list release_id %}
-                {% endblock %}
-            </div>
-            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-                <div>
-                    {% block body_block %}{% endblock %}
-                </div>
-            </div>
-        </div>
     </body>
 </html>

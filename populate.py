@@ -7,11 +7,11 @@ test_email = 'michael.b001@gmx.de'
 
 def populate():
 
-    release_1 = add_release(timezone.now())
-    release_2 = add_release(timezone.now()+timedelta(days=1))
+    event_1 = add_event(timezone.now())
+    event_2 = add_event(timezone.now()+timedelta(days=1))
 
-    registration_1 = add_registration(release_1, test_email)
-    registration_2 = add_registration(release_2, test_email)
+    registration_1 = add_registration(event_1, test_email)
+    registration_2 = add_registration(event_2, test_email)
 
     add_candidate(registration_1, 'Stefan', 'Mueller')
     add_candidate(registration_1, 'Simone', 'Peterson')
@@ -23,8 +23,8 @@ def populate():
     add_candidate(registration_2, 'Lothar', 'Brecht')
 
 
-def add_registration(release, email):
-    return Registration.objects.create(release=release, email=email)
+def add_registration(event, email):
+    return Registration.objects.create(event=event, email=email)
 
 
 def add_candidate(registration, first_name, last_name):
@@ -34,8 +34,8 @@ def add_candidate(registration, first_name, last_name):
         last_name=last_name)
 
 
-def add_release(due_date):
-    return Release.objects.create(due_date=due_date)
+def add_event(due_date):
+    return Event.objects.create(due_date=due_date)
 
 
 def add_bicycle():
@@ -50,5 +50,5 @@ if __name__ == '__main__':
     django.setup()
     from django.utils import timezone
     from datetime import timedelta
-    from register.models import Registration, Candidate, Bicycle, Release
+    from register.models import Registration, Candidate, Bicycle, Event
     populate()

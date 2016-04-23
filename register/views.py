@@ -2,10 +2,9 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.views.generic.edit import FormView
 from django.utils.translation import ugettext
-from django.template import RequestContext
 
 from register.forms import RegistrationForm
-from register.models import Registration, Candidate, Release
+from register.models import Registration, Candidate, Event
 from register.email import send_register_email
 from django.core.urlresolvers import reverse_lazy
 
@@ -17,12 +16,12 @@ class ContactView(FormView):
 
     def form_valid(self, form):
         email = form.cleaned_data['email']
-        release_id = form.cleaned_data['release_id']
+        event_id = form.cleaned_data['event_id']
 
-        release = get_object_or_404(Release, id=release_id)
+        event = get_object_or_404(Event, id=event_id)
 
         # Create and save registration and candidate object
-        registration = Registration.objects.create(release=release,
+        registration = Registration.objects.create(event=event,
                                                    email=email)
 
         for i in range(5):
@@ -48,11 +47,10 @@ class ContactView(FormView):
 
         return super(ContactView, self).form_valid(form)
 
-    def get(self, request, release_id, *args, **kwargs):
-        release = get_object_or_404(Release, id=release_id)
+    def get(self, request, event_id, *args, **kwargs):
+        event = get_object_or_404(Event, id=event_id)
 
-        context_dict = {'release_id': release.id,
-                        'due_date': release.due_date}
+        context_dict = {'event': event}
 
         return render(request, self.template_name, context_dict)
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+{% extends 'staff/base_staff.html' %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+    {% if event.is_closed %}
+        <div class="page-header">
+            <h2>
+                {% load i18n %}{% trans "The following people receive a bicycle on" %}
+                {{ event.due_date }}
+            </h2>
+            <h3>
+                {% trans "The list does not include people that already got their bicycle." %}
+            </h3>
+        </div>
+    
+        <ul>
+        {% for candidate in waiting_candidates %}
+        <h3>
+            <a href="{% url 'staff:handover' candidate_id=candidate.id %}">
+                {{ candidate.first_name }} {{ candidate.last_name }}
+            </a>
+        </h3>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <div class="page-header">
+            <h2>
+                {% load i18n %}{% trans "The event on " %}{{ event.due_date }}
+                {% trans " is still open for registration." %}
+            </h2>
+        </div>
+        <h3>
+            {% trans "The following people have already registered:" %}<br><br>
+            {% for candidate in all_candidates %}
+            <ul>
+                {{ candidate.first_name }} {{ candidate.last_name }}
+            </ul>
+            {% endfor %}
+        </h3>
+    {% endif %}
+{% endblock %}

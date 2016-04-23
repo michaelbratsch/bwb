@@ -4,17 +4,18 @@ from django.http import HttpResponseBadRequest
 from django.views.generic import View
 
 from bwb.settings import LANGUAGES
-from register.models import Release
+from register.models import Event
 
 
 class GreetingsView(View):
     template_name = 'index.html'
 
     def get(self, request, *args, **kwargs):
-        releases = [(release.id, release.due_date)
-                    for release in Release.objects.all()]
+        events = [event for event in Event.objects.all()
+                  if not event.is_closed]
+        events.sort(key=lambda x: x.due_date)
+        context_dict = {'events': events}
 
-        context_dict = {'releases': releases}
         return render(request, self.template_name, context_dict)
 
     def post(self, request, *args, **kwargs):
