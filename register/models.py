@@ -36,8 +36,6 @@ class Registration(models.Model):
     time_of_registration = models.DateTimeField(default=timezone.now,
                                                 blank=True)
 
-    general_notes = models.TextField(default='', blank=True)
-
     def get_candidates(self):
         return self.candidates.all()
 
@@ -65,7 +63,7 @@ class Candidate(models.Model):
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
 
-    def received_bicycle(self):
+    def has_bicycle(self):
         try:
             return self.bicycle is not None
         except Bicycle.DoesNotExist:
@@ -75,7 +73,7 @@ class Candidate(models.Model):
         cls = self.__class__
         i = 0
         for candidate in cls.objects.all():
-            if not candidate.received_bicycle():
+            if not candidate.has_bicycle():
                 i += 1
             if self == candidate:
                 return i

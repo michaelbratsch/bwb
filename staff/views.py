@@ -28,7 +28,7 @@ class HandoverView(FormView):
         general_remarks = form.cleaned_data['general_remarks']
 
         candidate = get_object_or_404(Candidate, id=candidate_id)
-        if candidate.received_bicycle():
+        if candidate.has_bicycle():
             raise Http404("This Candidate already has a bicycle.")
 
         Bicycle.objects.create(candidate=candidate,
