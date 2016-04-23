@@ -4,13 +4,18 @@ from django.http import HttpResponseBadRequest
 from django.views.generic import View
 
 from bwb.settings import LANGUAGES
+from register.models import Release
 
 
 class GreetingsView(View):
     template_name = 'index.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        releases = [(release.id, release.due_date)
+                    for release in Release.objects.all()]
+
+        context_dict = {'releases': releases}
+        return render(request, self.template_name, context_dict)
 
     def post(self, request, *args, **kwargs):
         user_language = request.POST.get('language')

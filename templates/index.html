@@ -15,5 +15,13 @@
         <li><h2>...</h2></li>
     </ul>
 
-    <a href="{% url 'register:index' %}"><h2>{% trans "Click here to register for a bike." %}</h2></a>
+    <h2>
+        {% trans "Click on one of the following dates to register for a bike:" %}
+    </h2>
+
+    {% for id, due_date in releases %}
+        <a href="{% url 'register:index' %}">
+            <h2>{{ due_date }}</h2>
+        </a>
+    {% endfor %}
 {% endblock %}

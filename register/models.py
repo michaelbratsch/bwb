@@ -91,9 +91,19 @@ class Candidate(models.Model):
         return " ".join((self.first_name, self.last_name))
 
 
+class Release(models.Model):
+    due_date = models.DateTimeField()
+
+    def __str__(self):
+        return str(self.due_date)
+
+
 class Bicycle(models.Model):
+    # ToDo: decide about on_delte
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
-                                     related_name='bicycle')
+                                     primary_key=True, related_name='bicycle')
+#    release = models.ForeignKey(Release, on_delete=models.CASCADE,
+#                                related_name='bicycles')
 
     bicycle_number = models.PositiveIntegerField()
     general_remarks = models.TextField(default='')

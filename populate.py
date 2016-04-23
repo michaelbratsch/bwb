@@ -18,6 +18,9 @@ def populate():
     add_candidate(registration_2, 'Guenter', 'Brecht')
     add_candidate(registration_2, 'Lothar', 'Brecht')
 
+    add_release(timezone.now())
+    add_release(timezone.now()+timedelta(days=1))
+
 
 def add_registration(email):
     return Registration.objects.create(email=email)
@@ -30,6 +33,10 @@ def add_candidate(registration, first_name, last_name):
         last_name=last_name)
 
 
+def add_release(due_date):
+    return Release.objects.create(due_date=due_date)
+
+
 def add_bicycle():
     b = Bicycle.objects.create()
     return b
@@ -40,5 +47,7 @@ if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bwb.settings')
     import django
     django.setup()
-    from register.models import Registration, Candidate, Bicycle
+    from django.utils import timezone
+    from datetime import timedelta
+    from register.models import Registration, Candidate, Bicycle, Release
     populate()
