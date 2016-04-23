@@ -6,8 +6,12 @@ test_email = 'michael.b001@gmx.de'
 
 
 def populate():
-    registration_1 = add_registration(test_email)
-    registration_2 = add_registration(test_email)
+
+    release_1 = add_release(timezone.now())
+    release_2 = add_release(timezone.now()+timedelta(days=1))
+
+    registration_1 = add_registration(release_1, test_email)
+    registration_2 = add_registration(release_2, test_email)
 
     add_candidate(registration_1, 'Stefan', 'Mueller')
     add_candidate(registration_1, 'Simone', 'Peterson')
@@ -18,12 +22,9 @@ def populate():
     add_candidate(registration_2, 'Guenter', 'Brecht')
     add_candidate(registration_2, 'Lothar', 'Brecht')
 
-    add_release(timezone.now())
-    add_release(timezone.now()+timedelta(days=1))
 
-
-def add_registration(email):
-    return Registration.objects.create(email=email)
+def add_registration(release, email):
+    return Registration.objects.create(release=release, email=email)
 
 
 def add_candidate(registration, first_name, last_name):

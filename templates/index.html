@@ -20,7 +20,7 @@
     </h2>
 
     {% for id, due_date in releases %}
-        <a href="{% url 'register:index' %}">
+        <a href="{% url 'register:index' release_id=id %}">
             <h2>{{ due_date }}</h2>
         </a>
     {% endfor %}

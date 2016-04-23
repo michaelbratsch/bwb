@@ -1,0 +1,12 @@
+{% if releases %}
+    <ul class="nav nav-sidebar">
+    {% for r in releases %}
+        {% if r == act_release %} <li class="active"> {% else %} <li> {% endif %}
+        <a href="{% url 'staff:handover' %}">{{ act_release }}</a></li>
+    {% endfor %}
+
+{% else %}
+    <li> <strong >There are no releases present.</strong></li>
+
+    </ul>
+{% endif %}

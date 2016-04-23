@@ -19,10 +19,20 @@ def datetime_min():
                                timezone.get_default_timezone())
 
 
+class Release(models.Model):
+    due_date = models.DateTimeField()
+
+    def __str__(self):
+        return str(self.due_date)
+
+
 class Registration(models.Model):
     identifier = models.CharField(default=get_hash_value,
                                   max_length=identifier_length,
                                   unique=True)
+
+    release = models.ForeignKey(Release, on_delete=models.CASCADE,
+                                related_name='registrations')
 
     email = models.EmailField()
     email_validated = models.BooleanField(default=False)
@@ -91,19 +101,10 @@ class Candidate(models.Model):
         return " ".join((self.first_name, self.last_name))
 
 
-class Release(models.Model):
-    due_date = models.DateTimeField()
-
-    def __str__(self):
-        return str(self.due_date)
-
-
 class Bicycle(models.Model):
     # ToDo: decide about on_delte
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
                                      primary_key=True, related_name='bicycle')
-#    release = models.ForeignKey(Release, on_delete=models.CASCADE,
-#                                related_name='bicycles')
 
     bicycle_number = models.PositiveIntegerField()
     general_remarks = models.TextField(default='')

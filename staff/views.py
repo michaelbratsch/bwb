@@ -4,6 +4,7 @@ from django.http import Http404
 
 from register.models import Candidate, Bicycle
 from staff.forms import HandoverForm
+from django.core.urlresolvers import reverse_lazy
 
 
 class ManageView(View):
@@ -20,7 +21,7 @@ class ManageView(View):
 class HandoverView(FormView):
     template_name = 'staff/handover.html'
     form_class = HandoverForm
-    success_url = '/staff'
+    success_url = reverse_lazy('staff')
 
     def form_valid(self, form):
         candidate_id = form.cleaned_data['candidate_id']
