@@ -33,14 +33,6 @@ class CreateEventView(FormView):
         return super(FormView, self).form_valid(form)
 
 
-def get_candidates_registered_for_event(event):
-    registrations = event.registrations.all()
-    candidates = []
-    for registration in registrations:
-        candidates += registration.candidates.all()
-    return candidates
-
-
 class CloseEventView(FormView):
     template_name = 'staff/close_event.html'
     form_class = CloseEventForm
@@ -51,10 +43,12 @@ class CloseEventView(FormView):
         event_id = form.cleaned_data['event_id']
 
         event = get_object_or_404(Event, id=event_id)
+        if event.is_closed:
+            raise Http404('The event is already closed.')
         event.is_closed = True
         event.save()
 
-        candidates = get_candidates_registered_for_event(event)
+        candidates = event.get_registered_candidates()
 
         winners = random.sample(candidates, min(len(candidates),
                                                 number_of_winners))
@@ -70,7 +64,7 @@ class CloseEventView(FormView):
     def get(self, request, event_id, *args, **kwargs):
         event = get_object_or_404(Event, id=event_id)
 
-        context_dict = {'event': event, 'event_id': event.id}
+        context_dict = {'event': event}
         return render(request, self.template_name, context_dict)
 
 
@@ -80,7 +74,7 @@ class EventView(View):
     def get(self, request, event_id, *args, **kwargs):
         event = get_object_or_404(Event, id=event_id)
 
-        candidates = get_candidates_registered_for_event(event)
+        candidates = event.get_registered_candidates()
 
         context_dict = {'number_of_candidates': len(candidates),
                         'candidates': candidates,

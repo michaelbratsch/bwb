@@ -12,7 +12,7 @@ class GreetingsView(View):
 
     def get(self, request, *args, **kwargs):
         events = [event for event in Event.objects.all()
-                  if not event.is_closed]
+                  if event.open_for_registration]
         events.sort(key=lambda x: x.due_date)
         context_dict = {'events': events}
 

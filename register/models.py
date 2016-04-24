@@ -23,6 +23,17 @@ class Event(models.Model):
     due_date = models.DateTimeField()
     is_closed = models.BooleanField(default=False)
 
+    @property
+    def open_for_registration(self):
+        return not self.is_closed and self.due_date > timezone.now()
+
+    def get_registered_candidates(self):
+        registrations = self.registrations.all()
+        candidates = []
+        for registration in registrations:
+            candidates += registration.candidates.all()
+        return candidates
+
     def __str__(self):
         return str('%s closed:%s' % (self.due_date, self.is_closed))
 
