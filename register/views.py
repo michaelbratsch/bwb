@@ -10,8 +10,20 @@ from register.email import send_register_email
 from django.core.urlresolvers import reverse_lazy
 
 
+class GreetingsView(View):
+    template_name = 'register/greeting.html'
+
+    def get(self, request, *args, **kwargs):
+        events = [event for event in Event.objects.all()
+                  if event.open_for_registration]
+        events.sort(key=lambda x: x.due_date)
+        context_dict = {'events': events}
+
+        return render(request, self.template_name, context_dict)
+
+
 class RegistrationView(FormView):
-    template_name = 'register/index.html'
+    template_name = 'register/registration.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('register:thanks')
 

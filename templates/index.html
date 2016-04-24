@@ -6,33 +6,27 @@
 
 {% block body_block %}
     <div class="page-header">
-        <h2>{% load i18n %}{% trans "I need a bicycle!" %}</h2>
+        <h1>{% load i18n %}{% trans "Welcome to bikes without borders!" %}</h1>
     </div>
-    <h3>
-        {% trans "Some informations we would like you to know:" %}
-        <ul>
-            <li>{% trans "Volunteers welcome" %}</li>
-            <li>{% trans "Keep smiling" %}</li>
-            <li>...</li>
-        </ul>
-        <br>
-        {% trans "Click on one of the following dates to register for a bike:" %}
-        <br><br>
-        {% for event in events %}
+    <h2>
+    {% get_current_language as LANGUAGE_CODE %}
+    {% get_available_languages as LANGUAGES %}
+    {% get_language_info_list for LANGUAGES as languages %}
+    
+    {% trans "First choose a language!" %}<br><br>
+    {% for language in languages %}
         <div class="form-group row">
             <div class="col-xs-4">
-                <a href="{% url 'register:index' event_id=event.id %}"
-                class="btn btn-info btn-block">
-                    {{ event.due_date }}
-                </a>
+                <form action="{% url 'index' %}" method="post" class="post-form">
+                    {% csrf_token %}            
+                    <input name="language" type="hidden" value="{{ language.code }}"/>
+                    <button class="btn btn-info btn-lg btn-block" type="submit"
+                    value="Submit">
+                        {{ language.name_local }}
+                    </button>
+                </form>
             </div>
-        </div>
-        {% endfor %}
-    </h3><br>
-    <h4>
-        Events are shown if they are:
-        <li>not closed</li>
-        <li>in the future</li>
-        <li>maximum number of registrations is not reached</li>
-    </h4>
+        </div><br>
+    {% endfor %}
+    </h2>
 {% endblock %}

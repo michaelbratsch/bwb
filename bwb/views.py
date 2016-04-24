@@ -4,19 +4,13 @@ from django.http import HttpResponseBadRequest
 from django.views.generic import View
 
 from bwb.settings import LANGUAGES
-from register.models import Event
 
 
 class GreetingsView(View):
     template_name = 'index.html'
 
     def get(self, request, *args, **kwargs):
-        events = [event for event in Event.objects.all()
-                  if event.open_for_registration]
-        events.sort(key=lambda x: x.due_date)
-        context_dict = {'events': events}
-
-        return render(request, self.template_name, context_dict)
+        return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
         user_language = request.POST.get('language')
@@ -27,4 +21,4 @@ class GreetingsView(View):
         translation.activate(user_language)
         request.session[translation.LANGUAGE_SESSION_KEY] = user_language
 
-        return redirect('index')
+        return redirect('register:greeting')
