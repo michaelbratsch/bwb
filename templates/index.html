@@ -15,12 +15,9 @@
             <li>{% trans "Keep smiling" %}</li>
             <li>...</li>
         </ul>
-
-        {% trans "Click on one of the following dates to register for a bike:" %}
         <br>
-        <h4>(Only events in the future which are not closed are shown.)</h4>
-
-        <br> <br>
+        {% trans "Click on one of the following dates to register for a bike:" %}
+        <br><br>
         {% for event in events %}
         <div class="form-group row">
             <div class="col-xs-4">
@@ -31,5 +28,11 @@
             </div>
         </div>
         {% endfor %}
-    </h3>
+    </h3><br>
+    <h4>
+        Events are shown if they are:
+        <li>not closed</li>
+        <li>in the future</li>
+        <li>maximum number of registrations is not reached</li>
+    </h4>
 {% endblock %}

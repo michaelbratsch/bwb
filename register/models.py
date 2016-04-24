@@ -21,11 +21,13 @@ def datetime_min():
 
 class Event(models.Model):
     due_date = models.DateTimeField()
+    max_registrations = models.PositiveIntegerField(default=200)
     is_closed = models.BooleanField(default=False)
 
     @property
     def open_for_registration(self):
-        return not self.is_closed and self.due_date > timezone.now()
+        return not self.is_closed and self.due_date > timezone.now() and \
+            self.__class__.objects.count() <= self.max_registrations
 
     def get_registered_candidates(self):
         registrations = self.registrations.all()

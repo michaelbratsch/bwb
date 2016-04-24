@@ -10,7 +10,7 @@ from register.email import send_register_email
 from django.core.urlresolvers import reverse_lazy
 
 
-class ContactView(FormView):
+class RegistrationView(FormView):
     template_name = 'register/index.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('register:thanks')
@@ -21,8 +21,8 @@ class ContactView(FormView):
 
         event = get_object_or_404(Event, id=event_id)
 
-        if event.is_closed:
-            raise Http404("The event is already closed.")
+        if not event.open_for_registration:
+            raise Http404("The event is not open for registration.")
 
         # Create and save registration and candidate object
         registration = Registration.objects.create(event=event,
@@ -49,10 +49,13 @@ class ContactView(FormView):
         send_register_email(recipient=recipient,
                             base_url=base_url)
 
-        return super(ContactView, self).form_valid(form)
+        return super(RegistrationView, self).form_valid(form)
 
     def get(self, request, event_id, *args, **kwargs):
         event = get_object_or_404(Event, id=event_id)
+
+        if not event.open_for_registration:
+            raise Http404("The event is not open for registration.")
 
         context_dict = {'event': event}
 

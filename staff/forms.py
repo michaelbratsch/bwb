@@ -18,6 +18,7 @@ class HandoverForm(forms.ModelForm):
 class EventForm(forms.Form):
     date = forms.DateField()
     time = forms.TimeField()
+    max_registrations = forms.IntegerField(min_value=0)
 
 
 class CloseEventForm(forms.Form):

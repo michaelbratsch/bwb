@@ -25,7 +25,10 @@ class CreateEventView(FormView):
         time = form.cleaned_data['time']
         date_time = parse_datetime('%s %s' % (date, time))
 
-        event = Event.objects.create(due_date=date_time)
+        max_registrations = form.cleaned_data['max_registrations']
+
+        event = Event.objects.create(due_date=date_time,
+                                     max_registrations=max_registrations)
 
         self.success_url = reverse_lazy('staff:event',
                                         kwargs={'event_id': event.id})
