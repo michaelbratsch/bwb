@@ -5,8 +5,10 @@ from django.views.generic import View, FormView
 from django.utils.dateparse import parse_datetime
 from django.http import Http404
 
-from register.models import Candidate, Bicycle, Event
-from staff.forms import HandoverForm, EventForm
+import random
+
+from register.models import Candidate, Bicycle, Event, Winner
+from staff.forms import HandoverForm, EventForm, CloseEventForm
 
 
 class ManageView(TemplateView):
@@ -23,9 +25,53 @@ class CreateEventView(FormView):
         time = form.cleaned_data['time']
         date_time = parse_datetime('%s %s' % (date, time))
 
-        Event.objects.create(due_date=date_time)
+        event = Event.objects.create(due_date=date_time)
+
+        self.success_url = reverse_lazy('staff:event',
+                                        kwargs={'event_id': event.id})
 
         return super(FormView, self).form_valid(form)
+
+
+def get_candidates_registered_for_event(event):
+    registrations = event.registrations.all()
+    candidates = []
+    for registration in registrations:
+        candidates += registration.candidates.all()
+    return candidates
+
+
+class CloseEventView(FormView):
+    template_name = 'staff/close_event.html'
+    form_class = CloseEventForm
+    success_url = reverse_lazy('staff:index')
+
+    def form_valid(self, form):
+        number_of_winners = form.cleaned_data['number_of_winners']
+        event_id = form.cleaned_data['event_id']
+
+        event = get_object_or_404(Event, id=event_id)
+        event.is_closed = True
+        event.save()
+
+        candidates = get_candidates_registered_for_event(event)
+
+        winners = random.sample(candidates, min(len(candidates),
+                                                number_of_winners))
+
+        for winner in winners:
+            Winner.objects.create(event=event, candidate=winner)
+
+        self.success_url = reverse_lazy('staff:event',
+                                        kwargs={'event_id': event.id})
+
+        return super(FormView, self).form_valid(form)
+
+    def get(self, request, event_id, *args, **kwargs):
+        event = get_object_or_404(Event, id=event_id)
+
+        context_dict = {'event': event, 'event_id': event.id}
+        return render(request, self.template_name, context_dict)
 
 
 class EventView(View):
@@ -34,23 +80,16 @@ class EventView(View):
     def get(self, request, event_id, *args, **kwargs):
         event = get_object_or_404(Event, id=event_id)
 
-        registrations = event.registrations.all()
+        candidates = get_candidates_registered_for_event(event)
 
-        all_candidates = []
-        for registration in registrations:
-            all_candidates += registration.candidates.all()
-
-        waiting_candidates = [cand for cand in all_candidates
-                              if not cand.has_bicycle()]
-
-        context_dict = {'all_candidates': all_candidates,
-                        'waiting_candidates': waiting_candidates,
+        context_dict = {'number_of_candidates': len(candidates),
+                        'candidates': candidates,
                         'event': event}
         return render(request, self.template_name, context_dict)
 
 
-class HandoverView(FormView):
-    template_name = 'staff/handover.html'
+class HandoverBicycleView(FormView):
+    template_name = 'staff/handover_bicycle.html'
     form_class = HandoverForm
     success_url = reverse_lazy('staff')
 
@@ -60,10 +99,12 @@ class HandoverView(FormView):
         general_remarks = form.cleaned_data['general_remarks']
 
         candidate = get_object_or_404(Candidate, id=candidate_id)
-        if candidate.has_bicycle():
+        if not candidate.has_won:
+            raise Http404("This Candidate has not won a bicycle.")
+        if candidate.has_bicycle:
             raise Http404("This Candidate already has a bicycle.")
 
-        Bicycle.objects.create(candidate=candidate,
+        Bicycle.objects.create(winner=candidate.winner,
                                bicycle_number=bicycle_number,
                                general_remarks=general_remarks)
 
@@ -71,7 +112,7 @@ class HandoverView(FormView):
         self.success_url = reverse_lazy('staff:event',
                                         kwargs={'event_id': event.id})
 
-        return super(HandoverView, self).form_valid(form)
+        return super(HandoverBicycleView, self).form_valid(form)
 
     def get(self, request, candidate_id, *args, **kwargs):
         candidate = get_object_or_404(Candidate, id=candidate_id)

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+{% extends 'staff/base_staff.html' %}
+
+{% load staticfiles %}
+
+{% block body_block %}
+<div class="page-header">
+    <h2>
+        {% load i18n %}{% trans "Close an event so that people can not register for bicycles anymore." %}
+        {% trans "The winners will be determined automatically and immediately receive a notification." %} 
+    </h2>
+</div>
+
+<form id="closeForm" method="POST" class="post-form">
+    {% csrf_token %}
+    <div class="form-group row">
+        <div class="col-xs-3" style="height:15px;"></div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-xs-2 control-label">
+            {% trans "Number of winner which will receive a bicycle" %}
+        </label>
+        <div class="col-xs-2"> 
+            <input type="number" min="0" name="number_of_winners" required>
+        </div>
+    </div>
+
+    <input name="event_id" type="hidden" value="{{ event.id }}"/>
+
+    <div class="form-group row">
+        <div class="col-xs-2" style="height:10px;"></div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-2">
+            <a href="{% url 'staff:event' event_id=event.id %}"
+            class="btn btn-info btn-block" role="button">
+                {% trans "Cancel" %}
+            </a>
+        </div>
+        <div class="col-xs-2">
+            <button class="btn btn-info btn-block" type="submit" value="Submit"/>
+                {% trans "Submit" %}
+            </button>
+        </div>
+    </div>
+</form>
+{% endblock %}

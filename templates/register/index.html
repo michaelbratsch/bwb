@@ -6,7 +6,7 @@
 
 {% block body_block %}
 <div class="page-header">
-    <h2>{% load i18n %}{% trans "Register for a bike on " %}{{ due_date }}</h2>
+    <h2>{% load i18n %}{% trans "Register for a bike on " %}{{ event.due_date }}</h2>
     <h3>{% trans "Currently, entering a phone number is not supported!" %}</h3>
 </div>
 <form id="nameForm" method="POST" class="post-form">

@@ -74,11 +74,18 @@ class Candidate(models.Model):
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
 
-    def has_bicycle(self):
+    @property
+    def has_won(self):
         try:
-            return self.bicycle is not None
-        except Bicycle.DoesNotExist:
+            return self.winner is not None
+        except Winner.DoesNotExist:
             return False
+
+    @property
+    def has_bicycle(self):
+        if self.has_won:
+            return self.winner.has_bicycle
+        return False
 
     def number_in_line(self):
         cls = self.__class__
@@ -102,10 +109,27 @@ class Candidate(models.Model):
         return " ".join((self.first_name, self.last_name))
 
 
+class Winner(models.Model):
+    candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
+                                     primary_key=True, related_name='winner')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE,
+                              related_name='winner')
+
+    @property
+    def has_bicycle(self):
+        try:
+            return self.bicycle is not None
+        except Bicycle.DoesNotExist:
+            return False
+
+    def __str__(self):
+        return str(self.candidate)
+
+
 class Bicycle(models.Model):
     # ToDo: decide about on_delte
-    candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
-                                     primary_key=True, related_name='bicycle')
+    winner = models.OneToOneField(Winner, on_delete=models.CASCADE,
+                                  primary_key=True, related_name='bicycle')
 
     bicycle_number = models.PositiveIntegerField()
     general_remarks = models.TextField(default='')

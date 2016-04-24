@@ -5,36 +5,60 @@
 {% load staticfiles %}
 
 {% block body_block %}
+    <div class="page-header">
+        <h2>
+            {% load i18n %}{% trans "The event on " %}{{ event.due_date }}
+            {% if event.is_closed %}
+                {% trans "is already closed" %}
+            {% else %}
+                {% trans "is still open" %}
+            {% endif %}            
+            {% trans " for registration." %}
+        </h2>
+    </div>
     {% if event.is_closed %}
-        <div class="page-header">
-            <h2>
-                {% load i18n %}{% trans "The following people receive a bicycle on" %}
-                {{ event.due_date }}
-            </h2>
-            <h3>
-                {% trans "The list does not include people that already got their bicycle." %}
-            </h3>
-        </div>
-    
-        <ul>
-        {% for candidate in waiting_candidates %}
         <h3>
-            <a href="{% url 'staff:handover' candidate_id=candidate.id %}">
-                {{ candidate.first_name }} {{ candidate.last_name }}
-            </a>
-        </h3>
+        {% trans "People that won the registration. If they do not have a bicycle yet, their name will appear as a link." %}
+        <br><br>
+        {% for candidate in candidates %}
+            {% if candidate.has_won %}
+                <ul>
+                {% if candidate.has_bicycle %}
+                    {{ candidate.first_name }} {{ candidate.last_name }}
+                {% else %}
+                    <a href="{% url 'staff:handover' candidate_id=candidate.id %}">
+                        {{ candidate.first_name }} {{ candidate.last_name }}
+                    </a>
+                {% endif %}
+                </ul>
+            {% endif %}
         {% endfor %}
-        </ul>
+        </h3>
+
+        <h3>
+        {% trans "People that lost the registration:" %}
+        <br><br>
+        {% for candidate in candidates %}
+            {% if not candidate.has_won %}
+                <ul>
+                {{ candidate.first_name }} {{ candidate.last_name }}
+                </ul>
+            {% endif %}
+        {% endfor %}
+        </h3>
     {% else %}
-        <div class="page-header">
-            <h2>
-                {% load i18n %}{% trans "The event on " %}{{ event.due_date }}
-                {% trans " is still open for registration." %}
-            </h2>
+        <div class="form-group row">
+            <div class="col-xs-2">
+                <a href="{% url 'staff:close_event' event_id=event.id %}"
+                class="btn btn-info btn-block" role="button">
+                    {% trans "Close Event" %}
+                </a>
+            </div>
         </div>
         <h3>
-            {% trans "The following people have already registered:" %}<br><br>
-            {% for candidate in all_candidates %}
+            {% trans "The following " %} {{ number_of_candidates }}
+            {% trans " people have already registered:" %}<br><br>
+            {% for candidate in candidates %}
             <ul>
                 {{ candidate.first_name }} {{ candidate.last_name }}
             </ul>

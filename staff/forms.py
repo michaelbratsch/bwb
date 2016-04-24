@@ -18,3 +18,8 @@ class HandoverForm(forms.ModelForm):
 class EventForm(forms.Form):
     date = forms.DateField()
     time = forms.TimeField()
+
+
+class CloseEventForm(forms.Form):
+    number_of_winners = forms.IntegerField(min_value=0)
+    event_id = forms.IntegerField(min_value=0)

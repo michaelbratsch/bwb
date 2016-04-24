@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import Http404
 from django.views.generic import View
 from django.views.generic.edit import FormView
 from django.utils.translation import ugettext
@@ -19,6 +20,9 @@ class ContactView(FormView):
         event_id = form.cleaned_data['event_id']
 
         event = get_object_or_404(Event, id=event_id)
+
+        if event.is_closed:
+            raise Http404("The event is already closed.")
 
         # Create and save registration and candidate object
         registration = Registration.objects.create(event=event,
