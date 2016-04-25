@@ -24,7 +24,10 @@
     </div>
     {% if event.is_closed %}
         <h3>
-        {% trans "People that won the registration. If they do not have a bicycle yet, their name will appear as a link." %}
+        {% blocktrans %}
+        People that won the registration. If they do not have a bicycle yet,
+        their name will appear as a link.
+        {% endblocktrans %}
         <br><br>
         {% for candidate in candidates %}
             {% if candidate.has_won %}

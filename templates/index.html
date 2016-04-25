@@ -17,9 +17,11 @@
     {% for language in languages %}
         <div class="form-group row">
             <div class="col-xs-4">
-                <form action="{% url 'index' %}" method="post" class="post-form">
+                <form action="{% url 'index' %}" method="post"
+                class="post-form">
                     {% csrf_token %}            
-                    <input name="language" type="hidden" value="{{ language.code }}"/>
+                    <input name="language" type="hidden"
+                    value="{{ language.code }}"/>
                     <button class="btn btn-info btn-lg btn-block" type="submit"
                     value="Submit">
                         {{ language.name_local }}

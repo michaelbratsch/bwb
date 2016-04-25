@@ -3,7 +3,6 @@ from django.utils import timezone
 
 import os
 import hashlib
-from __builtin__ import classmethod
 
 
 max_name_length = 100

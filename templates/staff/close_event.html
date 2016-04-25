@@ -7,8 +7,10 @@
 {% block body_block %}
 <div class="page-header">
     <h2>
-        {% load i18n %}{% trans "Close an event so that people can not register for bicycles anymore." %}
-        {% trans "The winners will be determined automatically and immediately receive a notification." %} 
+        {% load i18n %}{% blocktrans %}
+        Close an event so that people can not register for bicycles anymore.
+        The winners will be determined automatically and immediately receive
+        a notification.{% endblocktrans %}
     </h2>
 </div>
 
