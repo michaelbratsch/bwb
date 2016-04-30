@@ -21,9 +21,7 @@ class CreateEventView(FormView):
     success_url = reverse_lazy('staff:index')
 
     def form_valid(self, form):
-        date = form.cleaned_data['date']
-        time = form.cleaned_data['time']
-        date_time = parse_datetime('%s %s' % (date, time))
+        date_time = form.cleaned_data['date_time']
 
         max_registrations = form.cleaned_data['max_registrations']
 
