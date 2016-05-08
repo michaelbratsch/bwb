@@ -5,7 +5,7 @@ register = template.Library()
 
 
 @register.inclusion_tag('staff/event_sidebar.html')
-def get_event_list(event_id=None):
+def get_event_list(event_id):
     events = list(HandoutEvent.objects.all())
     events.sort(key=lambda e: e.due_date)
     return {'events': events,
@@ -13,7 +13,7 @@ def get_event_list(event_id=None):
 
 
 @register.inclusion_tag('staff/candidate_sidebar.html')
-def get_candidate_list(candidate_id=None):
+def get_candidate_list(candidate_id):
     candidates = list(Candidate.objects.all())
     candidates.sort(key=lambda c: c.last_name)
     return {'candidates': candidates,

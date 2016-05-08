@@ -5,9 +5,10 @@ from django.views.generic import View, FormView
 from django.views.generic.base import TemplateView
 import random
 
-from register.models import Candidate, Bicycle, HandoutEvent, \
-    User_Registration, Invitation
-from staff.forms import HandoverForm, EventForm, InviteForm
+from register.models import Candidate, Bicycle, HandoutEvent
+from register.models import User_Registration, Invitation
+from staff.forms import HandoverForm, EventForm, InviteForm, RefundForm
+from staff.forms import ModifyCandidateForm
 
 
 class ManageView(TemplateView):
@@ -30,7 +31,7 @@ class CreateEventView(FormView):
         return super(FormView, self).form_valid(form)
 
 
-class InviteView(FormView):
+class AutoInviteView(FormView):
     template_name = 'staff/invite.html'
     form_class = InviteForm
     success_url = reverse_lazy('staff:index')
@@ -95,56 +96,75 @@ class CandidateOverviewView(View):
         return render(request, self.template_name, context_dict)
 
 
-def append_event(request, context_dict):
-    event_id = request.GET.get('event_id')
-    if event_id is not None:
-        event = get_object_or_404(HandoutEvent, id=event_id)
-        context_dict['event'] = event
-        context_dict['event_string'] = '?event_id=%s' % event.id
+class CandidateMixin(object):
+
+    def get(self, request, candidate_id, *args, **kwargs):
+        candidate = get_object_or_404(Candidate, id=candidate_id)
+        context_dict = {'candidate': candidate}
+
+        event_id = request.GET.get('event_id')
+        if event_id is not None:
+            event = get_object_or_404(HandoutEvent, id=event_id)
+            context_dict['event'] = event
+            context_dict['event_string'] = '?event_id=%s' % event.id
+
+        return render(request, self.template_name, context_dict)
+
+    def set_success_url(self, form):
+        candidate_id = form.cleaned_data['candidate_id']
+        if not Candidate.objects.filter(id=candidate_id):
+            raise Http404("Candidate id not found.")
+        self.success_url = reverse_lazy('staff:candidate',
+                                        kwargs={'candidate_id': candidate_id})
+
+        event_id = form.cleaned_data['event_id']
+        if event_id:
+            if not HandoutEvent.objects.filter(id=event_id):
+                raise Http404("Event id not found.")
+            self.success_url += '?event_id=%s' % event_id
 
 
-class CandidateView(View):
+class CandidateView(CandidateMixin, View):
     template_name = 'staff/candidate.html'
 
-    def get(self, request, candidate_id, *args, **kwargs):
-        candidate = get_object_or_404(Candidate, id=candidate_id)
-        context_dict = {'candidate': candidate}
 
-        append_event(request, context_dict)
-
-        return render(request, self.template_name, context_dict)
-
-
-class ModifyCandidateView(View):
+class ModifyCandidateView(CandidateMixin, FormView):
     template_name = 'staff/modify_candidate.html'
-
-    def get(self, request, candidate_id, *args, **kwargs):
-        candidate = get_object_or_404(Candidate, id=candidate_id)
-        context_dict = {'candidate': candidate}
-
-        append_event(request, context_dict)
-
-        return render(request, self.template_name, context_dict)
-
-
-class HandoverBicycleView(FormView):
-    template_name = 'staff/handover_bicycle.html'
-    form_class = HandoverForm
-    success_url = reverse_lazy('staff')
+    form_class = ModifyCandidateForm
 
     def form_valid(self, form):
-        event_id = form.cleaned_data['event_id']
         candidate_id = form.cleaned_data['candidate_id']
-        bicycle_number = form.cleaned_data['bicycle_number']
-        lock_combination = form.cleaned_data['lock_combination']
-        color = form.cleaned_data['color']
-        brand = form.cleaned_data['brand']
-        general_remarks = form.cleaned_data['general_remarks']
+
+        form_data = {'first_name': form.cleaned_data['first_name'],
+                     'last_name': form.cleaned_data['last_name'],
+                     'date_of_birth': form.cleaned_data['date_of_birth']}
+
+        if Candidate.objects.exclude(id=candidate_id).filter(**form_data):
+            raise Http404("This candidate already exists")
+
+        Candidate.objects.filter(id=candidate_id).update(**form_data)
+
+        self.set_success_url(form)
+
+        return super(ModifyCandidateView, self).form_valid(form)
+
+
+class HandoverBicycleView(CandidateMixin, FormView):
+    template_name = 'staff/handover_bicycle.html'
+    form_class = HandoverForm
+
+    def form_valid(self, form):
+        candidate_id = form.cleaned_data['candidate_id']
 
         candidate = get_object_or_404(Candidate, id=candidate_id)
         if candidate.has_bicycle:
             raise Http404("This Candidate already has a bicycle.")
 
+        bicycle_number = form.cleaned_data['bicycle_number']
+        lock_combination = form.cleaned_data['lock_combination']
+        color = form.cleaned_data['color']
+        brand = form.cleaned_data['brand']
+        general_remarks = form.cleaned_data['general_remarks']
         Bicycle.objects.create(candidate=candidate,
                                bicycle_number=bicycle_number,
                                lock_combination=lock_combination,
@@ -152,15 +172,28 @@ class HandoverBicycleView(FormView):
                                brand=brand,
                                general_remarks=general_remarks)
 
-        self.success_url = reverse_lazy('staff:event',
-                                        kwargs={'event_id': event_id})
+        self.set_success_url(form)
 
         return super(HandoverBicycleView, self).form_valid(form)
 
-    def get(self, request, candidate_id, *args, **kwargs):
+
+class RefundBicycleView(CandidateMixin, FormView):
+    template_name = 'staff/refund_bicycle.html'
+    form_class = RefundForm
+
+    def form_valid(self, form):
+        candidate_id = form.cleaned_data['candidate_id']
+
         candidate = get_object_or_404(Candidate, id=candidate_id)
-        context_dict = {'candidate': candidate}
+        if not candidate.has_bicycle:
+            raise Http404("This Candidate does not have a bicycle.")
 
-        append_event(request, context_dict)
+        candidate.bicycle.delete()
 
-        return render(request, self.template_name, context_dict)
+        self.set_success_url(form)
+
+        return super(RefundBicycleView, self).form_valid(form)
+
+
+class InviteCandidateView(CandidateMixin, View):
+    template_name = 'staff/invite_candidate.html'

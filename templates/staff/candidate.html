@@ -41,7 +41,14 @@
 </h3>
 
 <div class="form-group row">
-    {% if not candidate.has_bicycle %}
+    {% if candidate.has_bicycle %}
+        <div class="col-xs-3">
+            <a href="{% url 'staff:refund_bicycle' candidate_id=candidate.id %}{{event_string}}"
+            class="btn btn-info btn-block" role="button">
+                {% trans "Refund bicycle" %}
+            </a>
+        </div>
+    {% else %}
         <div class="col-xs-3">
             <a href="{% url 'staff:handover_bicycle' candidate_id=candidate.id %}{{event_string}}"
             class="btn btn-info btn-block" role="button">
@@ -53,6 +60,12 @@
         <a href="{% url 'staff:modify_candidate' candidate_id=candidate.id %}{{event_string}}"
         class="btn btn-info btn-block" role="button">
             {% trans "Modify identification data" %}
+        </a>
+    </div>
+    <div class="col-xs-3">
+        <a href="{% url 'staff:invite_candidate' candidate_id=candidate.id %}{{event_string}}"
+        class="btn btn-info btn-block" role="button">
+            {% trans "Invite to an event" %}
         </a>
     </div>
 </div>

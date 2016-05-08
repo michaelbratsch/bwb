@@ -1,10 +1,25 @@
 from django import forms
 
-from register.models import Bicycle
+from register.models import Bicycle, Candidate
+
+
+class ModifyCandidateForm(forms.ModelForm):
+    event_id = forms.IntegerField(min_value=0, required=False)
+    candidate_id = forms.IntegerField(min_value=0)
+
+    class Meta:
+        model = Candidate
+        fields = ['first_name', 'last_name', 'date_of_birth',
+                  'event_id', 'candidate_id']
+
+
+class RefundForm(forms.Form):
+    event_id = forms.IntegerField(min_value=0, required=False)
+    candidate_id = forms.IntegerField(min_value=0)
 
 
 class HandoverForm(forms.ModelForm):
-    event_id = forms.IntegerField(min_value=0)
+    event_id = forms.IntegerField(min_value=0, required=False)
     candidate_id = forms.IntegerField(min_value=0)
 
     class Meta:
