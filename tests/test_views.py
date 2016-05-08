@@ -5,7 +5,7 @@ from hypothesis import given, settings, HealthCheck
 from hypothesis.strategies import text, lists, random_module
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 
-from register.models import Candidate, Registration
+from register.models import Candidate, User_Registration
 from tests.test_models import name_strategy, email_strategy, \
     registration_strategy, name_list_strategy
 
@@ -93,7 +93,7 @@ class CurrentInLineViewTestCase(HypothesisTestCase):
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(lists(elements=registration_strategy, average_size=3))
     def test_all_user_ids(self, list_of_registrations):
-        for registration in Registration.objects.all():
+        for registration in User_Registration.objects.all():
             self.assertFalse(registration.email_validated)
             for _ in registration.get_candidates():
                 text = 'Currently you are number %s' % \

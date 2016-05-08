@@ -16,23 +16,17 @@
             <li>...</li>
         </ul>
         <br>
-        {% trans "Click on one of the following dates to register for a bike:" %}
+        {% trans "Click on the following link to register for a bike:" %}
         <br><br>
-        {% for event in events %}
+        {% if open_for_registration %}
         <div class="form-group row">
             <div class="col-xs-4">
-                <a href="{% url 'register:registration' event_id=event.id %}"
+                <a href="{% url 'register:registration' %}"
                 class="btn btn-info btn-block">
-                    {{ event.due_date }}
+                    Register now!
                 </a>
             </div>
         </div>
-        {% endfor %}
-    </h3><br>
-    <h4>
-        Events are shown if they are:
-        <li>not closed</li>
-        <li>in the future</li>
-        <li>maximum number of registrations is not reached</li>
-    </h4>
+        {% endif %}
+    </h3>
 {% endblock %}

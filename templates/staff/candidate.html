@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+{% extends 'staff/base_candidate.html' %}
+
+{% block sub_body_block %}
+<h3>
+    {% if candidate.has_bicycle %}
+        {% load i18n %}{% trans "The following bicycle has been handed out:" %}
+        <div style="line-height:40%;"><br></div>
+        {{ candidate.bicycle }}
+    {% else %}
+        {% trans "So far, no bicycle has been handed out." %}
+    {% endif %}
+
+    <div style="line-height:150%;"><br></div>
+
+    {% if candidate.invitations %}
+        {% trans "So far, this person has not been invited to any event." %}
+    {% else %}
+        {% trans "This person has been invited to the following events:" %}
+        <div style="line-height:40%;"><br></div>
+        {% for invitation in candidate.invitations.all %}
+            {{ invitation.handout_event.due_date }} (invited on:  
+            {{ invitation.time_of_invitation }})<br>
+        {% endfor %}
+    {% endif %}
+
+    <div style="line-height:150%;"><br></div>
+
+    {% if candidate.user_registration %}
+        {% trans "The registration data is the following:" %}
+        <div style="line-height:40%;"><br></div>
+        {{ candidate.user_registration.get_bicycle_kind_display }}<br>
+        {{ candidate.user_registration.email }}<br>
+        {{ candidate.user_registration.time_of_registration }}
+    {% else %}
+        {% trans "The person has been added by staff without a registration." %}
+    {% endif %}
+
+    <div style="line-height:50%;"><br></div>
+</h3>
+
+<div class="form-group row">
+    {% if not candidate.has_bicycle %}
+        <div class="col-xs-3">
+            <a href="{% url 'staff:handover_bicycle' candidate_id=candidate.id %}{{event_string}}"
+            class="btn btn-info btn-block" role="button">
+                {% trans "Handout bicycle" %}
+            </a>
+        </div>
+    {% endif %}
+    <div class="col-xs-3">
+        <a href="{% url 'staff:modify_candidate' candidate_id=candidate.id %}{{event_string}}"
+        class="btn btn-info btn-block" role="button">
+            {% trans "Modify identification data" %}
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block back_button %}
+    {% if event %}
+    <div class="form-group row">
+        <div class="col-xs-3">
+            <a href="{% url 'staff:event' event_id=event.id %}"
+            class="btn btn-info btn-block" role="button">
+                {% trans "Back" %}
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="form-group row">
+        <div class="col-xs-3">
+            <a href="{% url 'staff:candidate_overview' %}"
+            class="btn btn-info btn-block" role="button">
+                {% trans "Back" %}
+            </a>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -5,7 +5,7 @@ from hypothesis.extra.django.models import models
 
 from faker import Faker
 
-from register.models import Candidate, Registration, get_hash_value, \
+from register.models import Candidate, User_Registration, get_hash_value, \
     max_name_length
 
 # filter text that only contains of whitespace
@@ -29,7 +29,7 @@ def generate_with_candidate(registration):
 
 # this strategy might take some time and it can be necessary to disable
 # the health check for too slow tests
-registration_strategy = models(model=Registration,
+registration_strategy = models(model=User_Registration,
                                identifier=builds(get_hash_value),
                                email_validated=just(False)).flatmap(
                                     generate_with_candidate)
@@ -46,6 +46,6 @@ class ModelTestCase(HypothesisTestCase):
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(lists(elements=registration_strategy, average_size=3))
     def test_unique_identifiers(self, list_of_registrations):
-        registrations = Registration.objects.only('identifier').all()
+        registrations = User_Registration.objects.only('identifier').all()
         identifier_set = set(i.identifier for i in registrations)
-        self.assertEqual(len(identifier_set), Registration.objects.count())
+        self.assertEqual(len(identifier_set), User_Registration.objects.count())

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+{% if candidates %}
+    <ul class="nav nav-sidebar">
+        {% for candidate in candidates %}
+            {% if candidate.id == candidate_id %} 
+                <li class="active">
+            {% else %}
+                <li>
+            {% endif %}
+            <a href="{% url 'staff:candidate' candidate_id=candidate.id%}">
+                {{ candidate.first_name }} {{ candidate.last_name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <li>
+        <strong >There are no candidates present.</strong>
+    </li>
+{% endif %}

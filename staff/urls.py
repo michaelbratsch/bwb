@@ -1,8 +1,10 @@
 from django.conf.urls import url
-
-from staff.views import ManageView, HandoverBicycleView, EventView
-from staff.views import CreateEventView, CloseEventView
 from django.contrib.auth.decorators import login_required
+
+from staff.views import CandidateView, EventView, ManageView
+from staff.views import CreateEventView, InviteView, ModifyCandidateView
+from staff.views import HandoverBicycleView, CandidateOverviewView
+
 
 urlpatterns = [
     url(regex=r'^$',
@@ -14,10 +16,19 @@ urlpatterns = [
     url(regex=r'^create_event/$',
         view=login_required(CreateEventView.as_view()),
         name='create_event'),
-    url(regex=r'^close_event/(?P<event_id>[0-9]+)/$',
-        view=login_required(CloseEventView.as_view()),
-        name='close_event'),
+    url(regex=r'^invite/(?P<event_id>[0-9]+)/$',
+        view=login_required(InviteView.as_view()),
+        name='invite'),
+    url(regex=r'^candidate_overview/$',
+        view=login_required(CandidateOverviewView.as_view()),
+        name='candidate_overview'),
     url(regex=r'^candidate/(?P<candidate_id>[0-9]+)/$',
+        view=login_required(CandidateView.as_view()),
+        name='candidate'),
+    url(regex=r'^modify_candidate/(?P<candidate_id>[0-9]+)/$',
+        view=login_required(ModifyCandidateView.as_view()),
+        name='modify_candidate'),
+    url(regex=r'^handover_bicycle/(?P<candidate_id>[0-9]+)/$',
         view=login_required(HandoverBicycleView.as_view()),
-        name='handover')
+        name='handover_bicycle')
 ]

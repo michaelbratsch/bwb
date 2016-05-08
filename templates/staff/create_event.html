@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_staff.html' %}
+{% extends 'staff/base_event_view.html' %}
 
 {% load staticfiles %}
 
@@ -8,7 +8,8 @@
 <div class="page-header">
     <h2>
         {% load i18n %}{% blocktrans %}
-        Create a new event for people to register for a new bicycle.
+        Create a new event to invite people from the waiting list and 
+        to handout bicycles.
         {% endblocktrans %}
     </h2>
 </div>
@@ -25,29 +26,11 @@
         </label>
         <div class='col-xs-4'>
             <div class='input-group date' id='datetimepicker1'>
-                <input type='text' name="date_time" class="form-control" />
+                <input type='text' name="due_date" class="form-control" />
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
                 </span>
             </div>
-        </div>
-    </div>
-    <script>
-        $(function () {
-            $('#datetimepicker1').datetimepicker({
-                locale: 'de',
-                defaultDate: moment(new Date()).hours(18).minutes(0)
-            });
-        });
-    </script>
-
-    <div class="form-group row">
-        <label class="col-xs-2 control-label">
-            {% trans "Maximum number of registrations" %}
-        </label>
-        <div class="col-xs-2">
-            <input class="form-control" type="number" name="max_registrations"
-            min="0" value="200" required>
         </div>
     </div>
 
@@ -70,4 +53,16 @@
         </div>
     </div>
 </form>
+{% endblock %}
+
+{% block script_block %}
+<script>
+    {% get_current_language as LANGUAGE_CODE %}
+    $(function () {
+        $('#datetimepicker1').datetimepicker({
+            locale: '{{ LANGUAGE_CODE }}',
+            defaultDate: moment(new Date()).hours(18).minutes(0)
+        });
+    });
+</script>
 {% endblock %}

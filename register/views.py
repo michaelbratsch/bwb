@@ -1,24 +1,24 @@
-from django.shortcuts import render, get_object_or_404
+from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.views.generic.edit import FormView
-from django.utils.translation import ugettext
 
-from register.forms import RegistrationForm
-from register.models import Registration, Candidate, Event
 from register.email import send_register_email
-from django.core.urlresolvers import reverse_lazy
+from register.forms import RegistrationForm
+from register.models import User_Registration, Candidate
+
+
+def open_for_registration():
+    max_number_of_registrations = 200
+    return Candidate.total_in_line() < max_number_of_registrations
 
 
 class GreetingsView(View):
     template_name = 'register/greeting.html'
 
     def get(self, request, *args, **kwargs):
-        events = [event for event in Event.objects.all()
-                  if event.open_for_registration]
-        events.sort(key=lambda x: x.due_date)
-        context_dict = {'events': events}
-
+        context_dict = {'open_for_registration': open_for_registration()}
         return render(request, self.template_name, context_dict)
 
 
@@ -28,32 +28,31 @@ class RegistrationView(FormView):
     success_url = reverse_lazy('register:thanks')
 
     def form_valid(self, form):
+        if not open_for_registration():
+            raise Http404(
+                "Currently it is not possible to register for a bicycle.")
+
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+        date_of_birth = form.cleaned_data['date_of_birth']
+
+        candidate = Candidate.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            date_of_birth=date_of_birth)
+
         email = form.cleaned_data['email']
-        event_id = form.cleaned_data['event_id']
+        bicycle_kind = form.cleaned_data['bicycle_kind']
 
-        event = get_object_or_404(Event, id=event_id)
+        registration = User_Registration.objects.create(
+            candidate=candidate,
+            bicycle_kind=bicycle_kind,
+            email=email)
 
-        if not event.open_for_registration:
-            raise Http404("The event is not open for registration.")
+        name = "%s %s" % (candidate.first_name, candidate.last_name)
 
-        # Create and save registration and candidate object
-        registration = Registration.objects.create(event=event,
-                                                   email=email)
-
-        for i in range(5):
-            first_name = form.cleaned_data['first_name_%s' % i]
-            last_name = form.cleaned_data['last_name_%s' % i]
-            if first_name and last_name:
-                Candidate.objects.create(registration=registration,
-                                         first_name=first_name,
-                                         last_name=last_name)
-
-        names = ["%s %s" % (c.first_name, c.last_name)
-                 for c in registration.candidates.all()]
-
-        name_link = " " + ugettext('and') + " "
         recipient = {'email': registration.email,
-                     'name': name_link.join(names),
+                     'name': name,
                      'identifier': registration.identifier}
 
         base_url = '{scheme}://{host}'.format(scheme=self.request.scheme,
@@ -63,14 +62,11 @@ class RegistrationView(FormView):
 
         return super(RegistrationView, self).form_valid(form)
 
-    def get(self, request, event_id, *args, **kwargs):
-        event = get_object_or_404(Event, id=event_id)
-
-        if not event.open_for_registration:
-            raise Http404("The event is not open for registration.")
-
-        context_dict = {'event': event}
-
+    def get(self, request, *args, **kwargs):
+        if not open_for_registration():
+            raise Http404(
+                "Currently it is not possible to register for a bicycle.")
+        context_dict = {'choices': User_Registration.BICYCLE_CHOICES}
         return render(request, self.template_name, context_dict)
 
 
@@ -89,8 +85,12 @@ class CurrentInLineView(View):
     def get(self, request, *args, **kwargs):
         identifier = request.GET.get('user_id')
 
-        registration = get_object_or_404(Registration, identifier=identifier)
+        registration = get_object_or_404(
+            User_Registration, identifier=identifier)
         registration.validate_email()
 
-        context_dict = {'number_in_line': registration.number_in_line()}
+        context_dict = {
+            'already_viewed': registration.email_validated,
+            'number_in_line': registration.number_in_line(),
+            'bicycle_kind': registration.get_bicycle_kind_display()}
         return render(request, self.template_name, context_dict)
