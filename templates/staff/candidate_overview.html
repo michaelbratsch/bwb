@@ -5,7 +5,19 @@
 {% load staticfiles %}
 
 {% block body_block %}
+<div class="page-header">
+    <h2>
+        {% load i18n %}
+        {% blocktrans %}
+        Overview of all people that are registered in the database.
+        {% endblocktrans %}
+    </h2>
+</div>
 <h3>
-    TESTING
+    {% trans "Existing people can be selected on the left." %}
+    <br><br>
+    <!--<a href="{% url 'staff:create_event' %}" class="btn btn-info" role="button">
+        {% trans "Add new person" %}
+    </a>-->
 </h3>
 {% endblock %}

@@ -8,17 +8,21 @@ import random
 from register.models import Candidate, Bicycle, HandoutEvent
 from register.models import User_Registration, Invitation
 from staff.forms import HandoverForm, EventForm, InviteForm, RefundForm
-from staff.forms import ModifyCandidateForm
+from staff.forms import ModifyCandidateForm, InviteCandidateForm
 
 
 class ManageView(TemplateView):
     template_name = 'staff/index.html'
 
 
+class EventOverviewView(TemplateView):
+    template_name = 'staff/event_overview.html'
+
+
 class CreateEventView(FormView):
     template_name = 'staff/create_event.html'
     form_class = EventForm
-    success_url = reverse_lazy('staff:index')
+    success_url = reverse_lazy('staff:event_overview')
 
     def form_valid(self, form):
         due_date = form.cleaned_data['due_date']
@@ -34,7 +38,7 @@ class CreateEventView(FormView):
 class AutoInviteView(FormView):
     template_name = 'staff/invite.html'
     form_class = InviteForm
-    success_url = reverse_lazy('staff:index')
+    success_url = reverse_lazy('staff:event_overview')
 
     def form_valid(self, form):
         event_id = form.cleaned_data['event_id']
@@ -195,5 +199,24 @@ class RefundBicycleView(CandidateMixin, FormView):
         return super(RefundBicycleView, self).form_valid(form)
 
 
-class InviteCandidateView(CandidateMixin, View):
+class InviteCandidateView(CandidateMixin, FormView):
     template_name = 'staff/invite_candidate.html'
+    form_class = InviteCandidateForm
+
+    def form_valid(self, form):
+        candidate_id = form.cleaned_data['candidate_id']
+        candidate = get_object_or_404(Candidate, id=candidate_id)
+
+        invitation_event_id = form.cleaned_data['invitation_event_id']
+        invitation_event = get_object_or_404(
+            HandoutEvent, id=invitation_event_id)
+
+        if invitation_event not in candidate.events_not_invited_to:
+            raise Http404("The Candidate is already invited to this event.")
+
+        Invitation.objects.create(candidate=candidate,
+                                  handout_event=invitation_event)
+
+        self.set_success_url(form)
+
+        return super(InviteCandidateView, self).form_valid(form)

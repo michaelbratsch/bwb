@@ -53,7 +53,7 @@
                             </div>
                         </form>
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'staff:index' %}">
+                            <li><a href="{% url 'staff:event_overview' %}">
                                 {% trans "Event View" %}
                             </a></li>
                             <li><a href="{% url 'staff:candidate_overview' %}">

@@ -3,9 +3,11 @@
 {% extends 'staff/base_candidate.html' %}
 
 {% block sub_body_block %}
-<!-- ToDo: fix covering of datepicker by topbar to remove double <br> -->
-<br><br>
-
+<h3>
+The date of birth, first and last name are used to uniquely identify people in
+the database. This information should match with their passports.
+</h3>
+<br>
 <form id="createForm" method="POST" class="post-form">
     {% csrf_token %}
     <div class="form-group row">
@@ -46,6 +48,8 @@
 
     <input name="candidate_id" type="hidden" value="{{ candidate.id }}"/>
     <input name="event_id" type="hidden" value="{{ event.id }}"/>
+    
+    <div style="line-height:80%;"><br></div>
     
     <div class="form-group row">
         <div class="col-xs-3">

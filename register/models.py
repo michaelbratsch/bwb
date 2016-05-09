@@ -17,6 +17,13 @@ def datetime_min():
                                timezone.get_default_timezone())
 
 
+class HandoutEvent(models.Model):
+    due_date = models.DateTimeField()
+
+    def __str__(self):
+        return str(self.due_date)
+
+
 class Candidate(models.Model):
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
@@ -30,13 +37,16 @@ class Candidate(models.Model):
         except Bicycle.DoesNotExist:
             return False
 
+    @property
+    def events_not_invited_to(self):
+        event_ids_invited_to = self.invitations.all().values_list(
+            'handout_event_id',
+            flat=True)
+        return HandoutEvent.objects.exclude(id__in=event_ids_invited_to)
+
     @classmethod
     def total_in_line(cls):
         return cls.objects.filter(bicycle__isnull=True).count()
-
-    # @classmethod
-    # def without_bicycle(cls):
-    #    return cls.objects.filter(bicycle__isnull=True).all()
 
     @classmethod
     def waiting_for_bicycle(cls, kind):
@@ -95,13 +105,6 @@ class User_Registration(models.Model):
                          self.get_bicycle_kind_display()))
 
 
-class HandoutEvent(models.Model):
-    due_date = models.DateTimeField()
-
-    def __str__(self):
-        return str(self.due_date)
-
-
 class Invitation(models.Model):
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE,
                                   related_name='invitations')
@@ -127,5 +130,5 @@ class Bicycle(models.Model):
     general_remarks = models.TextField(default='')
 
     def __str__(self):
-        return "number: %s, color: %s, brand: %s" % \
+        return "number: %s color: %s  brand: %s" % \
             (self.bicycle_number, self.color, self.brand)

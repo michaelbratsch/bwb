@@ -3,6 +3,12 @@ from django import forms
 from register.models import Bicycle, Candidate
 
 
+class InviteCandidateForm(forms.Form):
+    event_id = forms.IntegerField(min_value=0, required=False)
+    candidate_id = forms.IntegerField(min_value=0)
+    invitation_event_id = forms.IntegerField(min_value=0, required=False)
+
+
 class ModifyCandidateForm(forms.ModelForm):
     event_id = forms.IntegerField(min_value=0, required=False)
     candidate_id = forms.IntegerField(min_value=0)

@@ -5,36 +5,36 @@
 {% block sub_body_block %}
 <h3>
     {% if candidate.has_bicycle %}
-        {% load i18n %}{% trans "The following bicycle has been handed out:" %}
+        {% load i18n %}{% trans "Has the following bicycle:" %}
         <div style="line-height:40%;"><br></div>
         {{ candidate.bicycle }}
     {% else %}
-        {% trans "So far, no bicycle has been handed out." %}
+        {% trans "Does not have a bicycle so far." %}
     {% endif %}
 
     <div style="line-height:150%;"><br></div>
 
-    {% if candidate.invitations %}
-        {% trans "So far, this person has not been invited to any event." %}
-    {% else %}
-        {% trans "This person has been invited to the following events:" %}
+    {% if candidate.invitations.all %}
+        {% trans "Is invited to the following events:" %}
         <div style="line-height:40%;"><br></div>
         {% for invitation in candidate.invitations.all %}
             {{ invitation.handout_event.due_date }} (invited on:  
             {{ invitation.time_of_invitation }})<br>
         {% endfor %}
+    {% else %}
+        {% trans "Is not invited to any event." %}
     {% endif %}
 
     <div style="line-height:150%;"><br></div>
 
     {% if candidate.user_registration %}
-        {% trans "The registration data is the following:" %}
+        {% trans "Is registered with the following data:" %}
         <div style="line-height:40%;"><br></div>
         {{ candidate.user_registration.get_bicycle_kind_display }}<br>
         {{ candidate.user_registration.email }}<br>
         {{ candidate.user_registration.time_of_registration }}
     {% else %}
-        {% trans "The person has been added by staff without a registration." %}
+        {% trans "Has been added by staff without a registration." %}
     {% endif %}
 
     <div style="line-height:50%;"><br></div>

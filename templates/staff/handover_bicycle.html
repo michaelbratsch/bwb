@@ -5,7 +5,9 @@
 {% block sub_body_block %}    
 <form id="handoverForm" method="POST" class="post-form">
     {% csrf_token %}
-    <h3>{% load i18n %}{% trans "Handover of bicycle" %}</h3>
+    <h3>{% load i18n %}
+        {% trans "Handout of a bicycle" %}
+    </h3>
     <div class="form-group row">
         <div class="col-xs-3" style="height:15px;"></div>
     </div>
