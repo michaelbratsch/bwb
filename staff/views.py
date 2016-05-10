@@ -56,8 +56,7 @@ class AutoInviteView(FormView):
             candidates = Candidate.waiting_for_bicycle(choice)
 
             # are not invited yet
-            candidates = filter(lambda c: c.invitations.count() == 0,
-                                candidates)
+            candidates = [c for c in candidates if c.invitations.count() == 0]
 
             winners = random.sample(candidates, min(len(candidates),
                                                     number_of_winners))
@@ -85,8 +84,8 @@ class EventView(View):
     def get_candidates_in_groups(self, all_candidates):
         for choice, description in User_Registration.BICYCLE_CHOICES:
             yield (description,
-                   filter(lambda c: c.user_registration.bicycle_kind == choice,
-                          all_candidates))
+                   [c for c in all_candidates
+                    if c.user_registration.bicycle_kind == choice])
 
     def get(self, request, event_id, *args, **kwargs):
         event = get_object_or_404(HandoutEvent, id=event_id)
