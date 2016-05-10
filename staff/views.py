@@ -7,7 +7,8 @@ import random
 
 from register.models import Candidate, Bicycle, HandoutEvent
 from register.models import User_Registration, Invitation
-from staff.forms import HandoverForm, EventForm, InviteForm, RefundForm
+from staff.forms import CreateCandidateForm
+from staff.forms import HandoverForm,  EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
 
 
@@ -27,6 +28,9 @@ class CreateEventView(FormView):
     def form_valid(self, form):
         due_date = form.cleaned_data['due_date']
 
+        if HandoutEvent.objects.filter(due_date=due_date):
+            raise Http404("An event on that time and date already exists.")
+
         event = HandoutEvent.objects.create(due_date=due_date)
 
         self.success_url = reverse_lazy('staff:event',
@@ -36,7 +40,7 @@ class CreateEventView(FormView):
 
 
 class AutoInviteView(FormView):
-    template_name = 'staff/invite.html'
+    template_name = 'staff/auto_invite.html'
     form_class = InviteForm
     success_url = reverse_lazy('staff:event_overview')
 
@@ -48,7 +52,12 @@ class AutoInviteView(FormView):
         for choice, _ in User_Registration.BICYCLE_CHOICES:
             number_of_winners = form.cleaned_data['choice_%s' % choice]
 
-            candidates = list(Candidate.waiting_for_bicycle(choice))
+            # do have no bicycle and are registered with contact information
+            candidates = Candidate.waiting_for_bicycle(choice)
+
+            # are not invited yet
+            candidates = filter(lambda c: c.invitations.count() == 0,
+                                candidates)
 
             winners = random.sample(candidates, min(len(candidates),
                                                     number_of_winners))
@@ -130,6 +139,24 @@ class CandidateMixin(object):
 
 class CandidateView(CandidateMixin, View):
     template_name = 'staff/candidate.html'
+
+
+class CreateCandidateView(FormView):
+    template_name = 'staff/create_candidate.html'
+    form_class = CreateCandidateForm
+    success_url = reverse_lazy('staff:candidate_overview')
+
+    def form_valid(self, form):
+        form_data = {'first_name': form.cleaned_data['first_name'],
+                     'last_name': form.cleaned_data['last_name'],
+                     'date_of_birth': form.cleaned_data['date_of_birth']}
+
+        if Candidate.objects.filter(**form_data):
+            raise Http404("This candidate already exists")
+
+        Candidate.objects.create(**form_data)
+
+        return super(CreateCandidateView, self).form_valid(form)
 
 
 class ModifyCandidateView(CandidateMixin, FormView):

@@ -9,6 +9,13 @@ class InviteCandidateForm(forms.Form):
     invitation_event_id = forms.IntegerField(min_value=0, required=False)
 
 
+class CreateCandidateForm(forms.ModelForm):
+
+    class Meta:
+        model = Candidate
+        fields = ['first_name', 'last_name', 'date_of_birth']
+
+
 class ModifyCandidateForm(forms.ModelForm):
     event_id = forms.IntegerField(min_value=0, required=False)
     candidate_id = forms.IntegerField(min_value=0)
@@ -39,7 +46,8 @@ class HandoverForm(forms.ModelForm):
 
 
 class EventForm(forms.Form):
-    due_date = forms.DateTimeField(input_formats=['%d.%m.%Y %H:%M'])
+    due_date = forms.DateTimeField(input_formats=['%d.%m.%Y %H:%M',
+                                                  '%m/%d/%Y %I:%M %p'])
 
 
 class InviteForm(forms.Form):
