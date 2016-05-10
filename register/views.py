@@ -32,14 +32,15 @@ class RegistrationView(FormView):
             raise Http404(
                 "Currently it is not possible to register for a bicycle.")
 
-        first_name = form.cleaned_data['first_name']
-        last_name = form.cleaned_data['last_name']
-        date_of_birth = form.cleaned_data['date_of_birth']
+        form_data = {'first_name': form.cleaned_data['first_name'],
+                     'last_name': form.cleaned_data['last_name'],
+                     'date_of_birth': form.cleaned_data['date_of_birth']}
 
-        candidate = Candidate.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            date_of_birth=date_of_birth)
+        if Candidate.objects.filter(**form_data):
+            raise Http404(
+                "A candidate with this identity information already exists.")
+
+        candidate = Candidate.objects.create(**form_data)
 
         email = form.cleaned_data['email']
         bicycle_kind = form.cleaned_data['bicycle_kind']
