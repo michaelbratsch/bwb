@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_staff.html' %}
+{% extends 'staff/base_event_view.html' %}
 
 {% load staticfiles %}
 
@@ -8,7 +8,8 @@
 <div class="page-header">
     <h2>
         {% load i18n %}{% blocktrans %}
-        Create a new event for people to register for a new bicycle.
+        Create a new event to invite people from the waiting list and 
+        to handout bicycles.
         {% endblocktrans %}
     </h2>
 </div>
@@ -21,29 +22,15 @@
     
     <div class="form-group row">
         <label class="col-xs-2 control-label">
-            {% trans "Date of the Event" %}
+            {% trans "Date and time of the event" %}
         </label>
-        <div class="col-xs-2"> 
-            <input type="date" name="date" required>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label class="col-xs-2 control-label">
-            {% trans "Time of the Event" %}
-        </label>
-        <div class="col-xs-2"> 
-            <input type="time" name="time" required>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label class="col-xs-2 control-label">
-            {% trans "Maximum number of registrations" %}
-        </label>
-        <div class="col-xs-2">
-            <input type="number" name="max_registrations" min="0" value="200"
-            required>
+        <div class='col-xs-4'>
+            <div class='input-group date' id='datetimepicker1'>
+                <input type='text' name="due_date" class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
         </div>
     </div>
 
@@ -53,8 +40,8 @@
 
     <div class="form-group row">
         <div class="col-xs-2">
-            <a href="{% url 'staff:index' %}" class="btn btn-info btn-block"
-            role="button">
+            <a href="{% url 'staff:event_overview' %}"
+            class="btn btn-info btn-block" role="button">
                 {% trans "Cancel" %}
             </a>
         </div>
@@ -66,4 +53,16 @@
         </div>
     </div>
 </form>
+{% endblock %}
+
+{% block script_block %}
+<script>
+    {% get_current_language as LANGUAGE_CODE %}
+    $(function () {
+        $('#datetimepicker1').datetimepicker({
+            locale: '{{ LANGUAGE_CODE }}',
+            defaultDate: moment(new Date()).hours(18).minutes(0)
+        });
+    });
+</script>
 {% endblock %}

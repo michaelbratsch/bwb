@@ -1,8 +1,7 @@
 from django.db import models
 from django.utils import timezone
-
-import os
 import hashlib
+import os
 
 
 max_name_length = 100
@@ -18,114 +17,18 @@ def datetime_min():
                                timezone.get_default_timezone())
 
 
-class Event(models.Model):
+class HandoutEvent(models.Model):
     due_date = models.DateTimeField()
-    max_registrations = models.PositiveIntegerField(default=200)
-    is_closed = models.BooleanField(default=False)
-
-    @property
-    def open_for_registration(self):
-        return not self.is_closed and self.due_date > timezone.now() and \
-            self.__class__.objects.count() <= self.max_registrations
-
-    def get_registered_candidates(self):
-        registrations = self.registrations.all()
-        candidates = []
-        for registration in registrations:
-            candidates += registration.candidates.all()
-        return candidates
 
     def __str__(self):
-        return str('%s closed:%s' % (self.due_date, self.is_closed))
-
-
-class Registration(models.Model):
-    identifier = models.CharField(default=get_hash_value,
-                                  max_length=identifier_length,
-                                  unique=True)
-
-    event = models.ForeignKey(Event, on_delete=models.CASCADE,
-                              related_name='registrations')
-
-    email = models.EmailField()
-    email_validated = models.BooleanField(default=False)
-    time_of_email_validation = models.DateTimeField(default=datetime_min,
-                                                    blank=True)
-
-    win_validated = models.BooleanField(default=False)
-    time_of_win_validation = models.DateTimeField(default=datetime_min,
-                                                  blank=True)
-
-    time_of_registration = models.DateTimeField(default=timezone.now,
-                                                blank=True)
-
-    def get_candidates(self):
-        return self.candidates.all()
-
-    def number_of_candidates(self):
-        return self.candidates.count()
-
-    def validate_email(self):
-        if not self.email_validated:
-            self.email_validated = True
-            self.time_of_email_validation = timezone.now()
-            self.save()
-
-    def number_in_line(self):
-        return max(c.number_in_line() for c in self.get_candidates())
-
-    def __str__(self):
-        candidate_names = ["'%s'" % i for i in self.get_candidates()]
-        return " ".join(candidate_names + [self.identifier, self.email])
+        return str(self.due_date)
 
 
 class Candidate(models.Model):
-    registration = models.ForeignKey(Registration, on_delete=models.CASCADE,
-                                     related_name='candidates')
-
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
 
-    @property
-    def has_won(self):
-        try:
-            return self.winner is not None
-        except Winner.DoesNotExist:
-            return False
-
-    @property
-    def has_bicycle(self):
-        if self.has_won:
-            return self.winner.has_bicycle
-        return False
-
-    def number_in_line(self):
-        cls = self.__class__
-        i = 0
-        for candidate in cls.objects.all():
-            if not candidate.has_bicycle():
-                i += 1
-            if self == candidate:
-                return i
-        assert False, "Could not find object"
-
-    @classmethod
-    def total_in_line(cls):
-        return cls.objects.count()
-
-    @classmethod
-    def without_bicycle(cls):
-        return cls.objects.filter(bicycle__isnull=True).all()
-
-    def __str__(self):
-        return " ".join((self.first_name, self.last_name))
-
-
-class Winner(models.Model):
-    candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
-                                     primary_key=True, related_name='winner')
-    event = models.ForeignKey(Event, on_delete=models.CASCADE,
-                              related_name='winner')
+    date_of_birth = models.DateField()
 
     @property
     def has_bicycle(self):
@@ -134,17 +37,98 @@ class Winner(models.Model):
         except Bicycle.DoesNotExist:
             return False
 
+    @property
+    def events_not_invited_to(self):
+        event_ids_invited_to = self.invitations.all().values_list(
+            'handout_event_id',
+            flat=True)
+        return HandoutEvent.objects.exclude(id__in=event_ids_invited_to)
+
+    @classmethod
+    def total_in_line(cls):
+        return cls.objects.filter(bicycle__isnull=True).count()
+
+    @classmethod
+    def waiting_for_bicycle(cls, kind):
+        without_bicycles = cls.objects.filter(bicycle__isnull=True)
+        registered = without_bicycles.filter(user_registration__isnull=False)
+        return filter(lambda c: c.user_registration.bicycle_kind == kind,
+                      registered)
+
     def __str__(self):
-        return str(self.candidate)
+        return " ".join((self.first_name, self.last_name,
+                         str(self.date_of_birth)))
+
+
+class User_Registration(models.Model):
+    candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
+                                     related_name='user_registration')
+
+    MALE = 1
+    FEMALE = 2
+    CHILD = 3
+
+    BICYCLE_CHOICES = (
+        (MALE, "men's bicycle"), (FEMALE, "ladies' bicycle"),
+        (CHILD, "children's bicycle"))
+
+    bicycle_kind = models.IntegerField(choices=BICYCLE_CHOICES)
+
+    identifier = models.CharField(default=get_hash_value,
+                                  max_length=identifier_length,
+                                  primary_key=True)
+
+    email = models.EmailField()
+    email_validated = models.BooleanField(default=False)
+    time_of_email_validation = models.DateTimeField(default=datetime_min)
+
+    time_of_registration = models.DateTimeField(default=timezone.now)
+
+    def number_in_line(self):
+        cls = self.__class__
+        i = 0
+        for registration in cls.objects.filter(bicycle_kind=self.bicycle_kind):
+            if not registration.candidate.has_bicycle:
+                i += 1
+            if self.candidate == registration.candidate:
+                return i
+        assert False, "Could not find object"
+
+    def validate_email(self):
+        if not self.email_validated:
+            self.email_validated = True
+            self.time_of_email_validation = timezone.now()
+            self.save()
+
+    def __str__(self):
+        return " ".join((str(self.candidate), self.email,
+                         self.get_bicycle_kind_display()))
+
+
+class Invitation(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE,
+                                  related_name='invitations')
+
+    handout_event = models.ForeignKey(HandoutEvent,
+                                      on_delete=models.CASCADE,
+                                      related_name='invitations')
+
+    time_of_invitation = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return '%s %s' % (self.candidate, self.handout_event)
 
 
 class Bicycle(models.Model):
-    # ToDo: decide about on_delte
-    winner = models.OneToOneField(Winner, on_delete=models.CASCADE,
-                                  primary_key=True, related_name='bicycle')
+    candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
+                                     related_name='bicycle')
 
     bicycle_number = models.PositiveIntegerField()
+    lock_combination = models.PositiveIntegerField()
+    color = models.CharField(max_length=200)
+    brand = models.CharField(max_length=200)
     general_remarks = models.TextField(default='')
 
     def __str__(self):
-        return str(self.bicycle_number)
+        return "number: %s color: %s  brand: %s" % \
+            (self.bicycle_number, self.color, self.brand)

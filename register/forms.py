@@ -1,27 +1,13 @@
 from django import forms
 
-from register.models import max_name_length
+from register.models import max_name_length, User_Registration
 
 
 class RegistrationForm(forms.Form):
-    first_name_0 = forms.CharField(max_length=max_name_length)
-    last_name_0 = forms.CharField(max_length=max_name_length)
-    first_name_1 = forms.CharField(max_length=max_name_length, required=False)
-    last_name_1 = forms.CharField(max_length=max_name_length, required=False)
-    first_name_2 = forms.CharField(max_length=max_name_length, required=False)
-    last_name_2 = forms.CharField(max_length=max_name_length, required=False)
-    first_name_3 = forms.CharField(max_length=max_name_length, required=False)
-    last_name_3 = forms.CharField(max_length=max_name_length, required=False)
-    first_name_4 = forms.CharField(max_length=max_name_length, required=False)
-    last_name_4 = forms.CharField(max_length=max_name_length, required=False)
-    email = forms.EmailField()
-    event_id = forms.IntegerField(min_value=0)
+    first_name = forms.CharField(max_length=max_name_length)
+    last_name = forms.CharField(max_length=max_name_length)
+    date_of_birth = forms.DateField()
 
-    class Meta:
-        fields = ['email']
-        labels = {'email': 'Email address'}
-        for i in range(5):
-            fields.append('first_name_%s' % i)
-            fields.append('last_name_%s' % i)
-            labels['first_name_%s' % i] = 'First_name'
-            labels['last_name_%s' % i] = 'Last_name'
+    email = forms.EmailField()
+    bicycle_kind = forms.ChoiceField(
+        choices=User_Registration.BICYCLE_CHOICES)

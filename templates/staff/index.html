@@ -1,20 +1,42 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_staff.html' %}
+{% extends 'base.html' %}
 
 {% load staticfiles %}
 
 {% block body_block %}
-    <div class="page-header">
-        <h2>
-            {% load i18n %}{% trans "Staff page to create new events and manage them." %}
-        </h2>
-    </div>
-    <h3>
-        {% trans "Existing events can be selected on the left." %}
-        <br><br>
-        <a href="{% url 'staff:create_event' %}" class="btn btn-info" role="button">
-            {% trans "Create new event" %}
-        </a>
-    </h3>
+<div class="page-header">
+    <h2>
+        {% load i18n %}
+        {% blocktrans %}
+        Staff page to create new events, invite people and handout bicycles.
+        {% endblocktrans %}
+    </h2>
+</div>
+
+<h3>
+    {% blocktrans %}
+    There exist two different main views you can select. These 
+    views present you a summary of the informations currently stored in the 
+    database.
+    <div style="line-height:90%;"><br></div>
+    The
+    {% endblocktrans %} 
+    <a href="{% url 'staff:event_overview' %}">
+    {% trans "Event View" %}</a>
+    {% blocktrans %}
+    is what you probably need most of the time when handing
+    out bicycles to already registered persons. It shows the people that have
+    been invited and it is possible to handout bicycles.
+    <div style="line-height:90%;"><br></div>
+    The
+    {% endblocktrans %} 
+    <a href="{% url 'staff:candidate_overview' %}">
+    {% trans "Candidate View" %}</a>
+    {% blocktrans %} is to have an overview over all people in the 
+    database. It is possible to manually register new persons that do not 
+    have an email address or a telefon number. Furthermore, you can take back 
+    bicycles from people that have registered long time ago.
+    {% endblocktrans %}
+</h3>
 {% endblock %}

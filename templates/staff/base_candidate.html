@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+{% extends event|yesno:'staff/base_event_view.html,staff/base_candidate_view.html' %}
+
+{% block body_block %}
+<div class="page-header">
+    <h2>
+        {% load i18n %}{{ candidate.first_name }} {{ candidate.last_name }} 
+        {{ candidate.date_of_birth|date:'DATE_FORMAT' }}
+    </h2>
+</div>
+
+    {% block sub_body_block %}
+    {% endblock %}
+
+    {% block back_button %}
+    <div class="form-group row">
+        <div class="col-xs-3">
+            <a href="{% url 'staff:candidate' candidate_id=candidate.id%}{{event_string}}"
+            class="btn btn-info btn-block" role="button">
+                {% trans "Back" %}
+            </a>
+        </div>
+    </div>
+    {% endblock %}
+
+{% endblock %}

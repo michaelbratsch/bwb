@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_staff.html' %}
+{% extends 'staff/base_candidate.html' %}
 
-{% load staticfiles %}
-
-{% block body_block %}
-<div class="page-header">
-    <h1>{{ candidate.first_name }} {{ candidate.last_name }}</h1>
-</div>
-    
+{% block sub_body_block %}    
 <form id="handoverForm" method="POST" class="post-form">
     {% csrf_token %}
-    <h3>{% load i18n %}{% trans "Handover of bicycle" %}</h3>
+    <h3>{% load i18n %}
+        {% trans "Handout of a bicycle" %}
+    </h3>
     <div class="form-group row">
         <div class="col-xs-3" style="height:15px;"></div>
     </div>
@@ -27,6 +23,33 @@
     </div>
     <div class="form-group row">
         <label class="col-xs-2 control-label">
+            {% trans "Lock combination" %}
+        </label>
+        <div class="col-xs-2">
+            <input class="form-control" name="lock_combination" type="number"
+            placeholder="lock combination" min="0" required/>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-xs-2 control-label">
+            {% trans "Color" %}
+        </label>
+        <div class="col-xs-4">
+            <input class="form-control" name="color" type="text"
+                   maxlength="200" placeholder="color" required/>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-xs-2 control-label">
+            {% trans "Brand" %}
+        </label>
+        <div class="col-xs-4">
+            <input class="form-control" name="brand" type="text"
+                   maxlength="200" placeholder="brand" required/>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-xs-2 control-label">
             {% trans "General remarks" %}
         </label>
         <div class="col-xs-6">
@@ -37,21 +60,16 @@
     </div>
     
     <input name="candidate_id" type="hidden" value="{{ candidate.id }}"/>
+    <input name="event_id" type="hidden" value="{{ event.id }}"/>
 
     <div class="form-group row">
         <div class="col-xs-2" style="height:10px;"></div>
     </div>
 
     <div class="form-group row">
-        <div class="col-xs-2">
-            <a href="{% url 'staff:event' event.id%}" class="btn btn-info btn-block"
-            role="button">
-                {% trans "Cancel" %}
-            </a>
-        </div>
-        <div class="col-xs-2">
+        <div class="col-xs-3">
             <button class="btn btn-info btn-block" type="submit" 
-            value="Submit" />
+            value="Submit">
                 {% trans "Submit" %}
             </button>
         </div>

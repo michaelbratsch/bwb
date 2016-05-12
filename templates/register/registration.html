@@ -6,62 +6,52 @@
 
 {% block body_block %}
 <div class="page-header">
-    <h2>{% load i18n %}{% trans "Register for a bike on " %}{{ event.due_date }}</h2>
+    <h2>{% load i18n %}{% trans "Register for a bike" %}</h2>
     <h3>{% trans "Currently, entering a phone number is not supported!" %}</h3>
 </div>
 <form id="nameForm" method="POST" class="post-form">
     {% csrf_token %}
     <div class="form-group row">
-        <label class="col-xs-3 control-label">
-            {% trans "Name" %}
+        <label class="col-xs-3 col-md-2 control-label">
+            {% trans "Identification" %}
         </label>
-        <div class="col-xs-7">
-            <input class="form-control" name="first_name_0" type="text"
-                   maxlength="100" placeholder="first name" required/>
-        </div>
-        <div class="col-xs-12" style="height:10px;"></div>
-        <div class="col-xs-7 col-xs-offset-3">
-            <input class="form-control" name="last_name_0" type="text"
-                   maxlength="100" placeholder="last name" required/>
-        </div>
-        <div class="col-xs-1">
-            <button type="button" class="btn btn-default addButton">
-                <i class="fa fa-plus"></i>
-            </button>
-        </div>
-        <div class="col-xs-12" style="height:10px;"></div>
-    </div>
-    <div class="form-group hide row" id="nameTemplate">
-        <div class="col-xs-7 col-xs-offset-3">
+        <div class="col-xs-9 col-md-4">
             <input class="form-control" name="first_name" type="text"
                    maxlength="100" placeholder="first name" required/>
         </div>
         <div class="col-xs-12" style="height:10px;"></div>
-        <div class="col-xs-7 col-xs-offset-3">
+        <div class="col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-4">
             <input class="form-control" name="last_name" type="text"
                    maxlength="100" placeholder="last name" required/>
         </div>
-        <div class="col-xs-1">
-            <button type="button" class="btn btn-default removeButton">
-                <i class="fa fa-minus"></i>
-            </button>
+        <div class="col-xs-12" style="height:15px;"></div>
+        <div class="col-xs-offset-3 col-xs-7 col-md-offset-2 col-md-4">
+            <div class='input-group date' id='datepicker'>
+                <input type='text' name="date_of_birth" class="form-control"
+                placeholder='date of birth' required/>
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
         </div>
         <div class="col-xs-12" style="height:10px;"></div>
     </div>
     <div class="form-group row">
-        <div class="col-xs-3 control-label">
+        <div class="col-xs-3 col-md-2 control-label">
             <label for="id_email">
                 {% trans "Contact information" %}
             </label>
         </div>
-        <div class="col-xs-7">
+        <div class="col-xs-9 col-md-4">
             <p class="required">
                 <input class="form-control contact-group" id="id_email"
                        name="email" type="email"
                        placeholder="email address"/>
             </p>
         </div>
-        <div class="col-xs-offset-3 col-xs-7">
+    </div>
+    <div class="form-group row">
+        <div class="col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-4">
             <p class="required">
                 <input class="form-control contact-group" id="id_phone"
                        name="phone" type="tel"
@@ -69,19 +59,67 @@
             </p>
         </div>
     </div>
+    <div class="form-group row">
+        <div class="col-xs-3 col-md-2 control-label">
+            <label for="id_additional">
+                {% trans "Bicycle kind" %}
+            </label>
+        </div>
+        <div class="col-xs-7 col-md-3">
+            <select class="form-control" name="bicycle_kind">
+            {% for value, choice in choices %}
+                <option value="{{ value }}">{{ choice }}</option>
+            {% endfor %}
+            </select>
+        </div>
+    </div>
 
-    <input name="event_id" type="hidden" value="{{ event.id }}"/>
+     <div class="form-group row">
+        <label class="col-xs-3 col-md-2 control-label">
+            {% trans "Terms of use" %}
+        </label>
+        <div class="col-xs-9 col-md-5">
+            <div style="border: 1px solid #e5e5e5; height: 200px;
+            overflow: auto; padding: 10px;">
+                <p>Our terms of use are the following.</p>
+                <li>condition 1</li>
+                <li>condition 2</li>
+                <li>condition 3</li>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-4">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="agree" value="agree" required/>
+                    {% trans "Agree with the terms and conditions" %}
+                </label>
+            </div>
+        </div>
+    </div>
+
     
-    <div class="form-group">
-        <div class="col-xs-3">
+    <div class="form-group row">
+        <div class="col-xs-offset-3 col-xs-9 col-md-offset-2 col-md-3">
             <button type="submit" class="btn btn-lg btn-info btn-block">
                 {% trans "Submit" %}
             </button>
         </div>
     </div>
 </form>
+{% endblock %}
 
+{% block script_block %}
 <script>
+{% get_current_language as LANGUAGE_CODE %}
+$(function () {
+    $('#datepicker').datepicker({
+        language: '{{ LANGUAGE_CODE }}'
+    });
+});
+
 $(document).ready(function() {
     var nameIndex = 0;
     var MAX_OPTIONS = 4;
@@ -135,5 +173,4 @@ $(document).ready(function() {
         });
 });
 </script>
-
 {% endblock %}

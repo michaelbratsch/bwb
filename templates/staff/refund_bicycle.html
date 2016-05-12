@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+{% extends 'staff/base_candidate.html' %}
+
+{% block sub_body_block %}
+{% if candidate.has_bicycle %}
+    <h3>
+        The bicycle {{candidate.bicycle}} will be deleted from the database.
+    </h3>
+    <div style="line-height:80%;"><br></div>
+    <form id="handoverForm" method="POST" class="post-form">
+        {% csrf_token %}
+        <input name="event_id" type="hidden" value="{{ event.id }}"/>
+        <input name="candidate_id" type="hidden" value="{{ candidate.id }}"/>
+        <div class="form-group row">
+            <div class="col-xs-3">
+                <button class="btn btn-info btn-block" type="submit" 
+                value="Submit">
+                    {% load i18n %}{% trans "Refund bicycle" %}
+                </button>
+            </div>
+        </div>
+    </form>
+{% else %}
+    <h3>
+        This person does not have a bicycle to hand back.
+    </h3>
+{% endif %}
+{% endblock %}

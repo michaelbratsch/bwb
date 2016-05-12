@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load extras %}
+
+{% block side_bar_block %}
+<div class="col-sm-3 col-md-2 sidebar">
+    {% block side_block %}
+    {% get_event_list event.id %}
+    {% endblock %}
+</div>
+{% endblock %}

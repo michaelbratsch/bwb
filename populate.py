@@ -1,49 +1,50 @@
 #!/usr/bin/env python
 
+from datetime import timedelta
+from django.utils.dateparse import parse_date
 import os
+import random
+
+from faker import Faker
+
 
 test_email = 'michael.b001@gmx.de'
 
+fake = Faker('de')
+fake.seed(1)
+random.seed(1)
+
+
+def get_random_date():
+    return parse_date('1983-03-31') + timedelta(days=random.randint(-5000,
+                                                                    1000))
+
 
 def populate():
+    for _ in range(100):
+        candidate = add_candidate(first_name=fake.first_name(),
+                                  last_name=fake.last_name(),
+                                  date_of_birth=get_random_date())
 
-    event_1 = add_event(timezone.now()+timedelta(days=7))
-    event_2 = add_event(timezone.now()+timedelta(days=14))
-    event_3 = add_event(timezone.now()+timedelta(days=21))
-
-    registration_1 = add_registration(event_1, test_email)
-    registration_2 = add_registration(event_2, test_email)
-    registration_3 = add_registration(event_3, test_email)
-
-    add_candidate(registration_1, 'Stefan', 'Mueller')
-    add_candidate(registration_1, 'Simone', 'Peterson')
-    add_candidate(registration_1, 'Holger', 'Berens')
-    add_candidate(registration_1, 'Andreas', 'Welters')
-    add_candidate(registration_1, 'Linda', 'Mueller')
-
-    add_candidate(registration_2, 'Rolf', 'Brecht')
-    add_candidate(registration_2, 'Guenter', 'Brecht')
-    add_candidate(registration_2, 'Lothar', 'Brecht')
-    add_candidate(registration_2, 'Lisa', 'Schulz')
-
-    add_candidate(registration_3, 'Holger', 'Adams')
-    add_candidate(registration_3, 'Steve', 'Adams')
-    add_candidate(registration_3, 'Stefan', 'Boehm')
+        add_registration(candidate=candidate,
+                         bicycle_kind=random.randint(1, 3),
+                         email=fake.email())
 
 
-def add_registration(event, email):
-    return Registration.objects.create(event=event, email=email)
+def add_candidate(first_name, last_name, date_of_birth):
+    return Candidate.objects.create(first_name=first_name,
+                                    last_name=last_name,
+                                    date_of_birth=date_of_birth)
 
 
-def add_candidate(registration, first_name, last_name):
-    return Candidate.objects.create(
-        registration=registration,
-        first_name=first_name,
-        last_name=last_name)
+def add_registration(candidate, bicycle_kind, email):
+    return User_Registration.objects.create(candidate=candidate,
+                                            bicycle_kind=bicycle_kind,
+                                            email=email)
 
 
 def add_event(due_date):
-    return Event.objects.create(due_date=due_date)
+    return HandoutEvent.objects.create(due_date=due_date)
 
 
 def add_bicycle():
@@ -58,5 +59,5 @@ if __name__ == '__main__':
     django.setup()
     from django.utils import timezone
     from datetime import timedelta
-    from register.models import Registration, Candidate, Bicycle, Event
+    from register.models import User_Registration, Candidate, Bicycle, HandoutEvent
     populate()

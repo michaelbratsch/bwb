@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_staff.html' %}
+{% extends 'staff/base_event_view.html' %}
 
 {% load staticfiles %}
 
@@ -8,8 +8,10 @@
 <div class="page-header">
     <h2>
         {% load i18n %}{% blocktrans %}
-        Close an event so that people can not register for bicycles anymore.
-        The winners will be determined automatically and immediately receive
+        With this view, people are invited which registered themself with 
+        contact information, do not have a bicycle and are not invited
+        elsewhere.
+        The winners will be selected automatically and receive immediately
         a notification.{% endblocktrans %}
     </h2>
 </div>
@@ -20,14 +22,17 @@
         <div class="col-xs-3" style="height:15px;"></div>
     </div>
 
-    <div class="form-group row">
-        <label class="col-xs-2 control-label">
-            {% trans "Number of winner which will receive a bicycle" %}
-        </label>
-        <div class="col-xs-2"> 
-            <input type="number" min="0" name="number_of_winners" required>
+    {% for id, choice in bike_choices %}
+        <div class="form-group row">
+            <label class="col-xs-2 control-label">
+                {{choice}}
+            </label>
+            <div class="col-xs-2"> 
+                <input class="form-control" type="number" min="0"
+                name="choice_{{id}}" value="0" required>
+            </div>
         </div>
-    </div>
+    {% endfor %}
 
     <input name="event_id" type="hidden" value="{{ event.id }}"/>
 

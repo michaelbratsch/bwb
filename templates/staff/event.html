@@ -1,77 +1,59 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_staff.html' %}
+{% extends 'staff/base_event_view.html' %}
 
 {% load staticfiles %}
 
 {% block body_block %}
-    <div class="page-header">
-        <h2>
-            {% load i18n %}{% trans "The event on " %}{{ event.due_date }}
-            {% if event.is_closed %}
-                {% trans "is already closed" %}
-            {% else %}
-                {% trans "is still open" %}
-            {% endif %}            
-            {% trans " for registration." %}
-        </h2>
-        {% if not event.is_closed %}
-            <h3>
-                {% trans "A maximum of " %}{{ event.max_registrations }}
-                {% trans "participants is allowed."  %}
-            </h3>
-        {% endif %}
-    </div>
-    {% if event.is_closed %}
-        <h3>
-        {% blocktrans %}
-        People that won the registration. If they do not have a bicycle yet,
-        their name will appear as a link.
-        {% endblocktrans %}
-        <br><br>
-        {% for candidate in candidates %}
-            {% if candidate.has_won %}
-                <ul>
-                {% if candidate.has_bicycle %}
-                    {{ candidate.first_name }} {{ candidate.last_name }}
-                {% else %}
-                    <a href="{% url 'staff:handover' candidate_id=candidate.id %}">
-                        {{ candidate.first_name }} {{ candidate.last_name }}
-                    </a>
-                {% endif %}
-                </ul>
-            {% endif %}
-        {% endfor %}
-        </h3>
-
-        <h3>
-        {% trans "People that lost the registration:" %}
-        <br><br>
-        {% for candidate in candidates %}
-            {% if not candidate.has_won %}
-                <ul>
-                {{ candidate.first_name }} {{ candidate.last_name }}
-                </ul>
-            {% endif %}
-        {% endfor %}
-        </h3>
-    {% else %}
-        <div class="form-group row">
-            <div class="col-xs-2">
-                <a href="{% url 'staff:close_event' event_id=event.id %}"
-                class="btn btn-info btn-block" role="button">
-                    {% trans "Close Event" %}
-                </a>
-            </div>
+    {% if total_number_of_candidates == 0 %}
+        <div class="page-header">
+            <h2>
+                {% load i18n %}
+                {% trans "For the event on " %}{{ event.due_date }}
+                {% trans " are currently no people invited." %}
+            </h2>
         </div>
+    {% else %}
+        <div class="page-header">
+            <h2>
+                {% load i18n %}
+                {% trans "For the event on " %}{{ event.due_date }}
+                {% trans " are the following "%}{{ total_number_of_candidates }}
+                {% trans " people invited." %}
+            </h2>
+        </div>
+        
         <h3>
-            {% trans "The following " %} {{ number_of_candidates }}
-            {% trans " people have already registered:" %}<br><br>
+        {% for choice, candidates in candidate_groups %}
+            {{ choice }}:<br><br>
             {% for candidate in candidates %}
-            <ul>
-                {{ candidate.first_name }} {{ candidate.last_name }}
-            </ul>
-            {% endfor %}
-        </h3>
+            <div class="form-group row">
+                <div class="col-xs-6">
+                    <a href="{% url 'staff:candidate' candidate_id=candidate.id %}?event_id={{event.id}}">
+                        {{ candidate.first_name }} {{ candidate.last_name }},  
+                        {{ candidate.date_of_birth|date:"SHORT_DATE_FORMAT" }}
+                    </a>
+                </div>
+            </div>
+            {% endfor %}<br>
+        {% endfor %}
+        </h3><br>
     {% endif %}
+    <div class="form-group row">
+        <div class="col-xs-3">
+            <a href="{% url 'staff:invite' event_id=event.id %}"
+            class="btn btn-info btn-block" role="button">
+                {% trans "Invite additional people" %}
+            </a>
+        </div>
+    </div>
+    <div style="line-height:50%;"><br></div>
+    <div class="form-group row">
+        <div class="col-xs-3">
+            <a href="{% url 'staff:event_overview' %}"
+            class="btn btn-info btn-block" role="button">
+                {% trans "Back" %}
+            </a>
+        </div>
+    </div>
 {% endblock %}
