@@ -2,13 +2,10 @@
 
 from datetime import timedelta
 from django.utils.dateparse import parse_date
-import django
 import os
 import random
 
 from faker import Faker
-
-from register.models import User_Registration, Candidate, Bicycle, HandoutEvent
 
 
 test_email = 'michael.b001@gmx.de'
@@ -58,5 +55,8 @@ def add_bicycle():
 if __name__ == '__main__':
     print("Starting FIRST_APP population script...")
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bwb.settings')
+    import django
     django.setup()
+    from register.models import User_Registration, Candidate, Bicycle
+    from register.models import HandoutEvent
     populate()

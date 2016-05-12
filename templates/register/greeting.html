@@ -16,13 +16,22 @@
             <li>{% trans "With your help we will prepare a bicycle" %}</li>
             <li>...</li>
         </ul>
-        If you register for a bike you will be on a waiting list and receive a
-        note via sms or email two to three days in advance that you can come by
-        and prepare a bicycle for yourself.
+        {% blocktrans %}
+        If you register for a bike, you will be on a waiting list. As soon as
+        we have a bicycle ready for you, you will receive a note via sms or
+        email and you can come by on the next session and prepare a bicycle
+        for yourself with our help.
+        {% endblocktrans %}
         <br>
         <br>
         {% if open_for_registration %}
-            {% trans "Click on the following link to register for a bike:" %}
+            {% blocktrans %}
+            Click on the following link to register for a bike. You can only
+            register one person at a time and also do this for other people as
+            long as they will pick up their bicycle in person. Please use
+            the same name and date of birth as in your official documents.
+            It is not possible to register the same person multiple times.
+            {% endblocktrans %}
             <br><br>
             <div class="form-group row">
                 <div class="col-xs-12 col-md-3">
