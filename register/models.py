@@ -66,11 +66,13 @@ class User_Registration(models.Model):
 
     MALE = 1
     FEMALE = 2
-    CHILD = 3
+    CHILD_SMALL = 3
+    CHILD_BIG = 4
 
     BICYCLE_CHOICES = (
         (MALE, "men's bicycle"), (FEMALE, "ladies' bicycle"),
-        (CHILD, "children's bicycle"))
+        (CHILD_SMALL, "children's bicycle small"),
+        (CHILD_BIG, "children's bicycle big"))
 
     bicycle_kind = models.IntegerField(choices=BICYCLE_CHOICES)
 

@@ -13,20 +13,25 @@
         <ul>
             <li>{% trans "Volunteers welcome" %}</li>
             <li>{% trans "Keep smiling" %}</li>
+            <li>{% trans "With your help we will prepare a bicycle" %}</li>
             <li>...</li>
         </ul>
+        If you register for a bike you will be on a waiting list and receive a
+        note via sms or email two to three days in advance that you can come by
+        and prepare a bicycle for yourself.
         <br>
-        {% trans "Click on the following link to register for a bike:" %}
-        <br><br>
+        <br>
         {% if open_for_registration %}
-        <div class="form-group row">
-            <div class="col-xs-12 col-md-3">
-                <a href="{% url 'register:registration' %}"
-                class="btn btn-info btn-block">
-                    Register now!
-                </a>
+            {% trans "Click on the following link to register for a bike:" %}
+            <br><br>
+            <div class="form-group row">
+                <div class="col-xs-12 col-md-3">
+                    <a href="{% url 'register:registration' %}"
+                    class="btn btn-info btn-lg btn-block">
+                        Register now!
+                    </a>
+                </div>
             </div>
-        </div>
         {% endif %}
     </h3>
 {% endblock %}

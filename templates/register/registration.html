@@ -65,7 +65,7 @@
                 {% trans "Bicycle kind" %}
             </label>
         </div>
-        <div class="col-xs-7 col-md-3">
+        <div class="col-xs-7 col-md-3 selectContainer">
             <select class="form-control" name="bicycle_kind">
             {% for value, choice in choices %}
                 <option value="{{ value }}">{{ choice }}</option>
@@ -79,7 +79,7 @@
             {% trans "Terms of use" %}
         </label>
         <div class="col-xs-9 col-md-5">
-            <div style="border: 1px solid #e5e5e5; height: 200px;
+            <div style="border: 1px solid #e5e4e4; height: 200px;
             overflow: auto; padding: 10px;">
                 <p>Our terms of use are the following.</p>
                 <li>condition 1</li>
