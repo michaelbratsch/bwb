@@ -27,8 +27,8 @@ def send_register_email(recipient, base_url):
 
     message = "\n".join((header, newline, body, link, newline, footer))
 
-    send_mail(subject=ugettext('Bwb - Registration'),
+    send_mail(subject=ugettext('BwB - Registration'),
               message=message,
-              from_email='foobar@gmail.com',
+              from_email='webmaster@bikeswithoutborders.de',
               recipient_list=[recipient['email']],
               fail_silently=False)
