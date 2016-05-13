@@ -6,7 +6,11 @@
 <form id="handoverForm" method="POST" class="post-form">
     {% csrf_token %}
     <h3>{% load i18n %}
-        {% trans "Handout of a bicycle" %}
+        {% blocktrans %}
+        Before handing out a bicycle, it is important to check that name
+        and birthdate of the registration are matching an official document,
+        to make sure the person did not receive a bicycle before.
+        {% endblocktrans %}
     </h3>
     <div class="form-group row">
         <div class="col-xs-3" style="height:15px;"></div>

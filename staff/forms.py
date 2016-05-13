@@ -56,3 +56,4 @@ class InviteForm(forms.Form):
     choice_1 = forms.IntegerField(min_value=0)
     choice_2 = forms.IntegerField(min_value=0)
     choice_3 = forms.IntegerField(min_value=0)
+    choice_4 = forms.IntegerField(min_value=0)

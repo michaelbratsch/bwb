@@ -5,8 +5,13 @@
 {% block sub_body_block %}
 <h3>
 {% load i18n %}
+{% blocktrans %}
+After submitting an invitation, the person receives immedidately an
+email or sms if contact information is present in the database.
+{% endblocktrans %}
+<br><br>
 {% if candidate.invitations.all %}
-    {% trans "This person has as already been invited to the following events:" %}
+    {% trans "This person has already been invited to the following events:" %}
     <div style="line-height:30%;"><br></div>
     {% for invitation in candidate.invitations.all %}
         <ul>
@@ -19,7 +24,7 @@
 {% endif %}
 <div style="line-height:90%;"><br></div>
 {% if candidate.events_not_invited_to and not candidate.has_bicycle %}
-    {% trans "You can invite him to one of the following events:" %}
+    {% trans "You can invite this person to one of the following events:" %}
     <div style="line-height:40%;"><br></div>
     <form id="InviteForm" method="POST" class="post-form">
         {% csrf_token %}

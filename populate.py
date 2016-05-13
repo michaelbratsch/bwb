@@ -27,7 +27,7 @@ def populate():
                                   date_of_birth=get_random_date())
 
         add_registration(candidate=candidate,
-                         bicycle_kind=random.randint(1, 3),
+                         bicycle_kind=random.randint(1, 4),
                          email=fake.email())
 
 
@@ -53,11 +53,10 @@ def add_bicycle():
 
 # Start execution here!
 if __name__ == '__main__':
-    print "Starting FIRST_APP population script..."
+    print("Starting FIRST_APP population script...")
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bwb.settings')
     import django
     django.setup()
-    from django.utils import timezone
-    from datetime import timedelta
-    from register.models import User_Registration, Candidate, Bicycle, HandoutEvent
+    from register.models import User_Registration, Candidate, Bicycle
+    from register.models import HandoutEvent
     populate()
