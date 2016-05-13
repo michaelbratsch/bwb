@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import linebreaks
 from django.utils import timezone
 import hashlib
 import os
@@ -19,6 +20,10 @@ def datetime_min():
 
 class HandoutEvent(models.Model):
     due_date = models.DateTimeField()
+
+    @property
+    def url_parameter(self):
+        return '?event_id=%s' % self.id
 
     def __str__(self):
         return str(self.due_date)
@@ -130,6 +135,18 @@ class Bicycle(models.Model):
     color = models.CharField(max_length=200)
     brand = models.CharField(max_length=200)
     general_remarks = models.TextField(default='')
+
+    @property
+    def url_parameter(self):
+        return '?bicycle_id=%s' % self.id
+
+    @property
+    def information(self):
+        l1 = "bicycle number: %s, color: %s, brand: %s" % (
+            self.bicycle_number, self.color, self.brand)
+        l2 = "lock combination: %s, general remarks: %s" % (
+            self.lock_combination, self.general_remarks)
+        return '%s\n%s' % (l1, l2)
 
     def __str__(self):
         return "number: %s color: %s  brand: %s" % \

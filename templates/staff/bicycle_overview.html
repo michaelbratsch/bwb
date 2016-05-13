@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+{% extends 'staff/base_bicycle_view.html' %}
+
+
+{% block body_block %}
+<div class="page-header">
+    <h2>
+        {% load i18n %}
+        {% blocktrans %}
+        Overview of all bicycles that have been handed out so far.
+        {% endblocktrans %}
+    </h2>
+</div>
+<h3>
+    {% trans "Handed out bicycles can be selected on the left." %}
+</h3>
+{% endblock %}

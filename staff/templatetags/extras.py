@@ -1,5 +1,5 @@
 from django import template
-from register.models import HandoutEvent, Candidate
+from register.models import HandoutEvent, Candidate, Bicycle
 
 register = template.Library()
 
@@ -18,3 +18,11 @@ def get_candidate_list(candidate_id):
     candidates.sort(key=lambda c: c.last_name)
     return {'candidates': candidates,
             'candidate_id': candidate_id}
+
+
+@register.inclusion_tag('staff/bicycle_sidebar.html')
+def get_bicycle_list(bicycle_id):
+    bicycles = list(Bicycle.objects.all())
+    bicycles.sort(key=lambda b: b.bicycle_number)
+    return {'bicycles': bicycles,
+            'bicycle_id': bicycle_id}
