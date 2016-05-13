@@ -26,12 +26,12 @@
         </div>
         <div class="col-xs-12" style="height:15px;"></div>
         <div class="col-xs-offset-3 col-xs-7 col-md-offset-2 col-md-4">
-            <div class='input-group date' id='datepicker'>
-                <input type='text' name="date_of_birth" class="form-control"
-                placeholder='date of birth' required/>
-                <span class="input-group-addon">
+            <div class="input-group">
+                <input type='text' id='datepicker' name="date_of_birth"
+                class="form-control" placeholder='date of birth' required/>
+                <label for='datepicker' class="input-group-addon btn">
                     <span class="glyphicon glyphicon-calendar"></span>
-                </span>
+                </label>
             </div>
         </div>
         <div class="col-xs-12" style="height:10px;"></div>
@@ -113,11 +113,8 @@
 
 {% block script_block %}
 <script>
-{% get_current_language as LANGUAGE_CODE %}
 $(function () {
-    $('#datepicker').datepicker({
-        language: '{{ LANGUAGE_CODE }}'
-    });
+    $('#datepicker').datepicker();
 });
 
 $(document).ready(function() {

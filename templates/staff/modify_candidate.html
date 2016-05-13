@@ -35,13 +35,14 @@ the database. This information should match with an official document.
             {% trans "Date of birth" %}
         </label>
         <div class="col-xs-4">
-            <div class='input-group date' id='datepicker'>
-                <input type='text' name="date_of_birth" class="form-control"
+            <div class="input-group">
+                <input type='text' id='datepicker' name="date_of_birth"
+                class="form-control"
                 value="{{ candidate.date_of_birth|date:'SHORT_DATE_FORMAT' }}"
                 required/>
-                <span class="input-group-addon">
+                <label for='datepicker' class="input-group-addon btn">
                     <span class="glyphicon glyphicon-calendar"></span>
-                </span>
+                </label>
             </div>
         </div>
     </div>
@@ -62,12 +63,9 @@ the database. This information should match with an official document.
 {% endblock %}
 
 {% block script_block %}
-{% get_current_language as LANGUAGE_CODE %}
 <script>
     $(function () {
-        $('#datepicker').datepicker({
-            language: '{{ LANGUAGE_CODE }}'
-        });
+        $('#datepicker').datepicker();
     });
 </script>
 {% endblock %}
