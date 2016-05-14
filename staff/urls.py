@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
-from staff.views import BicycleOverviewView, BicycleView
+from staff.views import BicycleOverviewView
 from staff.views import CandidateView, EventView, ManageView, EventOverviewView
 from staff.views import CreateCandidateView
 from staff.views import CreateEventView, AutoInviteView, ModifyCandidateView
@@ -17,6 +17,12 @@ urlpatterns = [
     url(regex=r'^$',
         view=login_required(ManageView.as_view()),
         name='index'),
+
+    # URLs related to bicycles
+    url(regex=r'^bicycle_overview/$',
+        view=login_required(BicycleOverviewView.as_view()),
+        name='bicycle_overview'),
+
     # URLs related to events
     url(regex=r'^event_overview/$',
         view=login_required(EventOverviewView.as_view()),
@@ -30,14 +36,6 @@ urlpatterns = [
     url(regex=r'^create_event/$',
         view=login_required(CreateEventView.as_view()),
         name='create_event'),
-
-    # URLs related to bicycles
-    url(regex=r'^bicycle_overview/$',
-        view=login_required(BicycleOverviewView.as_view()),
-        name='bicycle_overview'),
-    url(regex=bicycle_pattern % 'bicycle',
-        view=login_required(BicycleView.as_view()),
-        name='bicycle'),
 
     # URLs related to candidates
     url(regex=r'^candidate_overview/$',

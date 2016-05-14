@@ -20,18 +20,6 @@ class BicycleOverviewView(TemplateView):
     template_name = 'staff/bicycle_overview.html'
 
 
-class BicycleView(View):
-    template_name = 'staff/candidate.html'
-
-    def get(self, request, bicycle_id, *args, **kwargs):
-        bicycle = get_object_or_404(Bicycle, id=bicycle_id)
-
-        context_dict = {'bicycle': bicycle,
-                        'candidate': bicycle.candidate,
-                        'base_template_name': 'staff/base_bicycle_view.html'}
-        return render(request, self.template_name, context_dict)
-
-
 class EventOverviewView(TemplateView):
     template_name = 'staff/event_overview.html'
 
