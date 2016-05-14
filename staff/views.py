@@ -167,7 +167,7 @@ class CreateCandidateView(FormView):
                      'last_name': form.cleaned_data['last_name'],
                      'date_of_birth': form.cleaned_data['date_of_birth']}
 
-        if Candidate.objects.filter(**form_data):
+        if Candidate.get_matching(**form_data):
             raise Http404("This candidate already exists")
 
         Candidate.objects.create(**form_data)
@@ -186,7 +186,7 @@ class ModifyCandidateView(CandidateMixin, FormView):
                      'last_name': form.cleaned_data['last_name'],
                      'date_of_birth': form.cleaned_data['date_of_birth']}
 
-        if Candidate.objects.exclude(id=candidate_id).filter(**form_data):
+        if Candidate.get_matching(**form_data).exclude(id=candidate_id):
             raise Http404("This candidate already exists")
 
         Candidate.objects.filter(id=candidate_id).update(**form_data)

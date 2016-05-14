@@ -1,6 +1,6 @@
 from django.db import models
-from django.template.defaultfilters import linebreaks
 from django.utils import timezone
+from enum import Enum, unique
 import hashlib
 import os
 
@@ -29,6 +29,16 @@ class HandoutEvent(models.Model):
         return str(self.due_date)
 
 
+@unique
+class CandidateStatus(Enum):
+    waiting = 1
+    invited = 2
+    received_bicycle = 3
+
+    def __str__(self):
+        return self.name.replace('_', ' ')
+
+
 class Candidate(models.Model):
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
@@ -43,10 +53,18 @@ class Candidate(models.Model):
             return False
 
     @property
+    def current_status(self):
+        if self.has_bicycle:
+            return CandidateStatus.received_bicycle
+        elif self.invitations.exists():
+            return CandidateStatus.invited
+        else:
+            return CandidateStatus.waiting
+
+    @property
     def events_not_invited_to(self):
         event_ids_invited_to = self.invitations.all().values_list(
-            'handout_event_id',
-            flat=True)
+            'handout_event_id', flat=True)
         return HandoutEvent.objects.exclude(id__in=event_ids_invited_to)
 
     @classmethod
@@ -59,6 +77,13 @@ class Candidate(models.Model):
         registered = without_bicycles.filter(user_registration__isnull=False)
         return filter(lambda c: c.user_registration.bicycle_kind == kind,
                       registered)
+
+    @classmethod
+    def get_matching(cls, first_name, last_name, date_of_birth):
+        # case insensitive search for existing candidate
+        return cls.objects.filter(date_of_birth=date_of_birth,
+                                  first_name__iexact=first_name,
+                                  last_name__iexact=last_name)
 
     def __str__(self):
         return " ".join((self.first_name, self.last_name,
