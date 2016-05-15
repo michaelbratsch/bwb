@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from enum import Enum, unique
 import hashlib
 import os
 
@@ -29,16 +28,6 @@ class HandoutEvent(models.Model):
         return str(self.due_date)
 
 
-@unique
-class CandidateStatus(Enum):
-    waiting = 1
-    invited = 2
-    received_bicycle = 3
-
-    def __str__(self):
-        return self.name.replace('_', ' ')
-
-
 class Candidate(models.Model):
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
@@ -52,14 +41,29 @@ class Candidate(models.Model):
         except Bicycle.DoesNotExist:
             return False
 
-    @property
-    def current_status(self):
-        if self.has_bicycle:
-            return CandidateStatus.received_bicycle
-        elif self.invitations.exists():
-            return CandidateStatus.invited
-        else:
-            return CandidateStatus.waiting
+    @classmethod
+    def get_status_and_candidates(cls):
+        candidates_with_bicycles = set(Bicycle.objects.values_list(
+            'candidate_id', flat=True))
+
+        candidates_invited = set(Invitation.objects.values_list(
+            'candidate_id', flat=True))
+        candidates_invited -= candidates_with_bicycles
+
+        candidates_waiting = set(
+            Candidate.objects.values_list('id', flat=True))
+        candidates_waiting -= candidates_with_bicycles | candidates_invited
+
+        assert cls.objects.count() == (
+            len(candidates_invited) + len(candidates_waiting) +
+            len(candidates_with_bicycles))
+
+        def get_objects(id_list):
+            return cls.objects.in_bulk(id_list).values()
+
+        return [('waiting', get_objects(candidates_waiting)),
+                ('invited', get_objects(candidates_invited)),
+                ('bicycle received', get_objects(candidates_with_bicycles))]
 
     @property
     def events_not_invited_to(self):

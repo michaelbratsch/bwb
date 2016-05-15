@@ -19,12 +19,12 @@ urlpatterns = [
         name='index'),
 
     # URLs related to bicycles
-    url(regex=r'^bicycle_overview/$',
+    url(regex=r'^bicycle_overview.html$',
         view=login_required(BicycleOverviewView.as_view()),
         name='bicycle_overview'),
 
     # URLs related to events
-    url(regex=r'^event_overview/$',
+    url(regex=r'^event_overview.html$',
         view=login_required(EventOverviewView.as_view()),
         name='event_overview'),
     url(regex=event_pattern % 'event',
@@ -38,7 +38,7 @@ urlpatterns = [
         name='create_event'),
 
     # URLs related to candidates
-    url(regex=r'^candidate_overview/$',
+    url(regex=r'^candidate_overview.html$',
         view=login_required(CandidateOverviewView.as_view()),
         name='candidate_overview'),
     url(regex=candidate_pattern % 'candidate',
