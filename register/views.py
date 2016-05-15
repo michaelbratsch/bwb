@@ -37,10 +37,16 @@ class RegistrationView(FormView):
             raise Http404(
                 "Currently it is not possible to register for a bicycle.")
 
-        candidate = Candidate.objects.create(
-            first_name=form.cleaned_data['first_name'],
-            last_name=form.cleaned_data['last_name'],
-            date_of_birth=form.cleaned_data['date_of_birth'])
+        form_data = {
+            'first_name': form.cleaned_data['first_name'],
+            'last_name': form.cleaned_data['last_name'],
+            'date_of_birth': form.cleaned_data['date_of_birth']}
+
+        if Candidate.get_matching(**form_data):
+            return HttpResponseRedirect(
+                reverse_lazy('register:registration_error'))
+
+        candidate = Candidate.objects.create(**form_data)
 
         email = form.cleaned_data['email']
         bicycle_kind = form.cleaned_data['bicycle_kind']
@@ -62,10 +68,6 @@ class RegistrationView(FormView):
                             base_url=base_url)
 
         return super(RegistrationView, self).form_valid(form)
-
-    def form_invalid(self, form):
-        return HttpResponseRedirect(
-            reverse_lazy('register:registration_error'))
 
     def get(self, request, *args, **kwargs):
         if not open_for_registration():
