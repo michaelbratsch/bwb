@@ -10,16 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-import os
-
 from django.utils.translation import ugettext_lazy
-
-# SECURITY WARNING: keep the secret key used in production secret!
-from .secret_key import SECRET_KEY
+import os
 
 # Email section
 from .email_settings import EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER
 from .email_settings import EMAIL_PORT, EMAIL_USE_TLS
+# SECURITY WARNING: keep the secret key used in production secret!
+from .secret_key import SECRET_KEY
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -117,8 +115,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 LANGUAGES = [
-  ('de', ugettext_lazy('German')),
-  ('en', ugettext_lazy('English')),
+    ('de', ugettext_lazy('German')),
+    ('en', ugettext_lazy('English')),
 ]
 
 LANGUAGE_CODE = 'en'
@@ -137,4 +135,4 @@ LOGIN_REDIRECT_URL = '/staff'
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"), )

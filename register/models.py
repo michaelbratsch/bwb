@@ -3,6 +3,8 @@ from django.utils import timezone
 import hashlib
 import os
 
+from register.email import get_url_parameter
+
 
 max_name_length = 100
 identifier_length = 20
@@ -22,7 +24,7 @@ class HandoutEvent(models.Model):
 
     @property
     def url_parameter(self):
-        return '?event_id=%s' % self.id
+        return get_url_parameter('event_id', self.id)
 
     def __str__(self):
         return str(self.due_date)
@@ -36,6 +38,7 @@ class Candidate(models.Model):
 
     @property
     def has_bicycle(self):
+        """Does this Candidate have a bicycle."""
         try:
             return self.bicycle is not None
         except Bicycle.DoesNotExist:
@@ -43,6 +46,8 @@ class Candidate(models.Model):
 
     @classmethod
     def get_status_and_candidates(cls):
+        """Returns a list of tuples which categorize all Candidates into
+        the groups waiting, invited and bicycle received."""
         candidates_with_bicycles = set(Bicycle.objects.values_list(
             'candidate_id', flat=True))
 
@@ -67,16 +72,20 @@ class Candidate(models.Model):
 
     @property
     def events_not_invited_to(self):
+        """Return all events this person is NOT invited to."""
         event_ids_invited_to = self.invitations.all().values_list(
             'handout_event_id', flat=True)
         return HandoutEvent.objects.exclude(id__in=event_ids_invited_to)
 
     @classmethod
     def total_in_line(cls):
+        """Number of all Candidates that do not have a bicycle."""
         return cls.objects.filter(bicycle__isnull=True).count()
 
     @classmethod
-    def waiting_for_bicycle(cls, kind):
+    def registered_and_without_bicycle(cls, kind):
+        """Return all Candidates that do not have a bicycle and are registered
+        for this kind of bicycle."""
         without_bicycles = cls.objects.filter(bicycle__isnull=True)
         registered = without_bicycles.filter(user_registration__isnull=False)
         return filter(lambda c: c.user_registration.bicycle_kind == kind,
@@ -84,14 +93,15 @@ class Candidate(models.Model):
 
     @classmethod
     def get_matching(cls, first_name, last_name, date_of_birth):
-        # case insensitive search for existing candidate
+        """Return all Candidates with the same name and date of birth.
+        The matching of the name is case-insensitive."""
         return cls.objects.filter(date_of_birth=date_of_birth,
                                   first_name__iexact=first_name,
                                   last_name__iexact=last_name)
 
     def __str__(self):
-        return " ".join((self.first_name, self.last_name,
-                         str(self.date_of_birth)))
+        return " ".join(map(str, (self.first_name, self.last_name,
+                                  self.date_of_birth)))
 
 
 class User_Registration(models.Model):
@@ -121,6 +131,8 @@ class User_Registration(models.Model):
     time_of_registration = models.DateTimeField(default=timezone.now)
 
     def number_in_line(self):
+        """Current number of people in line waiting for this kind of
+        bicycle."""
         cls = self.__class__
         i = 0
         for registration in cls.objects.filter(bicycle_kind=self.bicycle_kind):
@@ -128,9 +140,10 @@ class User_Registration(models.Model):
                 i += 1
             if self.candidate == registration.candidate:
                 return i
-        assert False, "Could not find object"
+        assert False, "Could not find object in database."
 
     def validate_email(self):
+        """Flag email address for validated and store current time."""
         if not self.email_validated:
             self.email_validated = True
             self.time_of_email_validation = timezone.now()
@@ -167,16 +180,15 @@ class Bicycle(models.Model):
 
     @property
     def url_parameter(self):
-        return '?bicycle_id=%s' % self.id
+        return get_url_parameter('bicycle_id', self.id)
+
+    def __str__(self):
+        return "bicycle number: %s, color: %s, brand: %s" % (
+            self.bicycle_number, self.color, self.brand)
 
     @property
     def information(self):
-        l1 = "bicycle number: %s, color: %s, brand: %s" % (
-            self.bicycle_number, self.color, self.brand)
-        l2 = "lock combination: %s, general remarks: %s" % (
+        """Return the information stored for this bicycle."""
+        add_info = "lock combination: %s, general remarks: %s" % (
             self.lock_combination, self.general_remarks)
-        return '%s\n%s' % (l1, l2)
-
-    def __str__(self):
-        return "number: %s color: %s  brand: %s" % \
-            (self.bicycle_number, self.color, self.brand)
+        return '%s\n%s' % (self, add_info)

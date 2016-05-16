@@ -5,12 +5,13 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, TemplateView
 from django.views.generic.edit import FormView
 
-from register.email import send_register_email
+from register.email import send_message_after_registration
 from register.forms import RegistrationForm
 from register.models import User_Registration, Candidate
 
 
 def open_for_registration():
+    # ToDo: move to general settings
     max_number_of_registrations = 200
     return Candidate.total_in_line() < max_number_of_registrations
 
@@ -56,16 +57,8 @@ class RegistrationView(FormView):
             bicycle_kind=bicycle_kind,
             email=email)
 
-        name = "%s %s" % (candidate.first_name, candidate.last_name)
-
-        recipient = {'email': registration.email,
-                     'name': name,
-                     'identifier': registration.identifier}
-
-        base_url = '{scheme}://{host}'.format(scheme=self.request.scheme,
-                                              host=self.request.get_host())
-        send_register_email(recipient=recipient,
-                            base_url=base_url)
+        send_message_after_registration(registration=registration,
+                                        request=self.request)
 
         return super(RegistrationView, self).form_valid(form)
 
