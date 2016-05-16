@@ -13,6 +13,8 @@
 
         <link href="https://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://getbootstrap.com/examples/dashboard/dashboard.css" rel="stylesheet">
+
+        {% block head_block %}{% endblock %}
     </head>
 
     <body>
@@ -61,7 +63,7 @@
                             </a></li>
                             <li><a href="{% url 'staff:bicycle_overview' %}">
                                 {% trans "Bicycle View" %}
-                                                        <li><a href="{% url 'staff:candidate_table' %}">
+                            <li><a href="{% url 'staff:candidate_table' %}">
                                 {% trans "Candidate Table" %}
                             </a></li>
                             </a></li>
