@@ -246,3 +246,13 @@ class InviteCandidateView(CandidateMixin, FormView):
         self.set_success_url(form)
 
         return super(InviteCandidateView, self).form_valid(form)
+
+class CandidateTableView(View):
+    template_name = 'staff/candidate_table.html'
+
+    def get(self, request, *args, **kwargs):
+#        queryset = Candidate.objects.all()
+#        table = SimpleTable(queryset)
+        table = Candidate.objects.all()
+        context_dict = {'candidates': table}
+        return render(request, self.template_name, context_dict)
