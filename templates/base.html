@@ -13,6 +13,7 @@
 
         <title>{% load i18n %}{% trans "Bikes without Borders" %}</title>
 
+        <!-- ToDo: use custom stylesheet -->
         <link href="https://getbootstrap.com/dist/css/bootstrap.min.css"
         rel="stylesheet">
         <link href="https://getbootstrap.com/examples/dashboard/dashboard.css"
@@ -56,6 +57,15 @@
                                 </select>
                             </div>
                         </form>
+                        <li class="active">
+                            <a href="">1 How?</a>
+                        </li>
+                        <li>
+                            <a href="">2 Register</a>
+                        </li>
+                        <li>
+                            <a href="">3 Finish</a>
+                        </li>
                         {% if user.is_authenticated %}
                             <li><a href="{% url 'staff:event_overview' %}">
                                 {% trans "Event View" %}

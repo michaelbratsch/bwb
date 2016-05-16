@@ -2,8 +2,8 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 
 from hypothesis import given, settings, HealthCheck
-from hypothesis.strategies import text, lists, random_module
 from hypothesis.extra.django import TestCase as HypothesisTestCase
+from hypothesis.strategies import text, lists, random_module
 
 from register.models import Candidate, User_Registration
 from tests.test_models import name_strategy, email_strategy, \
@@ -11,7 +11,7 @@ from tests.test_models import name_strategy, email_strategy, \
 
 
 class ContactViewTestCase(HypothesisTestCase):
-    url = reverse('register:index')
+    url = reverse('register:greeting')
 
     def test_get(self):
         response = self.client.get(self.url)

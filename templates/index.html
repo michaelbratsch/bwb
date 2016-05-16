@@ -6,29 +6,38 @@
 
 {% block body_block %}
     <div class="page-header">
-        <h1>{% load i18n %}{% trans "Welcome to bikes without borders!" %}</h1>
+        <h1>{% load i18n %}
+            <strong>{% trans "Welcome" %}</strong>,
+            {% blocktrans %}
+            you want to register for a „Bike without Borders“ Bike?
+            {% endblocktrans %}
+        </h1>
     </div>
     <h2>
     {% get_current_language as LANGUAGE_CODE %}
     {% get_available_languages as LANGUAGES %}
     {% get_language_info_list for LANGUAGES as languages %}
-    
-    {% trans "First choose a language!" %}<br><br>
+    {% trans "Please choose your language first!" %}<br><br>
+
     {% for language in languages %}
-        <div class="form-group row">
-            <div class="col-xs-12 col-md-4">
-                <form action="{% url 'index' %}" method="post"
-                class="post-form">
-                    {% csrf_token %}            
-                    <input name="language" type="hidden"
-                    value="{{ language.code }}"/>
-                    <button class="btn btn-info btn-lg btn-block" type="submit"
-                    value="Submit">
+    {% cycle '<div class="form-group row">' '' %}
+        <div class="col-xs-3 col-md-4">
+            <form action="{% url 'index' %}" method="post"
+            class="post-form">
+                {% csrf_token %}
+                <input name="language" type="hidden"
+                value="{{ language.code }}"/>
+
+                <button class="btn btn-info btn-lg btn-block"
+                type="submit" value="Submit">
+                    {{language.name}}
+                    {% ifnotequal language.name "English" %}
                         {{ language.name_local }}
-                    </button>
-                </form>
-            </div>
-        </div><br>
+                    {% endifnotequal %}
+                </button>
+            </form>
+        </div>
+    {% cycle '' '</div>' %}
     {% endfor %}
     </h2>
 {% endblock %}

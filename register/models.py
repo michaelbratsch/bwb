@@ -108,6 +108,9 @@ class User_Registration(models.Model):
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
                                      related_name='user_registration')
 
+    # ToDo: remember language of registration to send invitation email
+    # in right language
+
     MALE = 1
     FEMALE = 2
     CHILD_SMALL = 3
