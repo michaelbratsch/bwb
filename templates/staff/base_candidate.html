@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-{% extends event|yesno:'staff/base_event_view.html,staff/base_candidate_view.html' %}
+{% extends base_template_name %}
 
 {% block body_block %}
 <div class="page-header">
@@ -16,7 +16,7 @@
     {% block back_button %}
     <div class="form-group row">
         <div class="col-xs-3">
-            <a href="{% url 'staff:candidate' candidate_id=candidate.id%}{{event_string}}"
+            <a href="{% url 'staff:candidate' candidate_id=candidate.id%}{{event.url_parameter}}{{bicycle.url_parameter}}"
             class="btn btn-info btn-block" role="button">
                 {% trans "Back" %}
             </a>

@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 
-{% if candidates %}
+{% if status_and_candidates %}
     <ul class="nav nav-sidebar">
-        {% for candidate in candidates %}
-            {% if candidate.id == candidate_id %} 
-                <li class="active">
-            {% else %}
-                <li>
-            {% endif %}
-            <a href="{% url 'staff:candidate' candidate_id=candidate.id%}">
-                {{ candidate.first_name }} {{ candidate.last_name }}</a>
-            </li>
+        {% for status, candidates in status_and_candidates %}
+            <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;{{ status|upper }}:</strong></p>
+            {% for candidate in candidates %}
+                {% if candidate.id == candidate_id %}
+                    <li class="active">
+                {% else %}
+                    <li>
+                {% endif %}
+                <a href="{% url 'staff:candidate' candidate_id=candidate.id%}">
+                    {{ candidate.first_name }} {{ candidate.last_name }}
+                </a>
+                </li>
+            {% endfor %}
+            <br>
         {% endfor %}
     </ul>
 {% else %}

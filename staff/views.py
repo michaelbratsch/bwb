@@ -16,6 +16,10 @@ class ManageView(TemplateView):
     template_name = 'staff/index.html'
 
 
+class BicycleOverviewView(TemplateView):
+    template_name = 'staff/bicycle_overview.html'
+
+
 class EventOverviewView(TemplateView):
     template_name = 'staff/event_overview.html'
 
@@ -112,13 +116,19 @@ class CandidateMixin(object):
 
     def get(self, request, candidate_id, *args, **kwargs):
         candidate = get_object_or_404(Candidate, id=candidate_id)
-        context_dict = {'candidate': candidate}
+        context_dict = {'candidate': candidate,
+                        'base_template_name': 'staff/base_candidate_view.html'}
 
         event_id = request.GET.get('event_id')
+        bicycle_id = request.GET.get('bicycle_id')
         if event_id is not None:
             event = get_object_or_404(HandoutEvent, id=event_id)
             context_dict['event'] = event
-            context_dict['event_string'] = '?event_id=%s' % event.id
+            context_dict['base_template_name'] = 'staff/base_event_view.html'
+        elif bicycle_id is not None:
+            bicycle = get_object_or_404(Bicycle, id=bicycle_id)
+            context_dict['bicycle'] = bicycle
+            context_dict['base_template_name'] = 'staff/base_bicycle_view.html'
 
         return render(request, self.template_name, context_dict)
 
@@ -130,10 +140,17 @@ class CandidateMixin(object):
                                         kwargs={'candidate_id': candidate_id})
 
         event_id = form.cleaned_data['event_id']
+        bicycle_id = form.cleaned_data['bicycle_id']
         if event_id:
-            if not HandoutEvent.objects.filter(id=event_id):
-                raise Http404("Event id not found.")
-            self.success_url += '?event_id=%s' % event_id
+            event = get_object_or_404(HandoutEvent, id=event_id)
+            self.success_url += event.url_parameter
+        elif bicycle_id:
+            try:
+                bicycle = Bicycle.objects.get(id=bicycle_id)
+                self.success_url += bicycle.url_parameter
+            except Bicycle.DoesNotExist:
+                # the bicycle has been handed back
+                self.success_url = reverse_lazy('staff:bicycle_overview')
 
 
 class CandidateView(CandidateMixin, View):
@@ -150,7 +167,7 @@ class CreateCandidateView(FormView):
                      'last_name': form.cleaned_data['last_name'],
                      'date_of_birth': form.cleaned_data['date_of_birth']}
 
-        if Candidate.objects.filter(**form_data):
+        if Candidate.get_matching(**form_data):
             raise Http404("This candidate already exists")
 
         Candidate.objects.create(**form_data)
@@ -169,7 +186,7 @@ class ModifyCandidateView(CandidateMixin, FormView):
                      'last_name': form.cleaned_data['last_name'],
                      'date_of_birth': form.cleaned_data['date_of_birth']}
 
-        if Candidate.objects.exclude(id=candidate_id).filter(**form_data):
+        if Candidate.get_matching(**form_data).exclude(id=candidate_id):
             raise Http404("This candidate already exists")
 
         Candidate.objects.filter(id=candidate_id).update(**form_data)

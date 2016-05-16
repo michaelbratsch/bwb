@@ -18,27 +18,30 @@ class CreateCandidateForm(forms.ModelForm):
 
 class ModifyCandidateForm(forms.ModelForm):
     event_id = forms.IntegerField(min_value=0, required=False)
+    bicycle_id = forms.IntegerField(min_value=0, required=False)
     candidate_id = forms.IntegerField(min_value=0)
 
     class Meta:
         model = Candidate
         fields = ['first_name', 'last_name', 'date_of_birth',
-                  'event_id', 'candidate_id']
+                  'event_id', 'bicycle_id', 'candidate_id']
 
 
 class RefundForm(forms.Form):
     event_id = forms.IntegerField(min_value=0, required=False)
+    bicycle_id = forms.IntegerField(min_value=0, required=False)
     candidate_id = forms.IntegerField(min_value=0)
 
 
 class HandoverForm(forms.ModelForm):
     event_id = forms.IntegerField(min_value=0, required=False)
+    bicycle_id = forms.IntegerField(min_value=0, required=False)
     candidate_id = forms.IntegerField(min_value=0)
 
     class Meta:
         model = Bicycle
         fields = ['bicycle_number', 'general_remarks', 'lock_combination',
-                  'event_id', 'candidate_id', 'color', 'brand']
+                  'event_id', 'bicycle_id', 'candidate_id', 'color', 'brand']
 
     def __init__(self, *args, **kwargs):
         super(HandoverForm, self).__init__(*args, **kwargs)

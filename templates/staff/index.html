@@ -38,5 +38,11 @@
     have an email address or a telefon number. Furthermore, you can take back 
     bicycles from people that have registered long time ago.
     {% endblocktrans %}
+    <div style="line-height:90%;"><br></div>
+    The
+    <a href="{% url 'staff:bicycle_overview' %}">
+    {% trans "Bicycle View" %}</a>
+    {% blocktrans %} shows all bicycles that have been handed out so far.
+    {% endblocktrans %}
 </h3>
 {% endblock %}

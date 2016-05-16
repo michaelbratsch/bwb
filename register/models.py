@@ -20,6 +20,10 @@ def datetime_min():
 class HandoutEvent(models.Model):
     due_date = models.DateTimeField()
 
+    @property
+    def url_parameter(self):
+        return '?event_id=%s' % self.id
+
     def __str__(self):
         return str(self.due_date)
 
@@ -37,11 +41,34 @@ class Candidate(models.Model):
         except Bicycle.DoesNotExist:
             return False
 
+    @classmethod
+    def get_status_and_candidates(cls):
+        candidates_with_bicycles = set(Bicycle.objects.values_list(
+            'candidate_id', flat=True))
+
+        candidates_invited = set(Invitation.objects.values_list(
+            'candidate_id', flat=True))
+        candidates_invited -= candidates_with_bicycles
+
+        candidates_waiting = set(
+            Candidate.objects.values_list('id', flat=True))
+        candidates_waiting -= candidates_with_bicycles | candidates_invited
+
+        assert cls.objects.count() == (
+            len(candidates_invited) + len(candidates_waiting) +
+            len(candidates_with_bicycles))
+
+        def get_objects(id_list):
+            return cls.objects.in_bulk(id_list).values()
+
+        return [('waiting', get_objects(candidates_waiting)),
+                ('invited', get_objects(candidates_invited)),
+                ('bicycle received', get_objects(candidates_with_bicycles))]
+
     @property
     def events_not_invited_to(self):
         event_ids_invited_to = self.invitations.all().values_list(
-            'handout_event_id',
-            flat=True)
+            'handout_event_id', flat=True)
         return HandoutEvent.objects.exclude(id__in=event_ids_invited_to)
 
     @classmethod
@@ -54,6 +81,13 @@ class Candidate(models.Model):
         registered = without_bicycles.filter(user_registration__isnull=False)
         return filter(lambda c: c.user_registration.bicycle_kind == kind,
                       registered)
+
+    @classmethod
+    def get_matching(cls, first_name, last_name, date_of_birth):
+        # case insensitive search for existing candidate
+        return cls.objects.filter(date_of_birth=date_of_birth,
+                                  first_name__iexact=first_name,
+                                  last_name__iexact=last_name)
 
     def __str__(self):
         return " ".join((self.first_name, self.last_name,
@@ -130,6 +164,18 @@ class Bicycle(models.Model):
     color = models.CharField(max_length=200)
     brand = models.CharField(max_length=200)
     general_remarks = models.TextField(default='')
+
+    @property
+    def url_parameter(self):
+        return '?bicycle_id=%s' % self.id
+
+    @property
+    def information(self):
+        l1 = "bicycle number: %s, color: %s, brand: %s" % (
+            self.bicycle_number, self.color, self.brand)
+        l2 = "lock combination: %s, general remarks: %s" % (
+            self.lock_combination, self.general_remarks)
+        return '%s\n%s' % (l1, l2)
 
     def __str__(self):
         return "number: %s color: %s  brand: %s" % \

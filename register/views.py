@@ -1,7 +1,8 @@
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import View
+from django.views.generic import View, TemplateView
 from django.views.generic.edit import FormView
 
 from register.email import send_register_email
@@ -22,6 +23,10 @@ class GreetingsView(View):
         return render(request, self.template_name, context_dict)
 
 
+class RegistrationErrorView(TemplateView):
+    template_name = 'register/registration_error.html'
+
+
 class RegistrationView(FormView):
     template_name = 'register/registration.html'
     form_class = RegistrationForm
@@ -32,13 +37,14 @@ class RegistrationView(FormView):
             raise Http404(
                 "Currently it is not possible to register for a bicycle.")
 
-        form_data = {'first_name': form.cleaned_data['first_name'],
-                     'last_name': form.cleaned_data['last_name'],
-                     'date_of_birth': form.cleaned_data['date_of_birth']}
+        form_data = {
+            'first_name': form.cleaned_data['first_name'],
+            'last_name': form.cleaned_data['last_name'],
+            'date_of_birth': form.cleaned_data['date_of_birth']}
 
-        if Candidate.objects.filter(**form_data):
-            raise Http404(
-                "A candidate with this identity information already exists.")
+        if Candidate.get_matching(**form_data):
+            return HttpResponseRedirect(
+                reverse_lazy('register:registration_error'))
 
         candidate = Candidate.objects.create(**form_data)
 

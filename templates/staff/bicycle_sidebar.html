@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+{% if bicycles %}
+    <ul class="nav nav-sidebar">
+        {% for b in bicycles %}
+            {% if b.id == bicycle_id %} 
+                <li class="active">
+            {% else %}
+                <li>
+            {% endif %}
+            <a href="{% url 'staff:candidate' candidate_id=b.candidate.id %}?bicycle_id={{b.id}}">
+                # {{ b.bicycle_number }}
+            </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <li>
+        <strong >There are no bicycles handed out.</strong>
+    </li>
+{% endif %}
