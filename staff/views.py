@@ -11,7 +11,7 @@ from register.models import User_Registration, Invitation
 from staff.forms import CreateCandidateForm
 from staff.forms import HandoverForm,  EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
-from staff.tables import CandidateTable
+from staff.tables import CandidateTable, BicycleTable
 
 
 class ManageView(TemplateView):
@@ -275,4 +275,15 @@ class CandidateTableView(View):
         RequestConfig(request, paginate={'per_page': 10}).configure(table)
 
         context_dict = {'candidates': table}
+        return render(request, self.template_name, context_dict)
+
+class BicycleTableView(View):
+    template_name = 'staff/bicycle_table.html'
+
+    def get(self, request, *args, **kwargs):
+        queryset = Bicycle.objects.all()
+        table = BicycleTable(queryset)
+        RequestConfig(request, paginate={'per_page': 10}).configure(table)
+
+        context_dict = {'bicycles': table}
         return render(request, self.template_name, context_dict)

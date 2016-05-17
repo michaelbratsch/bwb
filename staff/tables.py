@@ -18,4 +18,6 @@ class CandidateTable(tables.Table):
 class BicycleTable(tables.Table):
     class Meta:
         model = Bicycle
-        attrs = {'class': 'bootstrap'}
+        attrs = {'class': 'bootstrap', 'width': '100%'}
+        template = 'django_tables2/bootstrap.html'
+        empty_text = "There are currently no bicycles in the database."

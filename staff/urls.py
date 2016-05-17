@@ -5,7 +5,7 @@ from staff.views import BicycleOverviewView
 from staff.views import CandidateView, EventView, ManageView, EventOverviewView
 from staff.views import CreateCandidateView
 from staff.views import CreateEventView, AutoInviteView, ModifyCandidateView
-from staff.views import HandoverBicycleView, CandidateOverviewView, CandidateTableView
+from staff.views import HandoverBicycleView, CandidateOverviewView, CandidateTableView, BicycleTableView
 from staff.views import RefundBicycleView, InviteCandidateView
 
 
@@ -44,6 +44,9 @@ urlpatterns = [
     url(regex=r'^candidate_table$',
         view=login_required(CandidateTableView.as_view()),
         name='candidate_table'),
+    url(regex=r'^bicycle_table$',
+        view=login_required(BicycleTableView.as_view()),
+        name='bicycle_table'),
     url(regex=candidate_pattern % 'candidate',
         view=login_required(CandidateView.as_view()),
         name='candidate'),
