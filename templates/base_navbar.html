@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+
+{% load i18n %}
+{% load staticfiles %}
+<link href="{% static 'css/base.css' %}" rel="stylesheet">
+
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top"
+    role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse"
+        data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li class="navbar-left"><a href="{% url 'index' %}">
+                {% load i18n %}{% trans "Bikes without Borders" %}
+            </a></li>
+            {% if show_steps %}
+                {% autoescape off %}
+                <li {{step_1}}><a href="{% url 'register:greeting' %}">1 How?</a></li>
+                <li {{step_2}}><a href="{% url 'register:registration' %}">2 Register</a></li>
+                <li {{step_3}}><a href="#">3 Finish</a></li>
+                {% endautoescape %}
+            {% endif %}
+            <li class="navbar-right"><form action="{% url 'index' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <select name="language" class="form-control navbar-btn"
+                    onchange="this.form.submit()">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                        <option value="{{ language.code }}"
+                            {% if language.code == LANGUAGE_CODE %}
+                            selected="selected" {% endif %}>
+                            {{ language.name_local }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form></li>
+        </ul>
+    </div>
+</nav>
+<!--
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+            data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'register:greeting' %}">
+                {% load i18n %}{% trans "Bikes without Borders" %}
+            </a>
+        </div>
+
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <form action="{% url 'index' %}" method="post"
+                class="navbar-form navbar-right">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <select name="language" class="form-control"
+                        onchange="this.form.submit()">
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% get_available_languages as LANGUAGES %}
+                            {% get_language_info_list for LANGUAGES as languages %}
+                            {% for language in languages %}
+                            <option value="{{ language.code }}"
+                                {% if language.code == LANGUAGE_CODE %}
+                                selected="selected" {% endif %}>
+                                {{ language.name_local }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+                <li class="active">
+                    <a href="">1 How?</a>
+                </li>
+                <li>
+                    <a href="">2 Register</a>
+                </li>
+                <li>
+                    <a href="">3 Finish</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'staff:event_overview' %}">
+                        {% trans "Event View" %}
+                    </a></li>
+                    <li><a href="{% url 'staff:candidate_overview' %}">
+                        {% trans "Candidate View" %}
+                    </a></li>
+                    <li><a href="{% url 'staff:bicycle_overview' %}">
+                        {% trans "Bicycle View" %}
+                    </a></li>
+                    <li><a href="{% url 'logout' %}?next=/">
+                        {% trans "Logout" %}
+                    </a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">
+                        {% trans "Login" %}
+                    </a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+-->

@@ -14,21 +14,40 @@ except ImportError:
     from urllib.parse import urlencode
 
 
-def send_register_email(recipient, base_url):
-    header = ugettext("Hello %(name)s,") % recipient
+def get_base_url_from_request(request):
+    '{scheme}://{host}'.format(scheme=request.scheme,
+                               host=request.get_host())
+
+
+def get_url_parameter(name, value):
+    return "?" + urlencode({name: value})
+
+
+def send_message_after_registration(registration, request):
+    candidate = registration.candidate
+
+    name = "%s %s" % (candidate.first_name, candidate.last_name)
+    header = ugettext("Hello %s,") % name
+
     body = ugettext("Thank you for registering for a bike.\n"
                     "To verify your email address and to check your current "
                     "number in line, please click the following link:")
+
     page_link = urljoin(reverse('register:current-in-line'),
-                        "?" + urlencode({'user_id': recipient['identifier']}))
+                        get_url_parameter('user_id', registration.identifier))
+    base_url = get_base_url_from_request(request)
     link = urljoin(base_url, page_link)
+
     footer = ugettext("We hope to see you soon!")
     newline = "\n"
 
     message = "\n".join((header, newline, body, link, newline, footer))
 
-    send_mail(subject=ugettext('BwB - Registration'),
-              message=message,
-              from_email='webmaster@bikeswithoutborders.de',
-              recipient_list=[recipient['email']],
-              fail_silently=False)
+    if registration.email:
+        send_mail(subject=ugettext('BwB - Registration'),
+                  message=message,
+                  from_email='webmaster@bikeswithoutborders.de',
+                  recipient_list=[registration.email],
+                  fail_silently=False)
+    else:
+        assert False, "Messages other than email are currently not supported."
