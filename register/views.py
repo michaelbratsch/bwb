@@ -1,7 +1,8 @@
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
-from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+
+from django.http.response import HttpResponseRedirect
 from django.views.generic import View, TemplateView
 from django.views.generic.edit import FormView
 
@@ -20,7 +21,9 @@ class GreetingsView(View):
     template_name = 'register/greeting.html'
 
     def get(self, request, *args, **kwargs):
-        context_dict = {'open_for_registration': open_for_registration()}
+        context_dict = {'open_for_registration': open_for_registration(),
+                        'show_steps': True,
+                        'step_1': 'class="active"'}
         return render(request, self.template_name, context_dict)
 
 
@@ -66,7 +69,9 @@ class RegistrationView(FormView):
         if not open_for_registration():
             raise Http404(
                 "Currently it is not possible to register for a bicycle.")
-        context_dict = {'choices': User_Registration.BICYCLE_CHOICES}
+        context_dict = {'choices': User_Registration.BICYCLE_CHOICES,
+                        'show_steps': True,
+                        'step_2': 'class="active"'}
         return render(request, self.template_name, context_dict)
 
 
@@ -74,8 +79,9 @@ class ThanksView(View):
     template_name = 'register/thanks.html'
 
     def get(self, request, *args, **kwargs):
-        context_dict = {'number_in_line':
-                        Candidate.total_in_line()}
+        context_dict = {'number_in_line': Candidate.total_in_line(),
+                        'show_steps': True,
+                        'step_3': 'class="active"'}
         return render(request, self.template_name, context_dict)
 
 

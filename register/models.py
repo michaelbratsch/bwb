@@ -1,7 +1,11 @@
+from __future__ import unicode_literals
+
 from django.db import models
 from django.utils import timezone
 import hashlib
 import os
+
+from django.utils.encoding import python_2_unicode_compatible
 
 from register.email import get_url_parameter
 
@@ -19,6 +23,7 @@ def datetime_min():
                                timezone.get_default_timezone())
 
 
+@python_2_unicode_compatible
 class HandoutEvent(models.Model):
     due_date = models.DateTimeField()
 
@@ -30,6 +35,7 @@ class HandoutEvent(models.Model):
         return str(self.due_date)
 
 
+@python_2_unicode_compatible
 class Candidate(models.Model):
     first_name = models.CharField(max_length=max_name_length)
     last_name = models.CharField(max_length=max_name_length)
@@ -100,10 +106,11 @@ class Candidate(models.Model):
                                   last_name__iexact=last_name)
 
     def __str__(self):
-        return " ".join(map(str, (self.first_name, self.last_name,
-                                  self.date_of_birth)))
+        return "%s %s %s" % (self.first_name, self.last_name,
+                             self.date_of_birth)
 
 
+@python_2_unicode_compatible
 class User_Registration(models.Model):
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
                                      related_name='user_registration')
@@ -153,10 +160,11 @@ class User_Registration(models.Model):
             self.save()
 
     def __str__(self):
-        return " ".join((str(self.candidate), self.email,
-                         self.get_bicycle_kind_display()))
+        return "%s %s %s " % (self.candidate, self.email,
+                              self.get_bicycle_kind_display())
 
 
+@python_2_unicode_compatible
 class Invitation(models.Model):
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE,
                                   related_name='invitations')
@@ -171,6 +179,7 @@ class Invitation(models.Model):
         return '%s %s' % (self.candidate, self.handout_event)
 
 
+@python_2_unicode_compatible
 class Bicycle(models.Model):
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
                                      related_name='bicycle')

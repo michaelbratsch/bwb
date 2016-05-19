@@ -1,6 +1,7 @@
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.utils import translation
-from django.http import HttpResponseBadRequest
+
 from django.views.generic import View
 
 from bwb.settings import LANGUAGES
@@ -10,7 +11,8 @@ class GreetingsView(View):
     template_name = 'index.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        context_dict = {'show_steps': True}
+        return render(request, self.template_name, context_dict)
 
     def post(self, request, *args, **kwargs):
         user_language = request.POST.get('language')
