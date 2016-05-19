@@ -27,7 +27,7 @@ def send_message_after_registration(registration, request):
     candidate = registration.candidate
 
     name = "%s %s" % (candidate.first_name, candidate.last_name)
-    header = ugettext("Hello %(name)s,") % name
+    header = ugettext("Hello %s,") % name
 
     body = ugettext("Thank you for registering for a bike.\n"
                     "To verify your email address and to check your current "
