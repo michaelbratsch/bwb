@@ -3,6 +3,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, FormView
 from django.views.generic.base import TemplateView
+from django_tables2 import RequestConfig
 import random
 
 from register.models import Candidate, Bicycle, HandoutEvent
@@ -10,6 +11,7 @@ from register.models import User_Registration, Invitation
 from staff.forms import CreateCandidateForm
 from staff.forms import HandoverForm,  EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
+from staff.tables import CandidateTable, BicycleTable
 
 
 class ManageView(TemplateView):
@@ -264,3 +266,25 @@ class InviteCandidateView(CandidateMixin, FormView):
         self.set_success_url(form)
 
         return super(InviteCandidateView, self).form_valid(form)
+
+class CandidateTableView(View):
+    template_name = 'staff/candidate_table.html'
+
+    def get(self, request, *args, **kwargs):
+        queryset = Candidate.objects.all()
+        table = CandidateTable(queryset)
+        RequestConfig(request, paginate={'per_page': 10}).configure(table)
+
+        context_dict = {'candidates': table}
+        return render(request, self.template_name, context_dict)
+
+class BicycleTableView(View):
+    template_name = 'staff/bicycle_table.html'
+
+    def get(self, request, *args, **kwargs):
+        queryset = Bicycle.objects.all()
+        table = BicycleTable(queryset)
+        RequestConfig(request, paginate={'per_page': 10}).configure(table)
+
+        context_dict = {'bicycles': table}
+        return render(request, self.template_name, context_dict)
