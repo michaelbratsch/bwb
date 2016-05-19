@@ -42,7 +42,7 @@ class CreateEventView(FormView):
         self.success_url = reverse_lazy('staff:event',
                                         kwargs={'event_id': event.id})
 
-        return super(FormView, self).form_valid(form)
+        return super(CreateEventView, self).form_valid(form)
 
 
 class AutoInviteView(FormView):
@@ -59,7 +59,7 @@ class AutoInviteView(FormView):
             number_of_winners = form.cleaned_data['choice_%s' % choice]
 
             # do have no bicycle and are registered with contact information
-            candidates = Candidate.waiting_for_bicycle(choice)
+            candidates = Candidate.registered_and_without_bicycle(choice)
 
             # are not invited yet
             candidates = [c for c in candidates if c.invitations.count() == 0]
@@ -74,7 +74,7 @@ class AutoInviteView(FormView):
         self.success_url = reverse_lazy('staff:event',
                                         kwargs={'event_id': event.id})
 
-        return super(FormView, self).form_valid(form)
+        return super(AutoInviteView, self).form_valid(form)
 
     def get(self, request, event_id, *args, **kwargs):
         event = get_object_or_404(HandoutEvent, id=event_id)
@@ -87,21 +87,22 @@ class AutoInviteView(FormView):
 class EventView(View):
     template_name = 'staff/event.html'
 
-    def get_candidates_in_groups(self, all_candidates):
-        for choice, description in User_Registration.BICYCLE_CHOICES:
-            yield (description,
-                   [c for c in all_candidates
-                    if c.user_registration.bicycle_kind == choice])
-
     def get(self, request, event_id, *args, **kwargs):
+
+        def group_candidates(self, candidates):
+            for choice, description in User_Registration.BICYCLE_CHOICES:
+                yield (description,
+                       [c for c in candidates
+                        if c.user_registration.bicycle_kind == choice])
+
         event = get_object_or_404(HandoutEvent, id=event_id)
 
-        all_candidates = [
+        invited_candidates = [
             invitation.candidate for invitation in event.invitations.all()]
 
         context_dict = {
-            'total_number_of_candidates': len(all_candidates),
-            'candidate_groups': self.get_candidates_in_groups(all_candidates),
+            'total_number_of_candidates': len(invited_candidates),
+            'candidate_groups': group_candidates(invited_candidates),
             'event': event}
         return render(request, self.template_name, context_dict)
 
@@ -112,6 +113,24 @@ class CandidateOverviewView(View):
     def get(self, request, *args, **kwargs):
         context_dict = {'candidates': Candidate.objects.all()}
         return render(request, self.template_name, context_dict)
+
+
+class CreateCandidateView(FormView):
+    template_name = 'staff/create_candidate.html'
+    form_class = CreateCandidateForm
+    success_url = reverse_lazy('staff:candidate_overview')
+
+    def form_valid(self, form):
+        form_data = {'first_name': form.cleaned_data['first_name'],
+                     'last_name': form.cleaned_data['last_name'],
+                     'date_of_birth': form.cleaned_data['date_of_birth']}
+
+        if Candidate.get_matching(**form_data):
+            raise Http404("This candidate already exists")
+
+        Candidate.objects.create(**form_data)
+
+        return super(CreateCandidateView, self).form_valid(form)
 
 
 class CandidateMixin(object):
@@ -159,24 +178,6 @@ class CandidateView(CandidateMixin, View):
     template_name = 'staff/candidate.html'
 
 
-class CreateCandidateView(FormView):
-    template_name = 'staff/create_candidate.html'
-    form_class = CreateCandidateForm
-    success_url = reverse_lazy('staff:candidate_overview')
-
-    def form_valid(self, form):
-        form_data = {'first_name': form.cleaned_data['first_name'],
-                     'last_name': form.cleaned_data['last_name'],
-                     'date_of_birth': form.cleaned_data['date_of_birth']}
-
-        if Candidate.get_matching(**form_data):
-            raise Http404("This candidate already exists")
-
-        Candidate.objects.create(**form_data)
-
-        return super(CreateCandidateView, self).form_valid(form)
-
-
 class ModifyCandidateView(CandidateMixin, FormView):
     template_name = 'staff/modify_candidate.html'
     form_class = ModifyCandidateForm
@@ -204,8 +205,8 @@ class HandoverBicycleView(CandidateMixin, FormView):
 
     def form_valid(self, form):
         candidate_id = form.cleaned_data['candidate_id']
-
         candidate = get_object_or_404(Candidate, id=candidate_id)
+
         if candidate.has_bicycle:
             raise Http404("This Candidate already has a bicycle.")
 
@@ -232,8 +233,8 @@ class RefundBicycleView(CandidateMixin, FormView):
 
     def form_valid(self, form):
         candidate_id = form.cleaned_data['candidate_id']
-
         candidate = get_object_or_404(Candidate, id=candidate_id)
+
         if not candidate.has_bicycle:
             raise Http404("This Candidate does not have a bicycle.")
 
@@ -265,25 +266,3 @@ class InviteCandidateView(CandidateMixin, FormView):
         self.set_success_url(form)
 
         return super(InviteCandidateView, self).form_valid(form)
-
-class CandidateTableView(View):
-    template_name = 'staff/candidate_table.html'
-
-    def get(self, request, *args, **kwargs):
-        queryset = Candidate.objects.all()
-        table = CandidateTable(queryset)
-        RequestConfig(request, paginate={'per_page': 10}).configure(table)
-
-        context_dict = {'candidates': table}
-        return render(request, self.template_name, context_dict)
-
-class BicycleTableView(View):
-    template_name = 'staff/bicycle_table.html'
-
-    def get(self, request, *args, **kwargs):
-        queryset = Bicycle.objects.all()
-        table = BicycleTable(queryset)
-        RequestConfig(request, paginate={'per_page': 10}).configure(table)
-
-        context_dict = {'bicycles': table}
-        return render(request, self.template_name, context_dict)

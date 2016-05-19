@@ -62,7 +62,7 @@ urlpatterns = [
     url(regex=candidate_pattern % 'invite_candidate',
         view=login_required(InviteCandidateView.as_view()),
         name='invite_candidate'),
-    url(regex=r'^create_candidate/$',
+    url(regex=r'^create_candidate.html$',
         view=login_required(CreateCandidateView.as_view()),
         name='create_candidate')
 ]
