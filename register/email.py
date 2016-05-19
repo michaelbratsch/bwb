@@ -15,8 +15,8 @@ except ImportError:
 
 
 def get_base_url_from_request(request):
-    '{scheme}://{host}'.format(scheme=request.scheme,
-                               host=request.get_host())
+    return '{scheme}://{host}'.format(scheme=request.scheme,
+                                      host=request.get_host())
 
 
 def get_url_parameter(name, value):
@@ -35,6 +35,7 @@ def send_message_after_registration(registration, request):
 
     page_link = urljoin(reverse('register:current-in-line'),
                         get_url_parameter('user_id', registration.identifier))
+
     base_url = get_base_url_from_request(request)
     link = urljoin(base_url, page_link)
 

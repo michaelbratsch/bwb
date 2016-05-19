@@ -27,24 +27,45 @@
                 <li {{step_3}}><a href="#">3 Finish</a></li>
                 {% endautoescape %}
             {% endif %}
-            <li class="navbar-right"><form action="{% url 'index' %}" method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <select name="language" class="form-control navbar-btn"
-                    onchange="this.form.submit()">
-                        {% get_current_language as LANGUAGE_CODE %}
-                        {% get_available_languages as LANGUAGES %}
-                        {% get_language_info_list for LANGUAGES as languages %}
-                        {% for language in languages %}
-                        <option value="{{ language.code }}"
-                            {% if language.code == LANGUAGE_CODE %}
-                            selected="selected" {% endif %}>
-                            {{ language.name_local }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </form></li>
+
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'staff:event_overview' %}">
+                    {% trans "Event View" %}
+                </a></li>
+                <li><a href="{% url 'staff:candidate_overview' %}">
+                    {% trans "Candidate View" %}
+                </a></li>
+                <li><a href="{% url 'staff:bicycle_overview' %}">
+                    {% trans "Bicycle View" %}
+                </a></li>
+                <li><a href="{% url 'logout' %}?next=/">
+                    {% trans "Logout" %}
+                </a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">
+                    {% trans "Login" %}
+                </a></li>
+            {% endif %}
+            <li class="navbar-right">
+                <form action="{% url 'index' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <select name="language" class="form-control navbar-btn"
+                        onchange="this.form.submit()">
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% get_available_languages as LANGUAGES %}
+                            {% get_language_info_list for LANGUAGES as languages %}
+                            {% for language in languages %}
+                            <option value="{{ language.code }}"
+                                {% if language.code == LANGUAGE_CODE %}
+                                selected="selected" {% endif %}>
+                                {{ language.name_local }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </li>
         </ul>
     </div>
 </nav>
