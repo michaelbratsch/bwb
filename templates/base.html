@@ -13,13 +13,20 @@
 
         <title>{% load i18n %}{% trans "Bikes without Borders" %}</title>
 
+        {% load staticfiles %}
+        <link href="{% static 'css/base.css' %}" rel="stylesheet">
+
         <!-- ToDo: use custom stylesheet -->
         <link href="https://getbootstrap.com/dist/css/bootstrap.min.css"
         rel="stylesheet">
         <link href="https://getbootstrap.com/examples/dashboard/dashboard.css"
         rel="stylesheet">
 
-	{% block head_block %}{% endblock %}
+        {% load staticfiles %}
+        <link href="{% static 'css/button.css' %}" rel="stylesheet">
+        <link href="{% static 'css/form.css' %}" rel="stylesheet">
+
+        {% block head_block %}{% endblock %}
     </head>
 
     <body>
