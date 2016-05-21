@@ -1,10 +1,11 @@
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import View, FormView
 from django.views.generic.base import TemplateView
 from django_tables2 import RequestConfig
 import random
+
+from django.views.generic import View, FormView
 
 from register.models import Candidate, Bicycle, HandoutEvent
 from register.models import User_Registration, Invitation
@@ -267,6 +268,7 @@ class InviteCandidateView(CandidateMixin, FormView):
 
         return super(InviteCandidateView, self).form_valid(form)
 
+
 class CandidateTableView(View):
     template_name = 'staff/candidate_table.html'
 
@@ -277,6 +279,7 @@ class CandidateTableView(View):
 
         context_dict = {'candidates': table}
         return render(request, self.template_name, context_dict)
+
 
 class BicycleTableView(View):
     template_name = 'staff/bicycle_table.html'

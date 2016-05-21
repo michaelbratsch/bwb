@@ -2,10 +2,11 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
 from staff.views import BicycleOverviewView
+from staff.views import CandidateTableView, BicycleTableView
 from staff.views import CandidateView, EventView, ManageView, EventOverviewView
 from staff.views import CreateCandidateView
 from staff.views import CreateEventView, AutoInviteView, ModifyCandidateView
-from staff.views import HandoverBicycleView, CandidateOverviewView, CandidateTableView, BicycleTableView
+from staff.views import HandoverBicycleView, CandidateOverviewView
 from staff.views import RefundBicycleView, InviteCandidateView
 
 
