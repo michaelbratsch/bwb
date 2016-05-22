@@ -3,6 +3,11 @@
 {% extends 'staff/base_event_view.html' %}
 
 {% load staticfiles %}
+{% load render_table from django_tables2 %}
+
+{% block head_block %}
+    <link href="{% static 'django_tables2/bootstrap.css' %}" rel="stylesheet" />
+{% endblock %}
 
 {% block body_block %}
     {% if total_number_of_candidates == 0 %}
@@ -18,27 +23,13 @@
             <h2>
                 {% load i18n %}
                 {% trans "For the event on " %}{{ event.due_date }}
-                {% trans " are the following "%}{{ total_number_of_candidates }}
+                {% trans " are the following "%}{{ number_of_candidates }}
                 {% trans " people invited." %}
             </h2>
         </div>
-        
-        <h3>
-        {% for choice, candidates in candidate_groups %}
-            {{ choice }}:<br><br>
-            {% for candidate in candidates %}
-            <div class="form-group row">
-                <div class="col-xs-6">
-                    <a href="{% url 'staff:candidate' candidate_id=candidate.id %}?event_id={{event.id}}">
-                        {{ candidate.first_name }} {{ candidate.last_name }},  
-                        {{ candidate.date_of_birth|date:"SHORT_DATE_FORMAT" }}
-                    </a>
-                </div>
-            </div>
-            {% endfor %}<br>
-        {% endfor %}
-        </h3><br>
+        {% render_table candidate_table %}
     {% endif %}
+
     <div class="form-group row">
         <div class="col-xs-3">
             <a href="{% url 'staff:invite' event_id=event.id %}"

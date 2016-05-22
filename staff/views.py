@@ -12,7 +12,7 @@ from register.models import User_Registration, Invitation
 from staff.forms import CreateCandidateForm
 from staff.forms import HandoverForm,  EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
-from staff.tables import CandidateTable, BicycleTable
+from staff.tables import CandidateTable, BicycleTable, EventTable
 
 
 class ManageView(TemplateView):
@@ -89,21 +89,20 @@ class EventView(View):
     template_name = 'staff/event.html'
 
     def get(self, request, event_id, *args, **kwargs):
-
-        def group_candidates(candidates):
-            for choice, description in User_Registration.BICYCLE_CHOICES:
-                yield (description,
-                       [c for c in candidates
-                        if c.user_registration.bicycle_kind == choice])
-
         event = get_object_or_404(HandoutEvent, id=event_id)
 
         invited_candidates = [
-            invitation.candidate for invitation in event.invitations.all()]
+            invitation.candidate.id for invitation in event.invitations.all()
+        ]
+
+        queryset = Candidate.objects.filter(id__in=invited_candidates)
+        candidate_table = EventTable(data=queryset, event_id=event_id)
+        RequestConfig(request, paginate={'per_page': 100}).configure(
+            candidate_table)
 
         context_dict = {
-            'total_number_of_candidates': len(invited_candidates),
-            'candidate_groups': group_candidates(invited_candidates),
+            'number_of_candidates': len(invited_candidates),
+            'candidate_table': candidate_table,
             'event': event}
         return render(request, self.template_name, context_dict)
 
