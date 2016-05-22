@@ -50,6 +50,18 @@ class Candidate(models.Model):
         except Bicycle.DoesNotExist:
             return False
 
+    # ToDo: introduce test that checks get_status with
+    # get_status_and_candidates
+    @property
+    def get_status(self):
+        number_of_inviations = self.invitations.count()
+        if self.has_bicycle:
+            return 'bicycle received'
+        elif number_of_inviations:
+            return 'invited %s' % number_of_inviations
+        else:
+            return 'waiting'
+
     @classmethod
     def get_status_and_candidates(cls):
         """Returns a list of tuples which categorize all Candidates into
