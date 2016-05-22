@@ -7,7 +7,7 @@
 .btn-info {
   color: #ECF0F1;
   background-color: #63C700;
-  border-color: #AFFC62;
+  border-color: #63C700;
 }
 
 .btn-info:hover,
@@ -17,7 +17,7 @@
 .open .dropdown-toggle.btn-info {
   color: #ECF0F1;
   background-color: #5CB801;
-  border-color: #AFFC62;
+  border-color: #63C700;
 }
 
 .btn-info:active,

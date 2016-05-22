@@ -58,7 +58,7 @@ class Candidate(models.Model):
         if self.has_bicycle:
             return 'bicycle received'
         elif number_of_inviations:
-            return 'invited %s' % number_of_inviations
+            return 'invited %sx' % number_of_inviations
         else:
             return 'waiting'
 

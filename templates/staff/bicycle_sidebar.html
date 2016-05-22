@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 
+{% load staticfiles %}
+<link href="{% static 'css/base_sidebar.css' %}" rel="stylesheet" />
+
 {% if bicycles %}
     <ul class="nav nav-sidebar">
         {% for b in bicycles %}
-            {% if b.id == bicycle_id %} 
+            {% if b.id == bicycle_id %}
                 <li class="active">
             {% else %}
                 <li>
