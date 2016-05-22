@@ -8,49 +8,6 @@ from register.models import Bicycle, Candidate, User_Registration
 import django_tables2 as tables
 
 
-class CandidateTable(tables.Table):
-    first_name = tables.Column(verbose_name='First Name')
-    last_name = tables.Column(verbose_name='Last Name')
-    date_of_birth = tables.Column(verbose_name='Date of Birth')
-    current_status = tables.Column(
-        verbose_name='Status',
-        accessor='get_status',
-        orderable=False)
-    invitations = tables.Column(
-        verbose_name='Invitations',
-        accessor='invitations')
-    bicycle = tables.Column(
-        verbose_name='Bicycle',
-        accessor='bicycle',
-        order_by='bicycle.bicycle_number')
-
-    def format_date(self, value):
-        return formats.date_format(value, SHORT_DATE_FORMAT)
-
-    def render_id(self, value):
-        candidate_url = reverse_lazy('staff:candidate',
-                                     kwargs={'candidate_id': value})
-        return format_html('<a href="%s">%s</a>' % (candidate_url, value))
-
-    def render_date_of_birth(self, value):
-        return self.format_date(value)
-
-    def render_invitations(self, value):
-        date_of_handout = [self.format_date(i.handout_event.due_date.date())
-                           for i in value.all()]
-        return format_html("<br>".join(date_of_handout))
-
-    def render_bicycle(self, value):
-        return '#%s %s %s' % (value.bicycle_number, value.color, value.brand)
-
-    class Meta:
-        model = Candidate
-        attrs = {'class': 'bootstrap', 'width': '1000%'}
-        template = 'django_tables2/bootstrap.html'
-        empty_text = "There are currently no canditates in the database."
-        sequence = ('current_status', '...')
-
-
 class EventTable(tables.Table):
     first_name = tables.Column(verbose_name='First Name')
     last_name = tables.Column(verbose_name='Last Name')
@@ -66,7 +23,7 @@ class EventTable(tables.Table):
         accessor='bicycle',
         order_by='bicycle.bicycle_number')
 
-    def __init__(self, data, event_id, *args, **kwargs):
+    def __init__(self, data, event_id=None, *args, **kwargs):
         super(EventTable, self).__init__(data, *args, **kwargs)
         self.event_id = event_id
 
@@ -96,13 +53,28 @@ class EventTable(tables.Table):
         return get_display_value(value)
 
     def render_bicycle(self, value):
-        return '#%s %s %s' % (value.bicycle_number, value.color, value.brand)
+        return value.short_str()
 
     class Meta:
         model = Candidate
         attrs = {'class': 'bootstrap', 'width': '1000%'}
         template = 'django_tables2/bootstrap.html'
         empty_text = "There are currently no canditates in the database."
+
+
+class CandidateTable(EventTable):
+
+    current_status = tables.Column(
+        verbose_name='Status',
+        accessor='get_status',
+        orderable=False)
+
+    class Meta:
+        model = Candidate
+        attrs = {'class': 'bootstrap', 'width': '1000%'}
+        template = 'django_tables2/bootstrap.html'
+        empty_text = "There are currently no canditates in the database."
+        sequence = ('current_status', '...')
 
 
 class BicycleTable(tables.Table):

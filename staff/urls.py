@@ -1,6 +1,8 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
+from register.models import Candidate
+
 from staff.views import BicycleOverviewView, CreateCandidateView
 from staff.views import CandidateView, EventView, ManageView, EventOverviewView
 from staff.views import CreateEventView, AutoInviteView, ModifyCandidateView
@@ -38,8 +40,11 @@ urlpatterns = [
 
     # URLs related to candidates
     url(regex=r'^candidate_overview.html$',
-        view=login_required(CandidateOverviewView.as_view()),
+        view=login_required(CandidateOverviewView.as_view(
+            get_query_set=lambda: Candidate.objects.all())),
         name='candidate_overview'),
+
+
     url(regex=candidate_pattern % 'candidate',
         view=login_required(CandidateView.as_view()),
         name='candidate'),

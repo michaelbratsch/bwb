@@ -210,6 +210,10 @@ class Bicycle(models.Model):
         return "bicycle number: %s, color: %s, brand: %s" % (
             self.bicycle_number, self.color, self.brand)
 
+    def short_str(self):
+        return '#%s %s %s' % (
+            self.bicycle_number, self.color, self.brand)
+
     @property
     def information(self):
         """Return the information stored for this bicycle."""

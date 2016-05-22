@@ -20,7 +20,9 @@ def get_base_url_from_request(request):
 
 
 def get_url_parameter(name, value):
-    return "?" + urlencode({name: value})
+    if value:
+        return "?" + urlencode({name: value})
+    return ""
 
 
 def send_message_after_registration(registration, request):

@@ -25,7 +25,7 @@ class BicycleOverviewView(View):
     def get(self, request, *args, **kwargs):
         queryset = Bicycle.objects.all()
         table = BicycleTable(queryset)
-        RequestConfig(request, paginate={'per_page': 10}).configure(table)
+        RequestConfig(request, paginate={'per_page': 40}).configure(table)
 
         context_dict = {'bicycles': table}
         return render(request, self.template_name, context_dict)
@@ -118,10 +118,14 @@ class EventView(View):
 class CandidateOverviewView(View):
     template_name = 'staff/candidate_overview.html'
 
+    def get_query_set(self):
+        # Define this function in urls.py
+        assert False, "Needs to be implemented."
+
     def get(self, request, *args, **kwargs):
-        queryset = Candidate.objects.all()
+        queryset = self.get_query_set()
         candidates_table = CandidateTable(queryset)
-        RequestConfig(request, paginate={'per_page': 10}).configure(
+        RequestConfig(request, paginate={'per_page': 40}).configure(
             candidates_table)
 
         context_dict = {'candidates': Candidate.objects.all(),
@@ -174,8 +178,8 @@ class CandidateMixin(object):
         self.success_url = reverse_lazy('staff:candidate',
                                         kwargs={'candidate_id': candidate_id})
 
-        event_id = form.cleaned_data['event_id']
-        bicycle_id = form.cleaned_data['bicycle_id']
+        event_id = form.cleaned_data.get('event_id')
+        bicycle_id = form.cleaned_data.get('bicycle_id')
         if event_id:
             event = get_object_or_404(HandoutEvent, id=event_id)
             self.success_url += event.url_parameter
