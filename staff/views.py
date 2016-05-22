@@ -90,7 +90,7 @@ class EventView(View):
 
     def get(self, request, event_id, *args, **kwargs):
 
-        def group_candidates(self, candidates):
+        def group_candidates(candidates):
             for choice, description in User_Registration.BICYCLE_CHOICES:
                 yield (description,
                        [c for c in candidates

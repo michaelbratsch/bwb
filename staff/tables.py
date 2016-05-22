@@ -1,3 +1,8 @@
+from django.conf.global_settings import SHORT_DATE_FORMAT
+from django.core.urlresolvers import reverse_lazy
+from django.utils import formats
+from django.utils.html import format_html
+
 from register.models import Bicycle, Candidate
 import django_tables2 as tables
 
@@ -6,16 +11,36 @@ class CandidateTable(tables.Table):
     first_name = tables.Column(verbose_name='First Name')
     last_name = tables.Column(verbose_name='Last Name')
     date_of_birth = tables.Column(verbose_name='Date of Birth')
-    date_of_registration = tables.Column(
-        verbose_name='Date of Registration',
-        accessor='user_registration.time_of_registration')
     current_status = tables.Column(
         verbose_name='Status',
-        accessor='get_status')
+        accessor='get_status',
+        orderable=False)
+    invitations = tables.Column(
+        verbose_name='Invitations',
+        accessor='invitations')
     bicycle = tables.Column(
         verbose_name='Bicycle',
         accessor='bicycle',
         order_by='bicycle.bicycle_number')
+
+    def format_date(self, value):
+        return formats.date_format(value, SHORT_DATE_FORMAT)
+
+    def render_id(self, value):
+        candidate_url = reverse_lazy('staff:candidate',
+                                     kwargs={'candidate_id': value})
+        return format_html('<a href="%s">%s</a>' % (candidate_url, value))
+
+    def render_date_of_birth(self, value):
+        return self.format_date(value)
+
+    def render_invitations(self, value):
+        date_of_handout = [self.format_date(i.handout_event.due_date.date())
+                           for i in value.all()]
+        return format_html("<br>".join(date_of_handout))
+
+    def render_bicycle(self, value):
+        return '#%s %s %s' % (value.bicycle_number, value.color, value.brand)
 
     class Meta:
         model = Candidate
