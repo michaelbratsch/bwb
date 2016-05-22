@@ -21,7 +21,7 @@
             <li class="navbar-left"><a href="{% url 'index' %}">
                 {% load i18n %}{% trans "Bikes without Borders" %}
             </a></li>
-            
+
             {% if show_steps %}
                 {% autoescape off %}
                 <li {{step_1}}><a class= "navbar-mid" href="{% url 'register:greeting' %}">1 How?</a></li>
@@ -68,12 +68,6 @@
                         </a></li>
                         <li><a href="{% url 'staff:bicycle_overview' %}">
                             {% trans "Bicycle View" %}
-                        </a></li>
-                        <li><a href="{% url 'staff:candidate_table' %}">
-                            {% trans "Candidate Table" %}
-                        </a></li>
-                        <li><a href="{% url 'staff:bicycle_table' %}">
-                            {% trans "Bicycle Table" %}
                         </a></li>
                     </ul>
                 </li>

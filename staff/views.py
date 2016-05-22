@@ -19,8 +19,16 @@ class ManageView(TemplateView):
     template_name = 'staff/index.html'
 
 
-class BicycleOverviewView(TemplateView):
+class BicycleOverviewView(View):
     template_name = 'staff/bicycle_overview.html'
+
+    def get(self, request, *args, **kwargs):
+        queryset = Bicycle.objects.all()
+        table = BicycleTable(queryset)
+        RequestConfig(request, paginate={'per_page': 10}).configure(table)
+
+        context_dict = {'bicycles': table}
+        return render(request, self.template_name, context_dict)
 
 
 class EventOverviewView(TemplateView):
@@ -111,7 +119,13 @@ class CandidateOverviewView(View):
     template_name = 'staff/candidate_overview.html'
 
     def get(self, request, *args, **kwargs):
-        context_dict = {'candidates': Candidate.objects.all()}
+        queryset = Candidate.objects.all()
+        candidates_table = CandidateTable(queryset)
+        RequestConfig(request, paginate={'per_page': 10}).configure(
+            candidates_table)
+
+        context_dict = {'candidates': Candidate.objects.all(),
+                        'candidates_table': candidates_table}
         return render(request, self.template_name, context_dict)
 
 
@@ -266,27 +280,3 @@ class InviteCandidateView(CandidateMixin, FormView):
         self.set_success_url(form)
 
         return super(InviteCandidateView, self).form_valid(form)
-
-
-class CandidateTableView(View):
-    template_name = 'staff/candidate_table.html'
-
-    def get(self, request, *args, **kwargs):
-        queryset = Candidate.objects.all()
-        table = CandidateTable(queryset)
-        RequestConfig(request, paginate={'per_page': 10}).configure(table)
-
-        context_dict = {'candidates': table}
-        return render(request, self.template_name, context_dict)
-
-
-class BicycleTableView(View):
-    template_name = 'staff/bicycle_table.html'
-
-    def get(self, request, *args, **kwargs):
-        queryset = Bicycle.objects.all()
-        table = BicycleTable(queryset)
-        RequestConfig(request, paginate={'per_page': 10}).configure(table)
-
-        context_dict = {'bicycles': table}
-        return render(request, self.template_name, context_dict)

@@ -2,6 +2,12 @@
 
 {% extends 'staff/base_candidate_view.html' %}
 
+{% load staticfiles %}
+{% load render_table from django_tables2 %}
+
+{% block head_block %}
+    <link href="{% static 'django_tables2/bootstrap.css' %}" rel="stylesheet" />
+{% endblock %}
 
 {% block body_block %}
 <div class="page-header">
@@ -12,12 +18,10 @@
         {% endblocktrans %}
     </h2>
 </div>
-<h3>
-    {% trans "Existing people can be selected on the left." %}
-    <br><br>
-    <a href="{% url 'staff:create_candidate' %}" class="btn btn-info"
-    role="button">
-        {% trans "Add new person" %}
-    </a>
-</h3>
+{% render_table candidates_table %}
+<br><br>
+<a href="{% url 'staff:create_candidate' %}" class="btn btn-info"
+role="button">
+    {% trans "Add new person" %}
+</a>
 {% endblock %}

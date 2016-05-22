@@ -107,8 +107,17 @@ class EventTable(tables.Table):
 
 class BicycleTable(tables.Table):
 
+    def render_id(self, value):
+        bicycle = Bicycle.objects.get(id=value)
+        candidate_id = bicycle.candidate.id
+        candidate_url = (reverse_lazy('staff:candidate',
+                                      kwargs={'candidate_id': candidate_id}) +
+                         get_url_parameter('bicycle_id', value))
+        return format_html('<a href="%s">%s</a>' % (candidate_url, value))
+
     class Meta:
         model = Bicycle
         attrs = {'class': 'bootstrap', 'width': '100%'}
         template = 'django_tables2/bootstrap.html'
         empty_text = "There are currently no bicycles in the database."
+        sequence = ('id', 'bicycle_number', '...')
