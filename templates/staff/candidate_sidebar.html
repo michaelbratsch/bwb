@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 
+{% load staticfiles %}
+<link href="{% static 'css/base_sidebar.css' %}" rel="stylesheet" />
+
 {% if status_and_candidates %}
     <ul class="nav nav-sidebar">
         {% for status, candidates in status_and_candidates %}

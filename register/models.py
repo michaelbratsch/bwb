@@ -58,7 +58,7 @@ class Candidate(models.Model):
         if self.has_bicycle:
             return 'bicycle received'
         elif number_of_inviations:
-            return 'invited %s' % number_of_inviations
+            return 'invited %sx' % number_of_inviations
         else:
             return 'waiting'
 
@@ -208,6 +208,10 @@ class Bicycle(models.Model):
 
     def __str__(self):
         return "bicycle number: %s, color: %s, brand: %s" % (
+            self.bicycle_number, self.color, self.brand)
+
+    def short_str(self):
+        return '#%s %s %s' % (
             self.bicycle_number, self.color, self.brand)
 
     @property

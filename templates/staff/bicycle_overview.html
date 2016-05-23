@@ -2,6 +2,14 @@
 
 {% extends 'staff/base_bicycle_view.html' %}
 
+{% load staticfiles %}
+{% load render_table from django_tables2 %}
+
+
+{% block head_block %}
+    <link href="{% static 'django_tables2/bootstrap.css' %}" rel="stylesheet" />
+{% endblock %}
+
 
 {% block body_block %}
 <div class="page-header">
@@ -12,7 +20,5 @@
         {% endblocktrans %}
     </h2>
 </div>
-<h3>
-    {% trans "Handed out bicycles can be selected on the left." %}
-</h3>
+    {% render_table bicycles %}
 {% endblock %}

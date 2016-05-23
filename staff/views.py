@@ -12,15 +12,23 @@ from register.models import User_Registration, Invitation
 from staff.forms import CreateCandidateForm
 from staff.forms import HandoverForm,  EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
-from staff.tables import CandidateTable, BicycleTable
+from staff.tables import CandidateTable, BicycleTable, EventTable
 
 
 class ManageView(TemplateView):
     template_name = 'staff/index.html'
 
 
-class BicycleOverviewView(TemplateView):
+class BicycleOverviewView(View):
     template_name = 'staff/bicycle_overview.html'
+
+    def get(self, request, *args, **kwargs):
+        queryset = Bicycle.objects.all()
+        table = BicycleTable(queryset)
+        RequestConfig(request, paginate={'per_page': 40}).configure(table)
+
+        context_dict = {'bicycles': table}
+        return render(request, self.template_name, context_dict)
 
 
 class EventOverviewView(TemplateView):
@@ -89,21 +97,20 @@ class EventView(View):
     template_name = 'staff/event.html'
 
     def get(self, request, event_id, *args, **kwargs):
-
-        def group_candidates(self, candidates):
-            for choice, description in User_Registration.BICYCLE_CHOICES:
-                yield (description,
-                       [c for c in candidates
-                        if c.user_registration.bicycle_kind == choice])
-
         event = get_object_or_404(HandoutEvent, id=event_id)
 
         invited_candidates = [
-            invitation.candidate for invitation in event.invitations.all()]
+            invitation.candidate.id for invitation in event.invitations.all()
+        ]
+
+        queryset = Candidate.objects.filter(id__in=invited_candidates)
+        candidate_table = EventTable(data=queryset, event_id=event_id)
+        RequestConfig(request, paginate={'per_page': 100}).configure(
+            candidate_table)
 
         context_dict = {
-            'total_number_of_candidates': len(invited_candidates),
-            'candidate_groups': group_candidates(invited_candidates),
+            'number_of_candidates': len(invited_candidates),
+            'candidate_table': candidate_table,
             'event': event}
         return render(request, self.template_name, context_dict)
 
@@ -111,8 +118,18 @@ class EventView(View):
 class CandidateOverviewView(View):
     template_name = 'staff/candidate_overview.html'
 
+    def get_query_set(self):
+        # Define this function in urls.py
+        assert False, "Needs to be implemented."
+
     def get(self, request, *args, **kwargs):
-        context_dict = {'candidates': Candidate.objects.all()}
+        queryset = self.get_query_set()
+        candidates_table = CandidateTable(queryset)
+        RequestConfig(request, paginate={'per_page': 40}).configure(
+            candidates_table)
+
+        context_dict = {'candidates': Candidate.objects.all(),
+                        'candidates_table': candidates_table}
         return render(request, self.template_name, context_dict)
 
 
@@ -161,8 +178,8 @@ class CandidateMixin(object):
         self.success_url = reverse_lazy('staff:candidate',
                                         kwargs={'candidate_id': candidate_id})
 
-        event_id = form.cleaned_data['event_id']
-        bicycle_id = form.cleaned_data['bicycle_id']
+        event_id = form.cleaned_data.get('event_id')
+        bicycle_id = form.cleaned_data.get('bicycle_id')
         if event_id:
             event = get_object_or_404(HandoutEvent, id=event_id)
             self.success_url += event.url_parameter
@@ -267,27 +284,3 @@ class InviteCandidateView(CandidateMixin, FormView):
         self.set_success_url(form)
 
         return super(InviteCandidateView, self).form_valid(form)
-
-
-class CandidateTableView(View):
-    template_name = 'staff/candidate_table.html'
-
-    def get(self, request, *args, **kwargs):
-        queryset = Candidate.objects.all()
-        table = CandidateTable(queryset)
-        RequestConfig(request, paginate={'per_page': 10}).configure(table)
-
-        context_dict = {'candidates': table}
-        return render(request, self.template_name, context_dict)
-
-
-class BicycleTableView(View):
-    template_name = 'staff/bicycle_table.html'
-
-    def get(self, request, *args, **kwargs):
-        queryset = Bicycle.objects.all()
-        table = BicycleTable(queryset)
-        RequestConfig(request, paginate={'per_page': 10}).configure(table)
-
-        context_dict = {'bicycles': table}
-        return render(request, self.template_name, context_dict)
