@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.global_settings import SHORT_DATE_FORMAT
 from django.core.urlresolvers import reverse_lazy
 from django.utils import formats
@@ -6,6 +7,12 @@ from django.utils.html import format_html
 from register.email import get_url_parameter
 from register.models import Bicycle, Candidate, User_Registration
 import django_tables2 as tables
+
+
+def format_date(value):
+    return formats.date_format(value,
+                               formats.get_format(SHORT_DATE_FORMAT,
+                                                  lang=settings.LANGUAGE_CODE))
 
 
 class EventTable(tables.Table):
@@ -27,9 +34,6 @@ class EventTable(tables.Table):
         super(EventTable, self).__init__(data, *args, **kwargs)
         self.event_id = event_id
 
-    def format_date(self, value):
-        return formats.date_format(value, SHORT_DATE_FORMAT)
-
     def render_id(self, value):
         candidate_url = (reverse_lazy('staff:candidate',
                                       kwargs={'candidate_id': value}) +
@@ -37,10 +41,10 @@ class EventTable(tables.Table):
         return format_html('<a href="%s">%s</a>' % (candidate_url, value))
 
     def render_date_of_birth(self, value):
-        return self.format_date(value)
+        return format_date(value)
 
     def render_invitations(self, value):
-        date_of_handout = [self.format_date(i.handout_event.due_date.date())
+        date_of_handout = [format_date(i.handout_event.due_date.date())
                            for i in value.all()]
         return format_html("<br>".join(date_of_handout))
 
