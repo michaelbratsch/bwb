@@ -4,7 +4,7 @@
 
 {% load staticfiles %}
 
-{% block body_block %}
+{% block body_block %}f
 <div class="page-header">
     <h2>{% load i18n %}{% trans "Register for a bike" %}</h2>
     <h3>{% trans "Currently, entering a phone number is not supported!" %}</h3>
@@ -130,7 +130,7 @@ $(document).ready(function() {
     // Validate form
     $('#nameForm').validate({
         rules: {
-            phone: {
+            mobile_number: {
                 require_from_group: [1, ".contact-group"]
             },
             email: {

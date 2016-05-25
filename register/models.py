@@ -11,6 +11,7 @@ from register.email import get_url_parameter
 
 
 max_name_length = 100
+max_mobile_number_length = 16
 identifier_length = 20
 
 
@@ -148,7 +149,7 @@ class User_Registration(models.Model):
 
     email = models.EmailField()
 
-    mobile_number = models.CharField(max_length=15)
+    mobile_number = models.CharField(max_length=max_mobile_number_length)
 
     email_validated = models.BooleanField(default=False)
 

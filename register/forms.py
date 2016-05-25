@@ -1,7 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext
 
-from register.models import max_name_length, User_Registration
+from register.models import max_name_length, max_mobile_number_length, \
+                            User_Registration
 
 
 class RegistrationForm(forms.Form):
@@ -10,7 +11,8 @@ class RegistrationForm(forms.Form):
     date_of_birth = forms.DateField(required=True)
 
     email = forms.EmailField(required=False)
-    mobile_number = forms.CharField(max_length=15, required=False)
+    mobile_number = forms.CharField(max_length=max_mobile_number_length,
+                                    required=False)
 
     bicycle_kind = forms.ChoiceField(
         choices=User_Registration.BICYCLE_CHOICES,
