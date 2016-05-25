@@ -20,8 +20,9 @@ class RegistrationForm(forms.Form):
         email = self.cleaned_data.get('email')
         mobile_number = self.cleaned_data.get('mobile_number')
 
-        if not (email or subject):
+        if not (email or mobile_number):
             raise forms.ValidationError(ugettext(
-                "Either a email address or a mobile number is required for contacting you!"))
+                "Either a email address or a mobile number is required for \
+                 contacting you!"))
 
         return self.cleaned_data

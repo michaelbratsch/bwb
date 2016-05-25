@@ -53,12 +53,14 @@ class RegistrationView(FormView):
         candidate = Candidate.objects.create(**form_data)
 
         email = form.cleaned_data['email']
+        mobile_number = form.cleaned_data['mobile_number']
         bicycle_kind = form.cleaned_data['bicycle_kind']
 
         registration = User_Registration.objects.create(
             candidate=candidate,
             bicycle_kind=bicycle_kind,
-            email=email)
+            email=email,
+            mobile_number=mobile_number)
 
         send_message_after_registration(registration=registration,
                                         request=self.request)

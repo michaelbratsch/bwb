@@ -3,6 +3,8 @@ from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext
 
+from django.conf import settings
+
 # To support Python 2 and 3
 try:
     from urlparse import urljoin
@@ -73,4 +75,5 @@ def send_message_after_registration(registration, request):
         email.send(fail_silently=False)
 
     else:
-        assert False, "Messages other than email or sms are currently not supported."
+        assert False, "Messages other than email or sms are currently not \
+                       upported."
