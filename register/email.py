@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext
 
@@ -52,5 +53,24 @@ def send_message_after_registration(registration, request):
                   from_email='webmaster@bikeswithoutborders.de',
                   recipient_list=[registration.email],
                   fail_silently=False)
+
+    elif registration.mobile_number:
+        message = ugettext("Thank you for registering for a bike.\n"
+                           "You will be notified when your bike is ready.\n"
+                           "Your BwB Team.")
+
+        smsgate_headers = {'X-SMSGate-User': settings.SMS_GATE_USER,
+                           'X-SMSGate-Pwd': settings.SMS_GATE_PASSWORD,
+                           'X-SMSGate-Auth-Method': settings.SMS_GATE_AUTH_METHOD,
+                           'X-SMSGate-To': registration.mobile_number}
+
+        email = EmailMessage(subject=ugettext('BwB - Registration'),
+                             body=message,
+                             headers=smsgate_headers,
+                             from_email='webmaster@bikeswithoutborders.de',
+                             to=['smsgate@bikeswithoutborders.de'])
+
+        email.send(fail_silently=False)
+
     else:
-        assert False, "Messages other than email are currently not supported."
+        assert False, "Messages other than email or sms are currently not supported."
