@@ -16,6 +16,10 @@ import os
 # Email section
 from .email_settings import EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER
 from .email_settings import EMAIL_PORT, EMAIL_USE_TLS
+
+# SMS section
+from .sms_settings import SMS_GATE_USER, SMS_GATE_PASSWORD, SMS_GATE_AUTH_METHOD
+
 # SECURITY WARNING: keep the secret key used in production secret!
 from .secret_key import SECRET_KEY
 
