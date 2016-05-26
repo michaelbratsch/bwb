@@ -104,7 +104,7 @@ class RegistrationForm(forms.Form):
                         {%load i18n %}{% trans "Terms of use" %}
                     </label>
                     <div class="controls" id="id_terms_of_use">
-                        <div style="border: 1px solid #e5e4e4; height: 200px;
+                        <div style="border: 1px solid #e5e4e4;
                         overflow: auto; padding: 10px;">
                             {% blocktrans %}
                             <p>Our terms of use are the following.</p>
