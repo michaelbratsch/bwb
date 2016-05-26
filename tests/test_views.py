@@ -62,6 +62,11 @@ class ContactViewTestCase(HypothesisTestCase):
              date_of_birth='2016-02-20',
              bicycle_kind=2,
              phone_number='01631703322')
+    @example(first_name='Stefan',
+             last_name='Seibert',
+             date_of_birth='1977-02-20',
+             bicycle_kind=1,
+             phone_number='015261703322')
     def test_phone_post(self, **kwargs):
         self.successful_post(kwargs)
 
