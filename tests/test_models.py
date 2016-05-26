@@ -37,10 +37,10 @@ email_strategy = builds(target=create_email_address)
 
 
 def create_phone_number():
-    prefix_strat = sampled_from(mobile_phone_prefixes)
-    number_strat = integers(min_value=500000, max_value=999999999)
+    prefix = sampled_from(mobile_phone_prefixes).example()
+    number_strat = integers(min_value=1000000, max_value=99999999)
+    counter = 0
     while True:
-        prefix = prefix_strat.example()
         number = number_strat.example()
         phone_number = '%s%s' % (prefix, number)
 
@@ -48,6 +48,9 @@ def create_phone_number():
             return parse_phone_number(phone_number)
         except ValidationError:
             pass
+
+        counter += 1
+        assert counter < 10000, 'No number matching for prefix ' + prefix
 
 
 # this is just a verifier
