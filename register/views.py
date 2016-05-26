@@ -27,8 +27,8 @@ class GreetingsView(View):
         return render(request, self.template_name, context_dict)
 
 
-class RegistrationErrorView(TemplateView):
-    template_name = 'register/registration_error.html'
+class RegistrationErrorUniquenessView(TemplateView):
+    template_name = 'register/registration_error_uniqueness.html'
 
 
 class RegistrationView(FormView):
@@ -46,32 +46,42 @@ class RegistrationView(FormView):
             'last_name': form.cleaned_data['last_name'],
             'date_of_birth': form.cleaned_data['date_of_birth']}
 
-        if Candidate.get_matching(**form_data):
-            return HttpResponseRedirect(
-                reverse_lazy('register:registration_error'))
-
         candidate = Candidate.objects.create(**form_data)
 
-        email = form.cleaned_data['email']
-        bicycle_kind = form.cleaned_data['bicycle_kind']
+        creation_dict = {'candidate': candidate,
+                         'bicycle_kind': form.cleaned_data['bicycle_kind']}
 
-        registration = User_Registration.objects.create(
-            candidate=candidate,
-            bicycle_kind=bicycle_kind,
-            email=email)
+        email = form.cleaned_data['email']
+        phone_number = form.cleaned_data['phone_number']
+
+        if not(email or phone_number):
+            raise Http404("Please fill in at least email or phone_number.")
+
+        if email:
+            creation_dict['email'] = email
+        if phone_number:
+            creation_dict['phone_number'] = phone_number
+
+        registration = User_Registration.objects.create(**creation_dict)
 
         send_message_after_registration(registration=registration,
                                         request=self.request)
 
         return super(RegistrationView, self).form_valid(form)
 
+    def form_invalid(self, form):
+        # print form.errors
+        return super(RegistrationView, self).form_invalid(form)
+
     def get(self, request, *args, **kwargs):
         if not open_for_registration():
             raise Http404(
                 "Currently it is not possible to register for a bicycle.")
+
         context_dict = {'choices': User_Registration.BICYCLE_CHOICES,
                         'show_steps': True,
-                        'step_2': 'class="active"'}
+                        'step_2': 'class="active"',
+                        'form': RegistrationForm()}
         return render(request, self.template_name, context_dict)
 
 

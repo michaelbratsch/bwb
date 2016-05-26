@@ -68,12 +68,12 @@ class AutoInviteView(FormView):
             number_of_winners = form.cleaned_data['choice_%s' % choice]
 
             # do have no bicycle and are registered with contact information
-            candidates = Candidate.registered_and_without_bicycle(choice)
+            candidate = Candidate.registered_and_without_bicycle(choice)
 
             # are not invited yet
-            candidates = [c for c in candidates if c.invitations.count() == 0]
+            candidate = [c for c in candidate if c.invitations.count() == 0]
 
-            winners = random.sample(candidates, min(len(candidates),
+            winners = random.sample(candidate, min(len(candidate),
                                                     number_of_winners))
 
             for winner in winners:
@@ -128,7 +128,7 @@ class CandidateOverviewView(View):
         RequestConfig(request, paginate={'per_page': 40}).configure(
             candidates_table)
 
-        context_dict = {'candidates': Candidate.objects.all(),
+        context_dict = {'candidate': Candidate.objects.all(),
                         'candidates_table': candidates_table}
         return render(request, self.template_name, context_dict)
 

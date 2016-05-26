@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
+from phonenumber_field.modelfields import PhoneNumberField
 import hashlib
 import os
 
@@ -146,9 +147,11 @@ class User_Registration(models.Model):
                                   max_length=identifier_length,
                                   primary_key=True)
 
-    email = models.EmailField()
+    email = models.EmailField(blank=True)
     email_validated = models.BooleanField(default=False)
     time_of_email_validation = models.DateTimeField(default=datetime_min)
+
+    phone_number = PhoneNumberField(blank=True, default='', null=True)
 
     time_of_registration = models.DateTimeField(default=timezone.now)
 
@@ -172,8 +175,8 @@ class User_Registration(models.Model):
             self.save()
 
     def __str__(self):
-        return "%s %s %s " % (self.candidate, self.email,
-                              self.get_bicycle_kind_display())
+        return "%s %s %s %s " % (self.candidate, self.email, self.phone_number,
+                                 self.get_bicycle_kind_display())
 
 
 @python_2_unicode_compatible

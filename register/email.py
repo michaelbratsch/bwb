@@ -52,5 +52,3 @@ def send_message_after_registration(registration, request):
                   from_email='webmaster@bikeswithoutborders.de',
                   recipient_list=[registration.email],
                   fail_silently=False)
-    else:
-        assert False, "Messages other than email are currently not supported."
