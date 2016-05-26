@@ -89,7 +89,7 @@ class RegistrationForm(forms.Form):
         choices=User_Registration.BICYCLE_CHOICES,
         required=True)
     agree = forms.BooleanField(required=False,
-                               label="Agree with Terms and Condition")
+                               label="Agree with Terms and Conditions")
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -111,15 +111,15 @@ class RegistrationForm(forms.Form):
                         <div style="border: 1px solid #e5e4e4;
                         overflow: auto; padding: 10px;">
                             {% blocktrans %}
-                            <p>Our terms of use are the following.</p>
-                            <li>You can only buy only one bike per person.</li>
+                            <p>Our terms of use are the following:</p>
+                            <li>You can only buy one bike per person.</li>
                             <li>Please do not register twice.</li>
                             <li>If you want a bike for your children, please also register them.</li>
                             <li>We do not sell new bikes.</li>
                             <li>All bikes are donated and used.</li>
                             <li>We only sell roadworthy bikes.</li>
                             <li>You can resell your bike to us, if you do not need it anymore.</li>
-                            <li>Our bikes always need repair work. Please bring some time and help us repairing your bike.</li>
+                            <li>Our bikes alway need repair work. Please bring some time and help us repairing your bike.</li>
                             {% endblocktrans %}
                         </div>
                     </div>"""),
@@ -152,7 +152,7 @@ class RegistrationForm(forms.Form):
         # Email or phone number needs to be present
         if not (email or phone_number):
             raise forms.ValidationError(
-                'Please fill in email oder phone number.')
+                'Please fill out email or phone number.')
 
         if Candidate.get_matching(first_name=cleaned_data['first_name'],
                                   last_name=cleaned_data['last_name'],
