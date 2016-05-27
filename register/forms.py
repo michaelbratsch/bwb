@@ -1,7 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, HTML
 from django import forms
-from django.utils.translation import ugettext
+from django.utils.translation import ugettext as _
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumbers.phonenumberutil import NumberParseException
 import phonenumbers
@@ -48,9 +48,9 @@ mobile_phone_prefixes = ['01511',  # Deutsche Telekom
                          '0179']
 
 
-bad_format_number = ugettext('This is not a properly formatted phone number.')
-invalid_number = ugettext('This is not a valid phone number for this region.')
-invalid_mobile_number = ugettext('This is not a valid mobile phone number.')
+bad_format_number = _('This is not a properly formatted phone number.')
+invalid_number = _('This is not a valid phone number.')
+invalid_mobile_number = _('This is not a valid mobile phone number.')
 
 
 def parse_phone_number(value):
@@ -84,31 +84,53 @@ class MyPhoneNumberField(PhoneNumberField):
         return super(MyPhoneNumberField, self).to_python(value)
 
 
-terms_and_conditions_error = ugettext(
+terms_and_conditions_error = _(
     'You need to agree with the terms and conditions.')
-multiple_registration_error = ugettext(
+multiple_registration_error = _(
     'A user with this name and date of birth is already registered. '
     'It is not allowed to register multiple times!')
-email_or_phone_error = ugettext('Please fill out email or phone number.')
+email_or_phone_error = _('Please fill out email or mobile phone number.')
 
 
 class RegistrationForm(forms.Form):
-    first_name = forms.CharField(max_length=max_name_length, required=True)
-    last_name = forms.CharField(max_length=max_name_length, required=True)
-    date_of_birth = forms.DateField(required=True)
+    first_name = forms.CharField(max_length=max_name_length, required=True,
+                                 label=_('First name'))
+    last_name = forms.CharField(max_length=max_name_length, required=True,
+                                label=_('Last name'))
+    date_of_birth = forms.DateField(required=True, label=_('Date of birth'))
 
-    email = forms.EmailField(required=False)
-    phone_number = MyPhoneNumberField(required=False)
+    email = forms.EmailField(required=False, label=_('Email'))
+    phone_number = MyPhoneNumberField(required=False,
+                                      label=_('Mobile phone number'))
     bicycle_kind = forms.ChoiceField(
         choices=User_Registration.BICYCLE_CHOICES,
-        required=True)
+        required=True,
+        label=_('Bicycle kind'))
     agree = forms.BooleanField(required=False,
-                               label="Agree with Terms and Conditions")
+                               label=_("Agree with Terms and Conditions"))
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
+
+        lines_of_body = [
+            _('You can only buy one bike per person.'),
+            _('Please do not register twice.'),
+            _('If you want a bike for your children, please also register '
+              'them.'),
+            _('We do not sell new bikes.'),
+            _('All bikes are donated and used.'),
+            _('We only sell road-worthy bikes.'),
+            _('You can resell your bike to us, if you do not need it '
+              'anymore.'),
+            _('Our bikes always need repair work. Please bring some time and '
+              'help us to repair your bike.')]
+
+        content_dict = {
+            'heading': _("Terms of use"),
+            'subheading': _("Our terms of use are the following:"),
+            'body': " ".join(map(lambda x: '<li>%s</li>' % x, lines_of_body))}
 
         self.helper.layout = Layout(
             Field('first_name'),
@@ -119,27 +141,15 @@ class RegistrationForm(forms.Form):
             Field('bicycle_kind'),
             HTML(
                 """ <label for="id_terms_of_use" class="control-label">
-                        {%load i18n %}{% trans "Terms of use" %}
+                        %(heading)s
                     </label>
                     <div class="controls" id="id_terms_of_use">
                         <div style="border: 1px solid #e5e4e4;
                         overflow: auto; padding: 10px;">
-                            {% blocktrans %}
-                            <p>Our terms of use are the following:</p>
-                            <li>You can only buy one bike per person.</li>
-                            <li>Please do not register twice.</li>
-                            <li>If you want a bike for your children, please
-                            also register them.</li>
-                            <li>We do not sell new bikes.</li>
-                            <li>All bikes are donated and used.</li>
-                            <li>We only sell roadworthy bikes.</li>
-                            <li>You can resell your bike to us, if you do not
-                            need it anymore.</li>
-                            <li>Our bikes alway need repair work. Please bring
-                            some time and help us repairing your bike.</li>
-                            {% endblocktrans %}
+                            <p>%(subheading)s</p>
+                            %(body)s
                         </div>
-                    </div>"""),
+                    </div>""" % content_dict),
             Field('agree'))
 
         self.helper.add_input(Submit('submit', 'Submit',

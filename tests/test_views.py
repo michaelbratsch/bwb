@@ -195,6 +195,9 @@ class ContactViewTestCase(HypothesisTestCase):
         self.check_failed_post(field='email',
                                errors=EmailValidator.message,
                                post_dict=kwargs)
+        self.check_failed_post(field='phone_number',
+                               errors=None,
+                               post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(first_name=name_strategy,
@@ -228,6 +231,9 @@ class ContactViewTestCase(HypothesisTestCase):
         self.check_failed_post(field='phone_number',
                                errors=invalid_number,
                                post_dict=kwargs)
+        self.check_failed_post(field='email',
+                               errors=None,
+                               post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(first_name=name_strategy,
@@ -241,6 +247,9 @@ class ContactViewTestCase(HypothesisTestCase):
         self.check_failed_post(field='email',
                                errors=EmailValidator.message,
                                post_dict=kwargs)
+        self.check_failed_post(field='phone_number',
+                               errors=None,
+                               post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(first_name=name_strategy,
@@ -253,6 +262,9 @@ class ContactViewTestCase(HypothesisTestCase):
         kwargs['phone_number'] = '88631'
         self.check_failed_post(field='phone_number',
                                errors=invalid_number,
+                               post_dict=kwargs)
+        self.check_failed_post(field='email',
+                               errors=EmailValidator.message,
                                post_dict=kwargs)
 
     @given(name=name_strategy)
