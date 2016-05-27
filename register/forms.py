@@ -8,7 +8,29 @@ import phonenumbers
 
 from django.core.exceptions import ValidationError
 
+from bwb.settings import MAX_NUMBER_OF_REGISTRATIONS
 from register.models import max_name_length, User_Registration, Candidate
+
+
+# ToDo: Only take people into account that do not have a bicycle.
+def open_for_registration():
+    return Candidate.total_in_line() < MAX_NUMBER_OF_REGISTRATIONS
+
+
+too_many_registrations_error = _(
+    'Due to too many registrations, it is currently not possible to register '
+    'for a bicycle.')
+
+bad_format_number = _('This is not a properly formatted phone number.')
+invalid_number = _('This is not a valid phone number.')
+invalid_mobile_number = _('This is not a valid mobile phone number.')
+
+terms_and_conditions_error = _(
+    'You need to agree with the terms and conditions.')
+multiple_registration_error = _(
+    'A user with this name and date of birth is already registered. '
+    'It is not allowed to register multiple times!')
+email_or_phone_error = _('Please fill out email or mobile phone number.')
 
 
 # ToDo: get these prefixes from somewhere else, otherwise they will
@@ -48,11 +70,6 @@ mobile_phone_prefixes = ['01511',  # Deutsche Telekom
                          '0179']
 
 
-bad_format_number = _('This is not a properly formatted phone number.')
-invalid_number = _('This is not a valid phone number.')
-invalid_mobile_number = _('This is not a valid mobile phone number.')
-
-
 def parse_phone_number(value):
     def is_mobile_number(parsed_number):
         for prefix in mobile_phone_prefixes:
@@ -82,14 +99,6 @@ class MyPhoneNumberField(PhoneNumberField):
             value = parse_phone_number(value)
 
         return super(MyPhoneNumberField, self).to_python(value)
-
-
-terms_and_conditions_error = _(
-    'You need to agree with the terms and conditions.')
-multiple_registration_error = _(
-    'A user with this name and date of birth is already registered. '
-    'It is not allowed to register multiple times!')
-email_or_phone_error = _('Please fill out email or mobile phone number.')
 
 
 class RegistrationForm(forms.Form):
@@ -171,6 +180,9 @@ class RegistrationForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(RegistrationForm, self).clean()
+
+        if not open_for_registration():
+            raise ValidationError(too_many_registrations_error)
 
         email = cleaned_data.get('email')
         phone_number = cleaned_data.get('phone_number')

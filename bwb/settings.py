@@ -19,6 +19,10 @@ from .email_settings import EMAIL_PORT, EMAIL_USE_TLS
 # SECURITY WARNING: keep the secret key used in production secret!
 from .secret_key import SECRET_KEY
 
+
+# Maximum number of people that can register
+MAX_NUMBER_OF_REGISTRATIONS = 200
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

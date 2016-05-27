@@ -2,19 +2,13 @@ from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 
-from django.http.response import HttpResponseRedirect
 from django.views.generic import View, TemplateView
 from django.views.generic.edit import FormView
 
 from register.email import send_message_after_registration
-from register.forms import RegistrationForm
+from register.forms import RegistrationForm, open_for_registration
+from register.forms import too_many_registrations_error
 from register.models import User_Registration, Candidate
-
-
-def open_for_registration():
-    # ToDo: move to general settings
-    max_number_of_registrations = 200
-    return Candidate.total_in_line() < max_number_of_registrations
 
 
 class GreetingsView(View):
@@ -37,9 +31,7 @@ class RegistrationView(FormView):
     success_url = reverse_lazy('register:thanks')
 
     def form_valid(self, form):
-        if not open_for_registration():
-            raise Http404(
-                "Currently it is not possible to register for a bicycle.")
+        assert open_for_registration(), too_many_registrations_error
 
         form_data = {
             'first_name': form.cleaned_data['first_name'],
@@ -54,8 +46,8 @@ class RegistrationView(FormView):
         email = form.cleaned_data['email']
         phone_number = form.cleaned_data['phone_number']
 
-        if not(email or phone_number):
-            raise Http404("Please fill in at least email or phone_number.")
+        assert email or phone_number, ("Neither email nor phone number "
+                                       "are given.")
 
         if email:
             creation_dict['email'] = email
@@ -70,13 +62,11 @@ class RegistrationView(FormView):
         return super(RegistrationView, self).form_valid(form)
 
     def form_invalid(self, form):
-        # print form.errors
         return super(RegistrationView, self).form_invalid(form)
 
     def get(self, request, *args, **kwargs):
         if not open_for_registration():
-            raise Http404(
-                "Currently it is not possible to register for a bicycle.")
+            raise Http404(too_many_registrations_error)
 
         context_dict = {'choices': User_Registration.BICYCLE_CHOICES,
                         'show_steps': True,

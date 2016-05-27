@@ -7,9 +7,10 @@ from hypothesis import given, settings, HealthCheck, example
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.strategies import random_module
 
+from bwb.settings import MAX_NUMBER_OF_REGISTRATIONS
 from register.forms import invalid_number, multiple_registration_error,\
     invalid_mobile_number, bad_format_number, terms_and_conditions_error,\
-    email_or_phone_error
+    email_or_phone_error, too_many_registrations_error
 from register.models import Candidate
 from tests.test_models import name_strategy, email_strategy, date_strategy,\
     bicycle_kind_strategy, phone_strategy_clean
@@ -24,21 +25,21 @@ class ContactViewTestCase(HypothesisTestCase):
                             count=1)
         self.assertEqual(mail.outbox, [])
 
-    def successful_post(self, post_dict):
+    def successful_post(self, post_dict, number_of_emails=1):
         post_dict['agree'] = "True"
         response = self.client.post(self.url, post_dict)
 
         self.assertRedirects(response, reverse('register:thanks'))
 
         if 'email' in post_dict:
-            self.assertEqual(len(mail.outbox), 1)
+            self.assertEqual(len(mail.outbox), number_of_emails)
             self.assertEqual(mail.outbox[0].to[0], post_dict['email'])
 
-        first_candidate = Candidate.objects.first()
+        last_candidate = Candidate.objects.last()
         self.assertEqual(post_dict['first_name'].strip(),
-                         first_candidate.first_name)
+                         last_candidate.first_name)
         self.assertEqual(post_dict['last_name'].strip(),
-                         first_candidate.last_name)
+                         last_candidate.last_name)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(first_name=name_strategy,
@@ -114,6 +115,23 @@ class ContactViewTestCase(HypothesisTestCase):
 
         self.check_failed_post(field='',
                                errors=multiple_registration_error,
+                               post_dict=post_dict,
+                               empty_outbox=False)
+
+    def test_too_many_registrations(self):
+        post_dict = {'last_name': 'Holger',
+                     'date_of_birth': '1982-05-12',
+                     'bicycle_kind': 2,
+                     'email': 'asdf@gmx.de'}
+
+        for registration_number in range(MAX_NUMBER_OF_REGISTRATIONS):
+            post_dict['first_name'] = str(registration_number)
+            self.successful_post(post_dict=post_dict,
+                                 number_of_emails=registration_number + 1)
+
+        post_dict['first_name'] = 'test'
+        self.check_failed_post(field='',
+                               errors=too_many_registrations_error,
                                post_dict=post_dict,
                                empty_outbox=False)
 
