@@ -1,10 +1,15 @@
 from django.core import mail
 from django.core.urlresolvers import reverse
 
+from django.core.validators import EmailValidator
+from django.forms.fields import Field
 from hypothesis import given, settings, HealthCheck, example
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.strategies import random_module
 
+from register.forms import invalid_number, multiple_registration_error,\
+    invalid_mobile_number, bad_format_number, terms_and_conditions_error,\
+    email_or_phone_error
 from register.models import Candidate
 from tests.test_models import name_strategy, email_strategy, date_strategy,\
     bicycle_kind_strategy, phone_strategy_clean
@@ -98,12 +103,6 @@ class ContactViewTestCase(HypothesisTestCase):
         if empty_outbox:
             self.assertEqual(mail.outbox, [])
 
-    number_error = 'This is not a valid number for this region.'
-    email_error = 'Enter a valid email address.'
-    duplicate_error = ('A user with this name and date of birth is already '
-                       'registered. It is not allowed to register multiple '
-                       'times!')
-
     def check_registering_twice(self, post_dict, cases=False):
         self.successful_post(post_dict)
 
@@ -114,7 +113,7 @@ class ContactViewTestCase(HypothesisTestCase):
             post_dict['last_name'] = post_dict['last_name'].upper()
 
         self.check_failed_post(field='',
-                               errors=self.duplicate_error,
+                               errors=multiple_registration_error,
                                post_dict=post_dict,
                                empty_outbox=False)
 
@@ -165,11 +164,36 @@ class ContactViewTestCase(HypothesisTestCase):
            last_name=name_strategy,
            date_of_birth=date_strategy,
            bicycle_kind=bicycle_kind_strategy,
+           email=email_strategy,
+           dummy=random_module())
+    def test_missing_agree_post(self, **kwargs):
+        kwargs['agree'] = ''
+        self.check_failed_post(field='agree',
+                               errors=terms_and_conditions_error,
+                               post_dict=kwargs)
+
+    @settings(suppress_health_check=[HealthCheck.too_slow])
+    @given(first_name=name_strategy,
+           last_name=name_strategy,
+           date_of_birth=date_strategy,
+           bicycle_kind=bicycle_kind_strategy,
+           dummy=random_module())
+    def test_missing_email_or_phone_post(self, **kwargs):
+        kwargs['agree'] = 'True'
+        self.check_failed_post(field='',
+                               errors=email_or_phone_error,
+                               post_dict=kwargs)
+
+    @settings(suppress_health_check=[HealthCheck.too_slow])
+    @given(first_name=name_strategy,
+           last_name=name_strategy,
+           date_of_birth=date_strategy,
+           bicycle_kind=bicycle_kind_strategy,
            dummy=random_module())
     def test_invalid_email_post(self, **kwargs):
         kwargs['email'] = 'asdf'
         self.check_failed_post(field='email',
-                               errors=self.email_error,
+                               errors=EmailValidator.message,
                                post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
@@ -181,7 +205,15 @@ class ContactViewTestCase(HypothesisTestCase):
     def test_invalid_phone_post(self, **kwargs):
         kwargs['phone_number'] = '01631'
         self.check_failed_post(field='phone_number',
-                               errors=self.number_error,
+                               errors=invalid_number,
+                               post_dict=kwargs)
+        kwargs['phone_number'] = '034021622483'
+        self.check_failed_post(field='phone_number',
+                               errors=invalid_mobile_number,
+                               post_dict=kwargs)
+        kwargs['phone_number'] = None
+        self.check_failed_post(field='phone_number',
+                               errors=bad_format_number,
                                post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
@@ -194,7 +226,7 @@ class ContactViewTestCase(HypothesisTestCase):
     def test_valid_email_and_invalid_phone_post(self, **kwargs):
         kwargs['phone_number'] = '88631'
         self.check_failed_post(field='phone_number',
-                               errors=self.number_error,
+                               errors=invalid_number,
                                post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
@@ -207,7 +239,7 @@ class ContactViewTestCase(HypothesisTestCase):
     def test_invalid_email_and_valid_phone_post(self, **kwargs):
         kwargs['email'] = 'djddj@www'
         self.check_failed_post(field='email',
-                               errors=self.email_error,
+                               errors=EmailValidator.message,
                                post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
@@ -220,16 +252,36 @@ class ContactViewTestCase(HypothesisTestCase):
         kwargs['email'] = 'qwer'
         kwargs['phone_number'] = '88631'
         self.check_failed_post(field='phone_number',
-                               errors=self.number_error,
+                               errors=invalid_number,
                                post_dict=kwargs)
 
-#########################
-#     @given(name=name_strategy, email=email_strategy)
-#     def test_failed_name_post(self, name, email):
-#         for first_name, last_name in [('', name), (name, '')]:
-#             self.check_failed_post({'first_name_0': first_name,
-#                                     'last_name_0': last_name,
-#                                     'email': email})
+    @given(name=name_strategy)
+    def test_missing_name_post(self, name):
+        error_message = Field.default_error_messages['required']
+
+        self.check_failed_post(field='first_name',
+                               errors=error_message,
+                               post_dict={'first_name': '',
+                                          'last_name': name})
+
+        self.check_failed_post(field='last_name',
+                               errors=error_message,
+                               post_dict={'first_name': name,
+                                          'last_name': ''})
+
+    @given(first_name=name_strategy,
+           last_name=name_strategy)
+    def test_missing_date_of_birth_post(self, **kwargs):
+        self.check_failed_post(field='date_of_birth',
+                               errors=Field.default_error_messages['required'],
+                               post_dict=kwargs)
+
+    @given(first_name=name_strategy,
+           last_name=name_strategy)
+    def test_missing_bicycle_kind_post(self, **kwargs):
+        self.check_failed_post(field='bicycle_kind',
+                               errors=Field.default_error_messages['required'],
+                               post_dict=kwargs)
 
 
 # class ThanksViewTestCase(HypothesisTestCase):

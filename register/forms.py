@@ -1,6 +1,7 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field, Div, HTML
+from crispy_forms.layout import Submit, Layout, Field, HTML
 from django import forms
+from django.utils.translation import ugettext
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumbers.phonenumberutil import NumberParseException
 import phonenumbers
@@ -47,6 +48,11 @@ mobile_phone_prefixes = ['01511',  # Deutsche Telekom
                          '0179']
 
 
+bad_format_number = ugettext('This is not a properly formatted phone number.')
+invalid_number = ugettext('This is not a valid phone number for this region.')
+invalid_mobile_number = ugettext('This is not a valid mobile phone number.')
+
+
 def parse_phone_number(value):
     def is_mobile_number(parsed_number):
         for prefix in mobile_phone_prefixes:
@@ -57,13 +63,13 @@ def parse_phone_number(value):
     try:
         parsed_number = phonenumbers.parse(value, 'DE')
     except NumberParseException:
-        raise ValidationError('This is not a properly formatted phone number.')
+        raise ValidationError(bad_format_number)
 
     if not phonenumbers.is_valid_number_for_region(parsed_number, 'de'):
-        raise ValidationError('This is not a valid number for this region.')
+        raise ValidationError(invalid_number)
 
     if not is_mobile_number(parsed_number):
-        raise ValidationError('This is not a valid mobile phone number.')
+        raise ValidationError(invalid_mobile_number)
 
     return phonenumbers.format_number(parsed_number,
                                       phonenumbers.PhoneNumberFormat.E164)
@@ -76,6 +82,14 @@ class MyPhoneNumberField(PhoneNumberField):
             value = parse_phone_number(value)
 
         return super(MyPhoneNumberField, self).to_python(value)
+
+
+terms_and_conditions_error = ugettext(
+    'You need to agree with the terms and conditions.')
+multiple_registration_error = ugettext(
+    'A user with this name and date of birth is already registered. '
+    'It is not allowed to register multiple times!')
+email_or_phone_error = ugettext('Please fill out email or phone number.')
 
 
 class RegistrationForm(forms.Form):
@@ -114,12 +128,15 @@ class RegistrationForm(forms.Form):
                             <p>Our terms of use are the following:</p>
                             <li>You can only buy one bike per person.</li>
                             <li>Please do not register twice.</li>
-                            <li>If you want a bike for your children, please also register them.</li>
+                            <li>If you want a bike for your children, please
+                            also register them.</li>
                             <li>We do not sell new bikes.</li>
                             <li>All bikes are donated and used.</li>
                             <li>We only sell roadworthy bikes.</li>
-                            <li>You can resell your bike to us, if you do not need it anymore.</li>
-                            <li>Our bikes alway need repair work. Please bring some time and help us repairing your bike.</li>
+                            <li>You can resell your bike to us, if you do not
+                            need it anymore.</li>
+                            <li>Our bikes alway need repair work. Please bring
+                            some time and help us repairing your bike.</li>
                             {% endblocktrans %}
                         </div>
                     </div>"""),
@@ -139,8 +156,7 @@ class RegistrationForm(forms.Form):
     def clean_agree(self):
         agree = bool(self.data.get('agree'))
         if not agree:
-            raise forms.ValidationError(
-                'You need to agree with the terms and conditions.')
+            raise ValidationError(terms_and_conditions_error)
         return agree
 
     def clean(self):
@@ -151,15 +167,21 @@ class RegistrationForm(forms.Form):
 
         # Email or phone number needs to be present
         if not (email or phone_number):
-            raise forms.ValidationError(
-                'Please fill out email or phone number.')
+            raise ValidationError(email_or_phone_error)
 
-        if Candidate.get_matching(first_name=cleaned_data['first_name'],
-                                  last_name=cleaned_data['last_name'],
-                                  date_of_birth=cleaned_data['date_of_birth']):
-            raise forms.ValidationError(
-                'A user with this name and date of birth '
-                'is already registered. It is not allowed to register '
-                'multiple times!')
+        try:
+            first_name = cleaned_data['first_name']
+            last_name = cleaned_data['last_name']
+            date_of_birth = cleaned_data['date_of_birth']
+        except KeyError:
+            # If not caught, this key error prevents from testing the
+            # form validation errors for first_name, last_name and
+            # date_of_birth.
+            pass
+        else:
+            if Candidate.get_matching(first_name=first_name,
+                                      last_name=last_name,
+                                      date_of_birth=date_of_birth):
+                raise ValidationError(multiple_registration_error)
 
         return cleaned_data
