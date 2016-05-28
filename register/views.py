@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 
-from django.views.generic import View, TemplateView
+from django.views.generic import View
 from django.views.generic.edit import FormView
 
 from register.email import send_message_after_registration
@@ -21,14 +21,10 @@ class GreetingsView(View):
         return render(request, self.template_name, context_dict)
 
 
-class RegistrationErrorUniquenessView(TemplateView):
-    template_name = 'register/registration_error_uniqueness.html'
-
-
 class RegistrationView(FormView):
     template_name = 'register/registration.html'
     form_class = RegistrationForm
-    success_url = reverse_lazy('register:thanks')
+    success_url = reverse_lazy('index')
 
     def form_valid(self, form):
         assert open_for_registration(), too_many_registrations_error
@@ -59,6 +55,10 @@ class RegistrationView(FormView):
         send_message_after_registration(registration=registration,
                                         request=self.request)
 
+        self.success_url = reverse_lazy(
+            'register:thanks',
+            kwargs={'user_id': registration.identifier})
+
         return super(RegistrationView, self).form_valid(form)
 
     def form_invalid(self, form):
@@ -78,21 +78,25 @@ class RegistrationView(FormView):
 class ThanksView(View):
     template_name = 'register/thanks.html'
 
-    def get(self, request, *args, **kwargs):
-        context_dict = {'number_in_line': Candidate.total_in_line(),
-                        'show_steps': True,
-                        'step_3': 'class="active"'}
+    def get(self, request, user_id, *args, **kwargs):
+        registration = get_object_or_404(
+            User_Registration, identifier=user_id)
+        registration.validate_email()
+
+        context_dict = {
+            'show_steps': True,
+            'step_3': 'class="active"',
+            'registration': registration,
+            'bicycle_kind': registration.get_bicycle_kind_display()}
         return render(request, self.template_name, context_dict)
 
 
 class CurrentInLineView(View):
     template_name = 'register/current_in_line.html'
 
-    def get(self, request, *args, **kwargs):
-        identifier = request.GET.get('user_id')
-
+    def get(self, request, user_id, *args, **kwargs):
         registration = get_object_or_404(
-            User_Registration, identifier=identifier)
+            User_Registration, identifier=user_id)
         registration.validate_email()
 
         context_dict = {

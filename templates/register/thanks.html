@@ -7,17 +7,42 @@
 {% block body_block %}
     <div class="page-header">
         <h1>
-            {% load i18n %}{% trans "Thank you for registering for a bike!" %}
+            {% load i18n %}{% trans "Congratulations" %}
+            {{ registration.candidate.first_name}},
         </h1>
     </div>
 
-    <h2>{% blocktrans %}Via email you received a link you can to click to
-    verify your email address.{% endblocktrans %}</h2>
-
-    <h2>{% blocktrans %}Furthermore, you can use this link to check your
-    current status.{% endblocktrans %}</h2>
-
-    <!--<h2>{% blocktrans %}Currently, there are a
-    total number of {{ number_in_line }} people waiting
-    for a bike.{% endblocktrans %}</h2>-->
+    <h2>
+        {% blocktrans %}
+            You are now registered for a {{ bicycle_kind }} and officially on
+            our waiting list. We also sent you an
+        {% endblocktrans %}
+        {% if registration.email %}
+            {% blocktrans %}
+                email with a link to confirm your email address and to check you
+                current status.
+            {% endblocktrans %}
+        {% else %}
+            {% trans "SMS." %}
+        {% endif %}
+        {% blocktrans %}
+            Please wait until your bike is prepared for you and you received an
+            invitation from us by
+        {% endblocktrans %}
+        {% if registration.email %}
+            {% trans "email." %}
+        {% else %}
+            {% trans "SMS." %}
+        {% endif %}
+        {% blocktrans %}
+            <br><br>
+            If you have further questions, send us an email:
+            <br>
+            bikeswithoutborders@gmx.de
+            <br><br>
+            Your,
+            <br>
+            BwB-Team
+        {% endblocktrans %}
+    </h2>
 {% endblock %}

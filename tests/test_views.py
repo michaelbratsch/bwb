@@ -29,17 +29,20 @@ class ContactViewTestCase(HypothesisTestCase):
         post_dict['agree'] = "True"
         response = self.client.post(self.url, post_dict)
 
-        self.assertRedirects(response, reverse('register:thanks'))
-
-        if 'email' in post_dict:
-            self.assertEqual(len(mail.outbox), number_of_emails)
-            self.assertEqual(mail.outbox[0].to[0], post_dict['email'])
-
         last_candidate = Candidate.objects.last()
         self.assertEqual(post_dict['first_name'].strip(),
                          last_candidate.first_name)
         self.assertEqual(post_dict['last_name'].strip(),
                          last_candidate.last_name)
+
+        identifier = last_candidate.user_registration.identifier
+
+        self.assertRedirects(response, reverse('register:thanks',
+                                               kwargs={'user_id': identifier}))
+
+        if 'email' in post_dict:
+            self.assertEqual(len(mail.outbox), number_of_emails)
+            self.assertEqual(mail.outbox[0].to[0], post_dict['email'])
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(first_name=name_strategy,
