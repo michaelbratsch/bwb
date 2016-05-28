@@ -5,7 +5,11 @@
 
 
 .custom-table {
-    padding: 30px 30px;
+    padding: 20px 30px;
     text-decoration: none;
     border-radius: 10px 10px 0 0;
+}
+
+.custom-row {
+    padding: 3px 2px;
 }
