@@ -1,5 +1,6 @@
 from django.core import mail
 from django.core.urlresolvers import reverse
+from django.utils.html import escape
 
 from django.core.validators import EmailValidator
 from django.forms.fields import Field
@@ -317,18 +318,67 @@ class ContactViewTestCase(HypothesisTestCase):
                                post_dict=kwargs)
 
 
-# class ThanksViewTestCase(HypothesisTestCase):
-#     url = reverse('register:thanks')
-#
-#     @settings(suppress_health_check=[HealthCheck.too_slow])
-#     @given(lists(elements=email_registration_strategy, average_size=3))
-#     def test_total_number_in_line(self, candidate):
-#         text = 'total number of %s people' % Candidate.objects.count()
-#
-#         self.assertContains(response=self.client.get(self.url),
-#                             text=text, count=1)
-#
-#
+class ThanksViewTestCase(HypothesisTestCase):
+
+    def get_thanks_response(self, post_dict):
+        post_url = reverse('register:registration')
+        post_dict['agree'] = "True"
+        response = self.client.post(post_url, post_dict)
+
+        last_candidate = Candidate.objects.last()
+        self.assertEqual(post_dict['first_name'].strip(),
+                         last_candidate.first_name)
+        self.assertEqual(post_dict['last_name'].strip(),
+                         last_candidate.last_name)
+
+        identifier = last_candidate.user_registration.identifier
+
+        url = reverse('register:thanks',
+                      kwargs={'user_id': identifier})
+        self.assertRedirects(response, url)
+
+        response = self.client.get(url)
+
+        self.assertContains(response=response,
+                            text=escape(last_candidate.first_name),
+                            status_code=200)
+        return response
+
+    @settings(suppress_health_check=[HealthCheck.too_slow])
+    @given(first_name=name_strategy,
+           last_name=name_strategy,
+           date_of_birth=date_strategy,
+           bicycle_kind=bicycle_kind_strategy,
+           email=email_strategy,
+           dummy=random_module())
+    def test_email_registration(self, **kwargs):
+        response = self.get_thanks_response(kwargs)
+        self.assertContains(response=response,
+                            text='email with a link',
+                            status_code=200)
+        self.assertContains(response=response,
+                            text='SMS',
+                            count=0,
+                            status_code=200)
+
+    @settings(suppress_health_check=[HealthCheck.too_slow])
+    @given(first_name=name_strategy,
+           last_name=name_strategy,
+           date_of_birth=date_strategy,
+           bicycle_kind=bicycle_kind_strategy,
+           phone_number=phone_strategy_clean,
+           dummy=random_module())
+    def test_phone_registration(self, **kwargs):
+        response = self.get_thanks_response(kwargs)
+        self.assertContains(response=response,
+                            text='SMS',
+                            status_code=200)
+        self.assertContains(response=response,
+                            text='email with a link',
+                            count=0,
+                            status_code=200)
+
+
 # class CurrentInLineViewTestCase(HypothesisTestCase):
 #     url = reverse('register:current-in-line')
 #
