@@ -1,15 +1,16 @@
-from django.views.generic import View, FormView
-from django_tables2 import RequestConfig
-import random
-
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView
+from django_tables2 import RequestConfig
+import random
+
+from django.views.generic import View, FormView
+from django.views.generic.edit import DeleteView
 
 from register.models import Candidate, Bicycle, HandoutEvent
 from register.models import User_Registration, Invitation
-from staff.forms import CreateCandidateForm
+from staff.forms import CreateCandidateForm, DeleteCandidateForm
 from staff.forms import HandoverForm,  EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
 from staff.tables import CandidateTable, BicycleTable, EventTable
@@ -74,7 +75,7 @@ class AutoInviteView(FormView):
             candidate = [c for c in candidate if c.invitations.count() == 0]
 
             winners = random.sample(candidate, min(len(candidate),
-                                                    number_of_winners))
+                                                   number_of_winners))
 
             for winner in winners:
                 Invitation.objects.create(handout_event=event,
@@ -202,6 +203,28 @@ class CandidateMixin(object):
 class CandidateView(CandidateMixin, View):
     template_name = 'staff/candidate.html'
     form_class = None
+
+
+class DeleteCandidateView(CandidateMixin, FormView):
+    template_name = 'staff/delete_candidate.html'
+    form_class = DeleteCandidateForm
+
+    def form_valid(self, form):
+        candidate_id = form.cleaned_data['candidate_id']
+        candidate = get_object_or_404(Candidate, id=candidate_id)
+        candidate.delete()
+
+        event_id = form.cleaned_data.get('event_id')
+        bicycle_id = form.cleaned_data.get('bicycle_id')
+        if event_id:
+            self.success_url = reverse_lazy('staff:event',
+                                            kwargs={'event_id': event_id})
+        elif bicycle_id:
+            self.success_url = reverse_lazy('staff:bicycle_overview')
+        else:
+            self.success_url = reverse_lazy('staff:candidate_overview')
+
+        return super(DeleteCandidateView, self).form_valid(form)
 
 
 class ModifyCandidateView(CandidateMixin, FormView):

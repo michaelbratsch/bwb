@@ -58,6 +58,10 @@
     class="btn btn-info" role="button">
         {% trans "Modify identification data" %}
     </a>
+    <a href="{% url 'staff:delete_candidate' candidate_id=candidate.id %}{{event.url_parameter}}{{bicycle.url_parameter}}"
+    class="btn btn-info" role="button">
+        {% trans "Delete from database" %}
+    </a>
     <a href="{% url 'staff:invite_candidate' candidate_id=candidate.id %}{{event.url_parameter}}{{bicycle.url_parameter}}"
     class="btn btn-info" role="button">
         {% trans "Invite to an event" %}

@@ -30,6 +30,22 @@ def get_hidden_fields(candidate_id, event_id, bicycle_id):
             get_hidden_field('bicycle_id', bicycle_id))
 
 
+class DeleteCandidateForm(forms.Form):
+    event_id = forms.IntegerField(min_value=0, required=False)
+    bicycle_id = forms.IntegerField(min_value=0, required=False)
+    candidate_id = forms.IntegerField(min_value=0)
+
+    def __init__(self, candidate_id=None, event_id=None, bicycle_id=None,
+                 *args, **kwargs):
+        super(DeleteCandidateForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(*get_hidden_fields(
+            candidate_id, event_id, bicycle_id))
+        self.helper.add_input(Submit('submit', 'Delete Candidate',
+                                     css_class='col-xs-3 btn-info'))
+
+
 class InviteCandidateForm(forms.Form):
     event_id = forms.IntegerField(min_value=0, required=False)
     candidate_id = forms.IntegerField(min_value=0)

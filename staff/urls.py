@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 
 from register.models import Candidate
 
-from staff.views import BicycleOverviewView, CreateCandidateView
+from staff.views import BicycleOverviewView, CreateCandidateView,\
+    DeleteCandidateView
 from staff.views import CandidateView, EventView, ManageView, EventOverviewView
 from staff.views import CreateEventView, AutoInviteView, ModifyCandidateView
 from staff.views import HandoverBicycleView, CandidateOverviewView
@@ -43,6 +44,9 @@ urlpatterns = [
         view=login_required(CandidateOverviewView.as_view(
             get_query_set=lambda: Candidate.objects.all())),
         name='candidate_overview'),
+    url(regex=r'^create_candidate.html$',
+        view=login_required(CreateCandidateView.as_view()),
+        name='create_candidate'),
 
 
     url(regex=candidate_pattern % 'candidate',
@@ -60,7 +64,7 @@ urlpatterns = [
     url(regex=candidate_pattern % 'invite_candidate',
         view=login_required(InviteCandidateView.as_view()),
         name='invite_candidate'),
-    url(regex=r'^create_candidate.html$',
-        view=login_required(CreateCandidateView.as_view()),
-        name='create_candidate')
+    url(regex=candidate_pattern % 'delete_candidate',
+        view=login_required(DeleteCandidateView.as_view()),
+        name='delete_candidate')
 ]
