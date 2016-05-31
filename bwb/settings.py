@@ -10,15 +10,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-from django.utils.translation import ugettext_lazy
 import os
 
-# Email section
-from .email_settings import EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER
-from .email_settings import EMAIL_PORT, EMAIL_USE_TLS
-# SECURITY WARNING: keep the secret key used in production secret!
-from .secret_key import SECRET_KEY
+from django.utils.translation import ugettext_lazy
 
+# Email section
+from .email_settings import EMAIL_HOST  # noqa @UnusedImport
+from .email_settings import EMAIL_HOST_PASSWORD  # noqa @UnusedImport
+from .email_settings import EMAIL_HOST_USER  # noqa @UnusedImport
+from .email_settings import EMAIL_PORT, EMAIL_USE_TLS  # noqa @UnusedImport
+
+# SECURITY WARNING: keep the secret key used in production secret!
+from .secret_key import SECRET_KEY  # noqa @UnusedImport
 
 # Maximum number of people that can register
 MAX_NUMBER_OF_REGISTRATIONS = 200
@@ -104,16 +107,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'UserAttributeSimilarityValidator'),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'MinimumLengthValidator'),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'CommonPasswordValidator'),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'NumericPasswordValidator'),
     },
 ]
 

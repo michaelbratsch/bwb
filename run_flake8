@@ -1,0 +1,1 @@
+flake8 --exclude db.sqlite3 --exclude register/migrations .
