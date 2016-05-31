@@ -8,35 +8,32 @@
         <h2>{% load i18n %}{% trans "How does it work?" %}</h2>
     </div>
     <h3>
-        {% blocktrans %}
-        BwB volunteers repair and sell donated bikes together with refugees
-        for refugees.
+        {% blocktrans %}BwB volunteers repair and sell donated bikes
+        together with refugees for refugees.{% endblocktrans %}
         <ol class="custom-table">
         <li class="custom-row">
-            Register online with your email address or your phone number:
-            you are now on our waiting list.
+            {% blocktrans %}Register online with your email address or your
+            phone number: you are now on our waiting list.{% endblocktrans %}
         </li>
         <li class="custom-row">
-            Wait until you get invitation from us by email or sms.
+            {% trans "Wait until you get invitation from us by email or sms." %}
         </li>
         <li class="custom-row">
-            Confirm the invitation, if you have time to pick up your bike.
+            {% trans "Confirm the invitation, if you have time to pick up your bike." %}
         </li>
         <li class="custom-row">
-            Come to our Workshop and bring your passport or registration
-            document.
+            {% trans "Come to our Workshop and bring your passport or registration document." %}
         </li>
         <li class="custom-row">
-            Repair your bike together with us, buy it for 10€ and get a lock.
+            {% trans "Repair your bike together with us, buy it for 10€ and get a lock." %}
         </li>
         </ol>
-        {% endblocktrans %}
         {% if open_for_registration %}
         <div class="form-group row">
             <div class="col-xs-12 col-md-4">
                 <a href="{% url 'register:registration' %}"
                 class="btn btn-info btn-lg btn-block">
-                    Register now!
+                    {% trans "Register now!" %}
                 </a>
             </div>
         </div>

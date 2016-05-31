@@ -12,16 +12,11 @@
 {% block body_block %}
 <div class="page-header">
     <h2>
-        {% load i18n %}
-        {% blocktrans %}
         Overview of all people that are registered in the database.
-        {% endblocktrans %}
     </h2>
 </div>
 {% render_table candidates_table %}
 <br><br>
 <a href="{% url 'staff:create_candidate' %}" class="btn btn-info"
-role="button">
-    {% trans "Add new person" %}
-</a>
+role="button"> Add new person </a>
 {% endblock %}

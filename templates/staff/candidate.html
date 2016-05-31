@@ -4,39 +4,38 @@
 
 {% block sub_body_block %}
 <h3>
-    {% load i18n %}
     {% if candidate.has_bicycle %}
-        {% trans "Has the following bicycle:" %}
+        Has the following bicycle:
         <div style="line-height:40%;"><br></div>
         {{ candidate.bicycle.information|linebreaksbr }}
     {% else %}
-        {% trans "Does not have a bicycle so far." %}
+        Does not have a bicycle so far.
     {% endif %}
 
     <div style="line-height:150%;"><br></div>
 
     {% if candidate.invitations.all %}
-        {% trans "Is invited to the following events:" %}
+        Is invited to the following events:
         <div style="line-height:40%;"><br></div>
         {% for invitation in candidate.invitations.all %}
             {{ invitation.handout_event.due_date }} (invited on:
             {{ invitation.time_of_invitation }})<br>
         {% endfor %}
     {% else %}
-        {% trans "Is not invited to any event." %}
+        Is not invited to any event.
     {% endif %}
 
     <div style="line-height:150%;"><br></div>
 
     {% if candidate.user_registration %}
-        {% trans "Is registered with the following data:" %}
+        Is registered with the following data:
         <div style="line-height:40%;"><br></div>
         {{ candidate.user_registration.get_bicycle_kind_display }}<br>
         {{ candidate.user_registration.email }}<br>
         {{ candidate.user_registration.phone_number }}<br>
         {{ candidate.user_registration.time_of_registration }}<br>
     {% else %}
-        {% trans "Has been added by staff without a registration." %}
+        Has been added by staff without a registration.
     {% endif %}
 
     <div style="line-height:50%;"><br></div>
@@ -46,41 +45,41 @@
     {% if candidate.has_bicycle %}
         <a href="{% url 'staff:refund_bicycle' candidate_id=candidate.id %}{{event.url_parameter}}{{bicycle.url_parameter}}"
         class="btn btn-info" role="button">
-            {% trans "Refund bicycle" %}
+            Refund bicycle
         </a>
     {% else %}
             <a href="{% url 'staff:handover_bicycle' candidate_id=candidate.id %}{{event.url_parameter}}{{bicycle.url_parameter}}"
             class="btn btn-info" role="button">
-                {% trans "Handout bicycle" %}
+                Handout bicycle
             </a>
     {% endif %}
     <a href="{% url 'staff:modify_candidate' candidate_id=candidate.id %}{{event.url_parameter}}{{bicycle.url_parameter}}"
     class="btn btn-info" role="button">
-        {% trans "Modify identification data" %}
+        Modify identification data
     </a>
     <a href="{% url 'staff:delete_candidate' candidate_id=candidate.id %}{{event.url_parameter}}{{bicycle.url_parameter}}"
     class="btn btn-info" role="button">
-        {% trans "Delete from database" %}
+        Delete from database
     </a>
     <a href="{% url 'staff:invite_candidate' candidate_id=candidate.id %}{{event.url_parameter}}{{bicycle.url_parameter}}"
     class="btn btn-info" role="button">
-        {% trans "Invite to an event" %}
+        Invite to an event
     </a>
 
     {% if event %}
         <a href="{% url 'staff:event' event_id=event.id %}"
         class="btn btn-info" role="button">
-            {% trans "Back" %}
+            Back
         </a>
     {% elif bicycle %}
         <a href="{% url 'staff:bicycle_overview' %}"
         class="btn btn-info" role="button">
-            {% trans "Back" %}
+            Back
         </a>
     {% else %}
         <a href="{% url 'staff:candidate_overview' %}"
         class="btn btn-info" role="button">
-            {% trans "Back" %}
+            Back
         </a>
     {% endif %}
 

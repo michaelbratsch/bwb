@@ -5,11 +5,8 @@
 {% block body_block %}
 <div class="page-header">
     <h2>
-        {% load i18n %}
-        {% blocktrans %}
-        Create a new person in the database. This could be needed for people 
+        Create a new person in the database. This could be needed for people
         who do not have a mobile phone or email.
-        {% endblocktrans %}
     </h2>
 </div>
 <h3>
@@ -21,7 +18,7 @@ the database. This information should match with their passports.
     {% csrf_token %}
     <div class="form-group row">
         <label class="col-xs-2 control-label">
-            {% load i18n %}{% trans "First name" %}
+            First name
         </label>
         <div class="col-xs-4">
             <input class="form-control" name="first_name" type="text"
@@ -31,7 +28,7 @@ the database. This information should match with their passports.
 
     <div class="form-group row">
         <label class="col-xs-2 control-label">
-            {% trans "Last name" %}
+            Last name
         </label>
         <div class="col-xs-4">
             <input class="form-control" name="last_name" type="text"
@@ -41,7 +38,7 @@ the database. This information should match with their passports.
 
     <div class="form-group row">
         <label class="col-xs-2 control-label">
-            {% trans "Date of birth" %}
+            Date of birth
         </label>
         <div class="col-xs-4">
             <div class="input-group">
@@ -59,7 +56,7 @@ the database. This information should match with their passports.
     <div class="form-group row">
         <div class="col-xs-3">
             <button class="btn btn-info btn-block" type="submit" value="Submit">
-                {% trans "Submit" %}
+                Submit
             </button>
         </div>
     </div>
@@ -68,7 +65,7 @@ the database. This information should match with their passports.
         <div class="col-xs-3">
             <a href="{% url 'staff:candidate_overview' %}"
             class="btn btn-info btn-block" role="button">
-                {% trans "Back" %}
+                Back
             </a>
         </div>
     </div>

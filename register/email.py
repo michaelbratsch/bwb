@@ -29,11 +29,11 @@ def send_message_after_registration(registration, request):
     candidate = registration.candidate
 
     name = "%s %s" % (candidate.first_name, candidate.last_name)
-    header = ugettext("Hello %s,") % name
+    header = "%s %s," % (ugettext("Hello"), name)
 
-    body = ugettext("Thank you for registering for a bike.\n"
-                    "To verify your email address and to check your current "
-                    "number in line, please click the following link:")
+    body = (ugettext("Thank you for registering for a bike.") + "\n" +
+            ugettext("To verify your email address and to check your current "
+                     "number in line, please click the following link:"))
 
     page_link = reverse('register:current-in-line',
                         kwargs={'user_id': registration.identifier})

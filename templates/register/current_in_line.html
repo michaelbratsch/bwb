@@ -11,6 +11,6 @@
             email address.{% endblocktrans %}</h1>
         </div>
     {% endif %}
-    <h1>{% blocktrans %}Currently you are number {{ number_in_line }} in line
-    waiting for a {{ bicycle_kind }}.{% endblocktrans %}</h1>
+    <h1>{% trans "Currently you are number" %} {{ number_in_line }}
+    {% trans "in line waiting for a" %} {{ bicycle_kind }}.</h1>
 {% endblock %}

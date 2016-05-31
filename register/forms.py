@@ -161,7 +161,7 @@ class RegistrationForm(forms.Form):
                     </div>""" % content_dict),
             Field('agree'))
 
-        self.helper.add_input(Submit('submit', 'Submit',
+        self.helper.add_input(Submit('submit', _('Submit'),
                                      css_class='col-xs-3 btn-info'))
 
     def clean_phone_number(self):
