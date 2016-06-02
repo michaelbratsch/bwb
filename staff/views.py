@@ -1,12 +1,12 @@
+from django.core.urlresolvers import reverse_lazy
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, FormView
 from django.views.generic.base import TemplateView
 from django_tables2 import RequestConfig
 import random
 
-from django.core.urlresolvers import reverse_lazy
-from django.http import Http404
-from django.shortcuts import render, get_object_or_404
-
+from register.email import send_message_after_invitation
 from register.models import Candidate, Bicycle, HandoutEvent
 from register.models import User_Registration, Invitation
 from staff.forms import CreateCandidateForm, DeleteCandidateForm
@@ -79,6 +79,9 @@ class AutoInviteView(FormView):
             for winner in winners:
                 Invitation.objects.create(handout_event=event,
                                           candidate=winner)
+
+                send_message_after_invitation(candidate=winner,
+                                              handout_event=event)
 
         self.success_url = reverse_lazy('staff:event',
                                         kwargs={'event_id': event.id})
@@ -310,6 +313,9 @@ class InviteCandidateView(CandidateMixin, FormView):
 
         Invitation.objects.create(candidate=candidate,
                                   handout_event=invitation_event)
+
+        send_message_after_invitation(candidate=candidate,
+                                      handout_event=invitation_event)
 
         self.set_success_url(form)
 

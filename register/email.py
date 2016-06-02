@@ -1,6 +1,10 @@
-from django.core.mail import send_mail
+from django.conf.global_settings import DATETIME_FORMAT
 from django.core.urlresolvers import reverse
+from django.utils import translation, formats
+
+from django.core.mail import send_mail
 from django.utils.translation import ugettext
+
 
 # To support Python 2 and 3
 try:
@@ -25,6 +29,41 @@ def get_url_parameter(name, value):
     return ""
 
 
+def send_message(registration, subject, message):
+
+    if registration.email:
+        send_mail(subject=subject,
+                  message=message,
+                  from_email='webmaster@bikeswithoutborders.de',
+                  recipient_list=[registration.email],
+                  fail_silently=False)
+
+
+def send_message_after_invitation(candidate, handout_event):
+    registration = candidate.user_registration
+
+    if registration:
+        with translation.override(registration.language):
+            name = "%s %s" % (candidate.first_name, candidate.last_name)
+            header = "%s %s," % (ugettext("Hello"), name)
+
+            body = (
+                ugettext("We have a ") +
+                registration.get_bicycle_kind_display() +
+                ugettext(" that is reserved for you. Please come by on ") +
+                formats.date_format(handout_event.due_date, DATETIME_FORMAT) +
+                ugettext(", so that we can fix it together with your help."))
+
+            newline = "\n"
+            footer = ugettext("Your,") + newline + ugettext('BwB-Team')
+
+            message = newline.join((header, newline, body, newline, footer))
+
+            subject = ugettext('BwB - Get your bike')
+
+        send_message(registration, subject, message)
+
+
 def send_message_after_registration(registration, request):
     candidate = registration.candidate
 
@@ -45,10 +84,6 @@ def send_message_after_registration(registration, request):
     newline = "\n"
 
     message = newline.join((header, newline, body, link, newline, footer))
+    subject = ugettext('BwB - Registration')
 
-    if registration.email:
-        send_mail(subject=ugettext('BwB - Registration'),
-                  message=message,
-                  from_email='webmaster@bikeswithoutborders.de',
-                  recipient_list=[registration.email],
-                  fail_silently=False)
+    send_message(registration, subject, message)

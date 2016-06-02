@@ -8,6 +8,7 @@ import os
 
 from django.utils.encoding import python_2_unicode_compatible
 
+from bwb.settings import LANGUAGE_CODE
 from register.email import get_url_parameter
 
 
@@ -128,8 +129,8 @@ class User_Registration(models.Model):
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
                                      related_name='user_registration')
 
-    # ToDo: remember language of registration to send invitation email
-    # in right language
+    language = models.CharField(default=LANGUAGE_CODE,
+                                max_length=10)
 
     MALE = 1
     FEMALE = 2

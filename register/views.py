@@ -1,9 +1,10 @@
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
-
 from django.views.generic import View
 from django.views.generic.edit import FormView
+
+from django.utils.translation import get_language
 
 from register.email import send_message_after_registration
 from register.forms import RegistrationForm, open_for_registration
@@ -37,7 +38,8 @@ class RegistrationView(FormView):
         candidate = Candidate.objects.create(**form_data)
 
         creation_dict = {'candidate': candidate,
-                         'bicycle_kind': form.cleaned_data['bicycle_kind']}
+                         'bicycle_kind': form.cleaned_data['bicycle_kind'],
+                         'language': get_language()}
 
         email = form.cleaned_data['email']
         phone_number = form.cleaned_data['phone_number']
