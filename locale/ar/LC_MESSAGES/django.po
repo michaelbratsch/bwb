@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-31 19:25+0000\n"
+"POT-Creation-Date: 2016-06-02 21:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,45 +19,69 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
-#: bwb/settings.py:124
+#: bwb/settings.py:131
 msgid "English"
 msgstr ""
 
-#: bwb/settings.py:125
+#: bwb/settings.py:132
 msgid "German"
 msgstr ""
 
-#: bwb/settings.py:126
+#: bwb/settings.py:133
 msgid "French"
 msgstr ""
 
-#: bwb/settings.py:127
+#: bwb/settings.py:134
 msgid "Arabic"
 msgstr ""
 
-#: bwb/settings.py:128
+#: bwb/settings.py:135
 msgid "Persian"
 msgstr ""
 
-#: register/email.py:32
+#: register/email.py:48 register/email.py:71
 msgid "Hello"
 msgstr ""
 
-#: register/email.py:34
+#: register/email.py:51
+msgid "We have a "
+msgstr ""
+
+#: register/email.py:53
+msgid " that is reserved for you. Please come by on "
+msgstr ""
+
+#: register/email.py:55
+msgid ", so that we can fix it together with your help."
+msgstr ""
+
+#: register/email.py:58
+msgid "Your,"
+msgstr ""
+
+#: register/email.py:58 templates/register/thanks.html:38
+msgid "BwB-Team"
+msgstr ""
+
+#: register/email.py:62
+msgid "BwB - Get your bike"
+msgstr ""
+
+#: register/email.py:73
 msgid "Thank you for registering for a bike."
 msgstr ""
 
-#: register/email.py:35
+#: register/email.py:74
 msgid ""
 "To verify your email address and to check your current number in line, "
 "please click the following link:"
 msgstr ""
 
-#: register/email.py:44
+#: register/email.py:83
 msgid "We hope to see you soon!"
 msgstr ""
 
-#: register/email.py:50
+#: register/email.py:87
 msgid "BwB - Registration"
 msgstr ""
 
@@ -291,8 +315,4 @@ msgstr ""
 
 #: templates/register/thanks.html:36
 msgid "Your"
-msgstr ""
-
-#: templates/register/thanks.html:38
-msgid "BwB-Team"
 msgstr ""
