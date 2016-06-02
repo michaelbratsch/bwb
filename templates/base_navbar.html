@@ -31,7 +31,7 @@
             {% endif %}
 
             <li class="navbar-right">
-                <form action="{% url 'index' %}" method="post">
+                <form action="{% url 'set_language' %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <select name="language" class="form-control navbar-btn"
