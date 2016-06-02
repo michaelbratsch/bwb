@@ -1,12 +1,12 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, HTML
 from django import forms
-from django.utils.translation import ugettext as _
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumbers.phonenumberutil import NumberParseException
 import phonenumbers
 
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _, ugettext_lazy
 
 from bwb.settings import MAX_NUMBER_OF_REGISTRATIONS
 from register.models import max_name_length, User_Registration, Candidate
@@ -103,20 +103,23 @@ class MyPhoneNumberField(PhoneNumberField):
 
 class RegistrationForm(forms.Form):
     first_name = forms.CharField(max_length=max_name_length, required=True,
-                                 label=_('First name'))
+                                 label=ugettext_lazy('First name'))
     last_name = forms.CharField(max_length=max_name_length, required=True,
-                                label=_('Last name'))
-    date_of_birth = forms.DateField(required=True, label=_('Date of birth'))
+                                label=ugettext_lazy('Last name'))
+    date_of_birth = forms.DateField(required=True,
+                                    label=ugettext_lazy('Date of birth'))
 
-    email = forms.EmailField(required=False, label=_('Email'))
-    phone_number = MyPhoneNumberField(required=False,
-                                      label=_('Mobile phone number'))
+    email = forms.EmailField(required=False, label=ugettext_lazy('Email'))
+    phone_number = MyPhoneNumberField(
+        required=False,
+        label=ugettext_lazy('Mobile phone number'))
     bicycle_kind = forms.ChoiceField(
         choices=User_Registration.BICYCLE_CHOICES,
         required=True,
-        label=_('Bicycle kind'))
-    agree = forms.BooleanField(required=False,
-                               label=_("Agree with Terms and Conditions"))
+        label=ugettext_lazy('Bicycle kind'))
+    agree = forms.BooleanField(
+        required=False,
+        label=ugettext_lazy("Agree with Terms and Conditions"))
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
