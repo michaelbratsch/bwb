@@ -1,6 +1,8 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field, HTML
+from crispy_forms.layout import Submit, Layout, Field, HTML, Div
+from datetime import datetime
 from django import forms
+from django.forms.widgets import SelectDateWidget, TextInput
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumbers.phonenumberutil import NumberParseException
 import phonenumbers
@@ -9,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _, ugettext_lazy
 
 from bwb.settings import MAX_NUMBER_OF_REGISTRATIONS
-from register.models import max_name_length, User_Registration, Candidate
+from register.models import User_Registration, Candidate
 
 
 # ToDo: Only take people into account that do not have a bicycle.
@@ -101,15 +103,17 @@ class MyPhoneNumberField(PhoneNumberField):
         return super(MyPhoneNumberField, self).to_python(value)
 
 
-class RegistrationForm(forms.Form):
-    first_name = forms.CharField(max_length=max_name_length, required=True,
-                                 label=ugettext_lazy('First name'))
-    last_name = forms.CharField(max_length=max_name_length, required=True,
-                                label=ugettext_lazy('Last name'))
-    date_of_birth = forms.DateField(required=True,
-                                    label=ugettext_lazy('Date of birth'))
+class SelectDateOfBirthWidget(SelectDateWidget):
 
-    email = forms.EmailField(required=False, label=ugettext_lazy('Email'))
+    def __init__(self, *args, **kwargs):
+        current_year = datetime.now().year
+        super(SelectDateOfBirthWidget, self).__init__(
+            years=range(1900, current_year)[::-1], *args, **kwargs)
+
+
+class RegistrationForm(forms.ModelForm):
+    email = forms.EmailField(required=False, label=ugettext_lazy('Email'),
+                             widget=TextInput)
     phone_number = MyPhoneNumberField(
         required=False,
         label=ugettext_lazy('Mobile phone number'))
@@ -120,6 +124,15 @@ class RegistrationForm(forms.Form):
     agree = forms.BooleanField(
         required=False,
         label=ugettext_lazy("Agree with Terms and Conditions"))
+
+    class Meta:
+        model = Candidate
+        fields = ('first_name', 'last_name', 'date_of_birth',
+                  'email', 'phone_number', 'bicycle_kind', 'agree')
+        labels = {'first_name': ugettext_lazy('First name'),
+                  'last_name': ugettext_lazy('Last name'),
+                  'date_of_birth': ugettext_lazy('Date of birth')}
+        widgets = {'date_of_birth': SelectDateOfBirthWidget}
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -144,25 +157,30 @@ class RegistrationForm(forms.Form):
             'subheading': _("Our terms of use are the following:"),
             'body': " ".join(map(lambda x: '<li>%s</li>' % x, lines_of_body))}
 
+        def wrap_field(*args):
+            return Div(*args, css_class='col-md-6 col-xs-12')
+
         self.helper.layout = Layout(
-            Field('first_name'),
-            Field('last_name'),
-            Field('date_of_birth', id='datepicker'),
-            Field('email'),
-            Field('phone_number'),
-            Field('bicycle_kind'),
-            HTML(
-                """ <label for="id_terms_of_use" class="control-label">
-                        %(heading)s
-                    </label>
-                    <div class="controls" id="id_terms_of_use">
-                        <div style="border: 1px solid #e5e4e4;
-                        overflow: auto; padding: 10px;">
-                            <p>%(subheading)s</p>
-                            %(body)s
-                        </div>
-                    </div>""" % content_dict),
-            Field('agree'))
+            wrap_field(Field('first_name'),
+                       Field('last_name'),
+                       Field('date_of_birth')),
+            wrap_field(Field('email'),
+                       Field('phone_number'),
+                       Field('bicycle_kind')),
+            Div(
+                HTML(
+                    """ <label for="id_terms_of_use" class="control-label">
+                            %(heading)s
+                        </label>
+                        <div class="controls" id="id_terms_of_use">
+                            <div style="border: 1px solid #e5e4e4;
+                            overflow: auto; padding: 10px;">
+                                <p>%(subheading)s</p>
+                                %(body)s
+                            </div>
+                        </div>""" % content_dict),
+                Field('agree'), css_class='col-xs-12')
+        )
 
         self.helper.add_input(Submit('submit', _('Submit'),
                                      css_class='col-xs-3 btn-info'))

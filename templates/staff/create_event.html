@@ -55,6 +55,7 @@
 
 {% block script_block %}
 <script>
+    {% load i18n %}
     {% get_current_language as LANGUAGE_CODE %}
     $(function () {
         $('#datetimepicker1').datetimepicker({
