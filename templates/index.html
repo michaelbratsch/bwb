@@ -18,8 +18,8 @@
     {% trans "Please choose your language first!" %}<br><br>
 
     {% for language in languages %}
-    {% cycle '<div class="form-group row">' '' %}
-        <div class="col-xs-6 col-md-4">
+    {% cycle '<div class="row">' '' %}
+        <div class="col-xs-12 col-md-5 col-lg-4" style="padding:7px">
             <form action="{% url 'set_language' %}" method="post"
             class="post-form">
                 {% csrf_token %}
@@ -30,13 +30,14 @@
 
                 <button class="btn btn-info btn-lg btn-block"
                 type="submit" value="Submit">
-                    {{language.name}}
-                    {% ifnotequal language.name "English" %}
-                        {{ language.name_local }}
+                    {% ifnotequal language.code LANGUAGE_CODE %}
+                        {% trans language.name %}
                     {% endifnotequal %}
+                    {{ language.name_local }}
                 </button>
             </form>
         </div>
+        <div class="clearfix visible-xs"></div>
     {% cycle '' '</div>' %}
     {% endfor %}
     </h2>
