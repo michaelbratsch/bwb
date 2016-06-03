@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-02 21:10+0000\n"
+"POT-Creation-Date: 2016-06-03 19:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -125,69 +125,69 @@ msgstr ""
 msgid "Last name"
 msgstr ""
 
-#: register/forms.py:109
+#: register/forms.py:110
 msgid "Date of birth"
 msgstr ""
 
-#: register/forms.py:111
+#: register/forms.py:112
 msgid "Email"
 msgstr ""
 
-#: register/forms.py:113
+#: register/forms.py:115
 msgid "Mobile phone number"
 msgstr ""
 
-#: register/forms.py:117
+#: register/forms.py:119
 msgid "Bicycle kind"
 msgstr ""
 
-#: register/forms.py:119
+#: register/forms.py:122
 msgid "Agree with Terms and Conditions"
 msgstr ""
 
-#: register/forms.py:127
+#: register/forms.py:130
 msgid "You can only buy one bike per person."
 msgstr ""
 
-#: register/forms.py:128
+#: register/forms.py:131
 msgid "Please do not register twice."
 msgstr ""
 
-#: register/forms.py:129
+#: register/forms.py:132
 msgid "If you want a bike for your children, please also register them."
 msgstr ""
 
-#: register/forms.py:131
+#: register/forms.py:134
 msgid "We do not sell new bikes."
 msgstr ""
 
-#: register/forms.py:132
+#: register/forms.py:135
 msgid "All bikes are donated and used."
 msgstr ""
 
-#: register/forms.py:133
+#: register/forms.py:136
 msgid "We only sell road-worthy bikes."
 msgstr ""
 
-#: register/forms.py:134
+#: register/forms.py:137
 msgid "You can resell your bike to us, if you do not need it anymore."
 msgstr ""
 
-#: register/forms.py:136
+#: register/forms.py:139
 msgid ""
 "Our bikes always need repair work. Please bring some time and help us to "
 "repair your bike."
 msgstr ""
 
-#: register/forms.py:140
+#: register/forms.py:143
 msgid "Terms of use"
 msgstr ""
 
-#: register/forms.py:141
+#: register/forms.py:144
 msgid "Our terms of use are the following:"
 msgstr ""
 
-#: register/forms.py:164
+#: register/forms.py:167
 msgid "Submit"
 msgstr ""
 
