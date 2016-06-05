@@ -6,6 +6,8 @@ from django.views.generic.base import TemplateView
 from django_tables2 import RequestConfig
 import random
 
+from django.http.response import HttpResponseRedirect
+
 from register.email import send_message_after_invitation
 from register.models import Candidate, Bicycle, HandoutEvent
 from register.models import User_Registration, Invitation
@@ -156,28 +158,53 @@ class CreateCandidateView(FormView):
 
 class CandidateMixin(object):
 
-    def get(self, request, candidate_id, *args, **kwargs):
+    def get_context_dict(self, candidate_id, event_id, bicycle_id, data=None):
         candidate = get_object_or_404(Candidate, id=candidate_id)
         context_dict = {'candidate': candidate,
                         'base_template_name': 'staff/base_candidate_view.html'}
 
-        event_id = request.GET.get('event_id')
-        bicycle_id = request.GET.get('bicycle_id')
+        if event_id:
+            event = get_object_or_404(HandoutEvent, id=event_id)
+            context_dict['event'] = event
+            context_dict['base_template_name'] = 'staff/base_event_view.html'
+        elif bicycle_id:
+            bicycle = get_object_or_404(Bicycle, id=bicycle_id)
+            context_dict['bicycle'] = bicycle
+            context_dict['base_template_name'] = 'staff/base_bicycle_view.html'
 
         if self.form_class:
             context_dict['form'] = self.form_class(
+                data=data,
                 candidate_id=candidate_id,
                 event_id=event_id,
                 bicycle_id=bicycle_id)
 
-        if event_id is not None:
-            event = get_object_or_404(HandoutEvent, id=event_id)
-            context_dict['event'] = event
-            context_dict['base_template_name'] = 'staff/base_event_view.html'
-        elif bicycle_id is not None:
-            bicycle = get_object_or_404(Bicycle, id=bicycle_id)
-            context_dict['bicycle'] = bicycle
-            context_dict['base_template_name'] = 'staff/base_bicycle_view.html'
+        return context_dict
+
+    def get(self, request, candidate_id, *args, **kwargs):
+        event_id = request.GET.get('event_id')
+        bicycle_id = request.GET.get('bicycle_id')
+
+        context_dict = self.get_context_dict(candidate_id=candidate_id,
+                                             event_id=event_id,
+                                             bicycle_id=bicycle_id)
+
+        return render(request, self.template_name, context_dict)
+
+    def post(self, request, candidate_id, *args, **kwargs):
+        event_id = request.POST.get('event_id')
+        bicycle_id = request.POST.get('bicycle_id')
+
+        context_dict = self.get_context_dict(candidate_id=candidate_id,
+                                             event_id=event_id,
+                                             bicycle_id=bicycle_id,
+                                             data=request.POST)
+
+        form = context_dict['form']
+
+        if form.is_valid():
+            self.form_valid(form)
+            return HttpResponseRedirect(self.success_url)
 
         return render(request, self.template_name, context_dict)
 

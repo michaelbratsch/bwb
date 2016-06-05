@@ -3,10 +3,11 @@ from crispy_forms.layout import Submit, Layout, Field, Div
 from django import forms
 from django.shortcuts import get_object_or_404
 
+from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
 from django.utils.translation import ugettext_lazy
 
-from register.forms import SelectDateOfBirthWidget
+from register.forms import SelectDateOfBirthWidget, multiple_registration_error
 from register.models import Bicycle, Candidate
 
 
@@ -34,6 +35,20 @@ class CreateCandidateForm(forms.ModelForm):
 
         self.helper.add_input(Submit('submit', 'Submit',
                                      css_class='col-xs-3 btn-info'))
+
+    def clean(self):
+        cleaned_data = super(CreateCandidateForm, self).clean()
+
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        date_of_birth = cleaned_data.get('date_of_birth')
+
+        if Candidate.get_matching(first_name=first_name,
+                                  last_name=last_name,
+                                  date_of_birth=date_of_birth):
+            raise ValidationError(multiple_registration_error)
+
+        return cleaned_data
 
 
 def get_hidden_field(name, var):
@@ -138,6 +153,23 @@ class ModifyCandidateForm(forms.ModelForm):
 
             self.helper.add_input(Submit('submit', 'Submit',
                                          css_class='col-xs-3 btn-info'))
+
+    def clean(self):
+        cleaned_data = super(ModifyCandidateForm, self).clean()
+
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        date_of_birth = cleaned_data.get('date_of_birth')
+
+        candidate_id = cleaned_data['candidate_id']
+
+        if Candidate.get_matching(
+                first_name=first_name,
+                last_name=last_name,
+                date_of_birth=date_of_birth).exclude(id=candidate_id):
+            raise ValidationError(multiple_registration_error)
+
+        return cleaned_data
 
 
 class RefundForm(forms.Form):
