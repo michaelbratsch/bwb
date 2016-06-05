@@ -72,7 +72,7 @@ mobile_phone_prefixes = ['01511',  # Deutsche Telekom
                          '0179']
 
 
-def parse_phone_number(value):
+def parse_mobile_number(value):
     def is_mobile_number(parsed_number):
         for prefix in mobile_phone_prefixes:
             if str(parsed_number.national_number).startswith(prefix[1:]):
@@ -98,7 +98,7 @@ class MyPhoneNumberField(PhoneNumberField):
 
     def to_python(self, value):
         if value:
-            value = parse_phone_number(value)
+            value = parse_mobile_number(value)
 
         return super(MyPhoneNumberField, self).to_python(value)
 
@@ -114,7 +114,7 @@ class SelectDateOfBirthWidget(SelectDateWidget):
 class RegistrationForm(forms.ModelForm):
     email = forms.EmailField(required=False, label=ugettext_lazy('Email'),
                              widget=TextInput)
-    phone_number = MyPhoneNumberField(
+    mobile_number = MyPhoneNumberField(
         required=False,
         label=ugettext_lazy('Mobile phone number'))
     bicycle_kind = forms.ChoiceField(
@@ -128,7 +128,7 @@ class RegistrationForm(forms.ModelForm):
     class Meta:
         model = Candidate
         fields = ('first_name', 'last_name', 'date_of_birth',
-                  'email', 'phone_number', 'bicycle_kind', 'agree')
+                  'email', 'mobile_number', 'bicycle_kind', 'agree')
         labels = {'first_name': ugettext_lazy('First name'),
                   'last_name': ugettext_lazy('Last name'),
                   'date_of_birth': ugettext_lazy('Date of birth')}
@@ -165,7 +165,7 @@ class RegistrationForm(forms.ModelForm):
                        Field('last_name'),
                        Field('date_of_birth')),
             wrap_field(Field('email'),
-                       Field('phone_number'),
+                       Field('mobile_number'),
                        Field('bicycle_kind')),
             Div(
                 HTML(
@@ -185,11 +185,11 @@ class RegistrationForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', _('Submit'),
                                      css_class='col-xs-3 btn-info'))
 
-    def clean_phone_number(self):
-        phone_number_uncleaned = self.data.get('phone_number')
+    def clean_mobile_number(self):
+        mobile_number_uncleaned = self.data.get('mobile_number')
 
-        if phone_number_uncleaned:
-            return parse_phone_number(phone_number_uncleaned)
+        if mobile_number_uncleaned:
+            return parse_mobile_number(mobile_number_uncleaned)
 
         return None
 
@@ -206,25 +206,19 @@ class RegistrationForm(forms.ModelForm):
             raise ValidationError(too_many_registrations_error)
 
         email = cleaned_data.get('email')
-        phone_number = cleaned_data.get('phone_number')
+        mobile_number = cleaned_data.get('mobile_number')
 
         # Email or phone number needs to be present
-        if not (email or phone_number):
+        if not (email or mobile_number):
             raise ValidationError(email_or_phone_error)
 
-        try:
-            first_name = cleaned_data['first_name']
-            last_name = cleaned_data['last_name']
-            date_of_birth = cleaned_data['date_of_birth']
-        except KeyError:
-            # If not caught, this key error prevents from testing the
-            # form validation errors for first_name, last_name and
-            # date_of_birth.
-            pass
-        else:
-            if Candidate.get_matching(first_name=first_name,
-                                      last_name=last_name,
-                                      date_of_birth=date_of_birth):
-                raise ValidationError(multiple_registration_error)
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        date_of_birth = cleaned_data.get('date_of_birth')
+
+        if Candidate.get_matching(first_name=first_name,
+                                  last_name=last_name,
+                                  date_of_birth=date_of_birth):
+            raise ValidationError(multiple_registration_error)
 
         return cleaned_data

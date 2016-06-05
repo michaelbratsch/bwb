@@ -1,9 +1,9 @@
 from django.core import mail
 from django.core.urlresolvers import reverse
+from django.forms.fields import Field
 from django.utils.html import escape
 
 from django.core.validators import EmailValidator
-from django.forms.fields import Field
 from hypothesis import given, settings, HealthCheck, example
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.strategies import random_module
@@ -24,7 +24,7 @@ class ContactViewTestCase(HypothesisTestCase):
         response = self.client.get(self.url)
         self.assertContains(response=response, text='Register for a bike',
                             count=1)
-        self.assertEqual(mail.outbox, [])
+        self.assertEqual(mail.outbox, [])  # @UndefinedVariable
 
     def successful_post(self, post_dict, number_of_emails=1):
         post_dict['agree'] = "True"
@@ -42,7 +42,8 @@ class ContactViewTestCase(HypothesisTestCase):
                                                kwargs={'user_id': identifier}))
 
         if 'email' in post_dict:
-            self.assertEqual(len(mail.outbox), number_of_emails)
+            self.assertEqual(len(mail.outbox),  # @UndefinedVariable
+                             number_of_emails)
             self.assertEqual(mail.outbox[0].to[0], post_dict['email'])
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
@@ -65,18 +66,18 @@ class ContactViewTestCase(HypothesisTestCase):
            last_name=name_strategy,
            date_of_birth=date_strategy,
            bicycle_kind=bicycle_kind_strategy,
-           phone_number=phone_strategy_clean,
+           mobile_number=phone_strategy_clean,
            dummy=random_module())
     @example(first_name='Bernd',
              last_name='Klaus',
              date_of_birth='2016-02-20',
              bicycle_kind=2,
-             phone_number='01631703322')
+             mobile_number='01631703322')
     @example(first_name='Stefan',
              last_name='Seibert',
              date_of_birth='1977-02-20',
              bicycle_kind=1,
-             phone_number='015261703322')
+             mobile_number='015261703322')
     def test_phone_post(self, **kwargs):
         self.successful_post(kwargs)
 
@@ -86,14 +87,14 @@ class ContactViewTestCase(HypothesisTestCase):
            date_of_birth=date_strategy,
            bicycle_kind=bicycle_kind_strategy,
            email=email_strategy,
-           phone_number=phone_strategy_clean,
+           mobile_number=phone_strategy_clean,
            dummy=random_module())
     @example(first_name='Bernd',
              last_name='Klaus',
              date_of_birth='1984-12-20',
              bicycle_kind=3,
              email='gmail@hans.com',
-             phone_number='015111316383')
+             mobile_number='015111316383')
     def test_email_and_phone_post(self, **kwargs):
         self.successful_post(kwargs)
 
@@ -106,7 +107,7 @@ class ContactViewTestCase(HypothesisTestCase):
                              field=field,
                              errors=errors)
         if empty_outbox:
-            self.assertEqual(mail.outbox, [])
+            self.assertEqual(mail.outbox, [])  # @UndefinedVariable
 
     def check_registering_twice(self, post_dict, cases=False):
         self.successful_post(post_dict)
@@ -154,7 +155,7 @@ class ContactViewTestCase(HypothesisTestCase):
            last_name=name_strategy,
            date_of_birth=date_strategy,
            bicycle_kind=bicycle_kind_strategy,
-           phone_number=phone_strategy_clean,
+           mobile_number=phone_strategy_clean,
            dummy=random_module())
     def test_registering_twice_with_phone(self, **kwargs):
         self.check_registering_twice(kwargs)
@@ -165,7 +166,7 @@ class ContactViewTestCase(HypothesisTestCase):
            date_of_birth=date_strategy,
            bicycle_kind=bicycle_kind_strategy,
            email=email_strategy,
-           phone_number=phone_strategy_clean,
+           mobile_number=phone_strategy_clean,
            dummy=random_module())
     def test_registering_twice_with_email_and_phone(self, **kwargs):
         self.check_registering_twice(kwargs)
@@ -174,7 +175,7 @@ class ContactViewTestCase(HypothesisTestCase):
     @given(date_of_birth=date_strategy,
            bicycle_kind=bicycle_kind_strategy,
            email=email_strategy,
-           phone_number=phone_strategy_clean,
+           mobile_number=phone_strategy_clean,
            dummy=random_module())
     def test_registering_twice_case_insensitive(self, **kwargs):
         kwargs['first_name'] = 'Norbert'
@@ -217,7 +218,7 @@ class ContactViewTestCase(HypothesisTestCase):
         self.check_failed_post(field='email',
                                errors=EmailValidator.message,
                                post_dict=kwargs)
-        self.check_failed_post(field='phone_number',
+        self.check_failed_post(field='mobile_number',
                                errors=None,
                                post_dict=kwargs)
 
@@ -228,16 +229,16 @@ class ContactViewTestCase(HypothesisTestCase):
            bicycle_kind=bicycle_kind_strategy,
            dummy=random_module())
     def test_invalid_phone_post(self, **kwargs):
-        kwargs['phone_number'] = '01631'
-        self.check_failed_post(field='phone_number',
+        kwargs['mobile_number'] = '01631'
+        self.check_failed_post(field='mobile_number',
                                errors=invalid_number,
                                post_dict=kwargs)
-        kwargs['phone_number'] = '034021622483'
-        self.check_failed_post(field='phone_number',
+        kwargs['mobile_number'] = '034021622483'
+        self.check_failed_post(field='mobile_number',
                                errors=invalid_mobile_number,
                                post_dict=kwargs)
-        kwargs['phone_number'] = None
-        self.check_failed_post(field='phone_number',
+        kwargs['mobile_number'] = None
+        self.check_failed_post(field='mobile_number',
                                errors=bad_format_number,
                                post_dict=kwargs)
 
@@ -249,8 +250,8 @@ class ContactViewTestCase(HypothesisTestCase):
            email=email_strategy,
            dummy=random_module())
     def test_valid_email_and_invalid_phone_post(self, **kwargs):
-        kwargs['phone_number'] = '88631'
-        self.check_failed_post(field='phone_number',
+        kwargs['mobile_number'] = '88631'
+        self.check_failed_post(field='mobile_number',
                                errors=invalid_number,
                                post_dict=kwargs)
         self.check_failed_post(field='email',
@@ -262,14 +263,14 @@ class ContactViewTestCase(HypothesisTestCase):
            last_name=name_strategy,
            date_of_birth=date_strategy,
            bicycle_kind=bicycle_kind_strategy,
-           phone_number=phone_strategy_clean,
+           mobile_number=phone_strategy_clean,
            dummy=random_module())
     def test_invalid_email_and_valid_phone_post(self, **kwargs):
         kwargs['email'] = 'djddj@www'
         self.check_failed_post(field='email',
                                errors=EmailValidator.message,
                                post_dict=kwargs)
-        self.check_failed_post(field='phone_number',
+        self.check_failed_post(field='mobile_number',
                                errors=None,
                                post_dict=kwargs)
 
@@ -281,8 +282,8 @@ class ContactViewTestCase(HypothesisTestCase):
            dummy=random_module())
     def test_invalid_email_and_invalid_phone_post(self, **kwargs):
         kwargs['email'] = 'qwer'
-        kwargs['phone_number'] = '88631'
-        self.check_failed_post(field='phone_number',
+        kwargs['mobile_number'] = '88631'
+        self.check_failed_post(field='mobile_number',
                                errors=invalid_number,
                                post_dict=kwargs)
         self.check_failed_post(field='email',
@@ -366,7 +367,7 @@ class ThanksViewTestCase(HypothesisTestCase):
            last_name=name_strategy,
            date_of_birth=date_strategy,
            bicycle_kind=bicycle_kind_strategy,
-           phone_number=phone_strategy_clean,
+           mobile_number=phone_strategy_clean,
            dummy=random_module())
     def test_phone_registration(self, **kwargs):
         response = self.get_thanks_response(kwargs)

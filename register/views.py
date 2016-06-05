@@ -42,15 +42,15 @@ class RegistrationView(FormView):
                          'language': get_language()}
 
         email = form.cleaned_data['email']
-        phone_number = form.cleaned_data['phone_number']
+        mobile_number = form.cleaned_data['mobile_number']
 
-        assert email or phone_number, ("Neither email nor phone number "
-                                       "are given.")
+        assert email or mobile_number, ("Neither email nor mobile phone "
+                                        "number are given.")
 
         if email:
             creation_dict['email'] = email
-        if phone_number:
-            creation_dict['phone_number'] = phone_number
+        if mobile_number:
+            creation_dict['mobile_number'] = mobile_number
 
         registration = User_Registration.objects.create(**creation_dict)
 

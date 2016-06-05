@@ -19,9 +19,13 @@ from .email_settings import EMAIL_HOST  # noqa @UnusedImport
 from .email_settings import EMAIL_HOST_PASSWORD  # noqa @UnusedImport
 from .email_settings import EMAIL_HOST_USER  # noqa @UnusedImport
 from .email_settings import EMAIL_PORT, EMAIL_USE_TLS  # noqa @UnusedImport
-
 # SECURITY WARNING: keep the secret key used in production secret!
 from .secret_key import SECRET_KEY  # noqa @UnusedImport
+# SMS section
+from .sms_settings import SMS_GATE_AUTH_METHOD  # noqa @UnusedImport
+from .sms_settings import SMS_GATE_PASSWORD  # noqa @UnusedImport
+from .sms_settings import SMS_GATE_USER  # noqa @UnusedImport
+
 
 # Maximum number of people that can register
 MAX_NUMBER_OF_REGISTRATIONS = 200

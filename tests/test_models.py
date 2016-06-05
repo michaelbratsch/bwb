@@ -9,7 +9,7 @@ from hypothesis.extra.django.models import models
 from hypothesis.strategies import integers, random_module
 from hypothesis.strategies import just, text, builds, lists, sampled_from
 
-from register.forms import parse_phone_number, mobile_phone_prefixes
+from register.forms import parse_mobile_number, mobile_phone_prefixes
 from register.models import Candidate, User_Registration, max_name_length
 
 
@@ -36,16 +36,16 @@ def create_email_address():
 email_strategy = builds(target=create_email_address)
 
 
-def create_phone_number():
+def create_mobile_number():
     prefix = sampled_from(mobile_phone_prefixes).example()
     number_strat = integers(min_value=1000000, max_value=99999999)
     counter = 0
     while True:
         number = number_strat.example()
-        phone_number = '%s%s' % (prefix, number)
+        mobile_number = '%s%s' % (prefix, number)
 
         try:
-            return parse_phone_number(phone_number)
+            return parse_mobile_number(mobile_number)
         except ValidationError:
             pass
 
@@ -54,16 +54,16 @@ def create_phone_number():
 
 
 # this is just a verifier
-def valid_phone_number(number):
+def valid_mobile_number(number):
     parsed_number = phonenumbers.parse(number, 'DE')
 
     assert phonenumbers.is_valid_number_for_region(
         parsed_number, 'de'), parsed_number
     return True
 
-phone_strategy = builds(target=create_phone_number)
+phone_strategy = builds(target=create_mobile_number)
 phone_strategy_clean = phone_strategy.filter(lambda x:
-                                             valid_phone_number(x))
+                                             valid_mobile_number(x))
 
 candidate_dict = {'model': Candidate,
                   'first_name': name_strategy,
@@ -84,7 +84,7 @@ candidate_with_email = models(**candidate_dict).flatmap(
 
 def generate_phone_registration(candidate):
     return models(model=User_Registration,
-                  phone_number=phone_strategy_clean,
+                  mobile_number=phone_strategy_clean,
                   candidate=just(candidate))
 
 candidate_with_phone = models(**candidate_dict).flatmap(
@@ -94,7 +94,7 @@ candidate_with_phone = models(**candidate_dict).flatmap(
 def generate_email_and_phone_registration(candidate):
     return models(model=User_Registration,
                   email=email_strategy,
-                  phone_number=phone_strategy_clean,
+                  mobile_number=phone_strategy_clean,
                   candidate=just(candidate))
 
 candidate_with_email_and_phone = models(**candidate_dict).flatmap(
@@ -105,20 +105,20 @@ class ModelTestCase(HypothesisTestCase):
 
     @given(candidate_with_phone, random_module())
     def test_phone(self, registration, dummy):
-        self.assertTrue(registration.phone_number.is_valid())
+        self.assertTrue(registration.mobile_number.is_valid())
 
     @given(candidate_with_email)
     def test_email(self, registration):
-        self.assertFalse(registration.phone_number)
+        self.assertFalse(registration.mobile_number)
 
     @given(candidate_with_email_and_phone, random_module())
     def test_email_and_phone(self, registration, dummy):
-        if registration.phone_number:
-            self.assertTrue(registration.phone_number.is_valid())
+        if registration.mobile_number:
+            self.assertTrue(registration.mobile_number.is_valid())
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(lists(candidate), random_module())
-    def test_valid_phone_number(self, registrations, dummy):
+    def test_valid_mobile_number(self, registrations, dummy):
         self.assertFalse(User_Registration.objects.count())
 
     # ToDo: fix this test (it seems that it is only
