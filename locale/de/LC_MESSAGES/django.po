@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bikes Without Borders Registration Form\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-03 19:17+0000\n"
+"POT-Creation-Date: 2016-06-05 19:02+0000\n"
 "PO-Revision-Date: 2016-06-01 14:26+0000\n"
 "Last-Translator: Hannes Riehl <hannes.riehl@posteo.de>\n"
 "Language-Team: German (http://www.transifex.com/bikes-without-borders/bikes-"
@@ -19,61 +19,61 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: bwb/settings.py:131
+#: bwb/settings.py:135
 msgid "English"
 msgstr "Englisch"
 
-#: bwb/settings.py:132
+#: bwb/settings.py:136
 msgid "German"
 msgstr "Deutsch"
 
-#: bwb/settings.py:133
+#: bwb/settings.py:137
 msgid "French"
 msgstr "Französisch"
 
-#: bwb/settings.py:134
+#: bwb/settings.py:138
 msgid "Arabic"
 msgstr "Arabisch"
 
-#: bwb/settings.py:135
+#: bwb/settings.py:139
 msgid "Persian"
 msgstr "Persisch"
 
-#: register/email.py:48 register/email.py:71
+#: register/email.py:66 register/email.py:89
 msgid "Hello"
 msgstr "Hallo"
 
-#: register/email.py:51
+#: register/email.py:69
 msgid "We have a "
 msgstr ""
 
-#: register/email.py:53
+#: register/email.py:71
 msgid " that is reserved for you. Please come by on "
 msgstr ""
 
-#: register/email.py:55
+#: register/email.py:73
 msgid ", so that we can fix it together with your help."
 msgstr ""
 
-#: register/email.py:58
+#: register/email.py:76
 #, fuzzy
 #| msgid "Your"
 msgid "Your,"
 msgstr "Euer"
 
-#: register/email.py:58 templates/register/thanks.html:38
+#: register/email.py:76 templates/register/thanks.html:38
 msgid "BwB-Team"
 msgstr "BwB-Team"
 
-#: register/email.py:62
+#: register/email.py:80
 msgid "BwB - Get your bike"
 msgstr ""
 
-#: register/email.py:73
+#: register/email.py:101 register/email.py:107
 msgid "Thank you for registering for a bike."
 msgstr "Danke, dass Du Dich für ein Fahrrad registriert hast."
 
-#: register/email.py:74
+#: register/email.py:102
 msgid ""
 "To verify your email address and to check your current number in line, "
 "please click the following link:"
@@ -81,38 +81,42 @@ msgstr ""
 "Um deine Emailadresse zu bestätigen und Deine Position in der Warteschlange "
 "zu überprüfen, klicke bitte den folgenden Link:"
 
-#: register/email.py:83
+#: register/email.py:108
+msgid "You will be notified when your bike is ready."
+msgstr ""
+
+#: register/email.py:110
 msgid "We hope to see you soon!"
 msgstr "Wir freuen uns Dich bald bei uns zu sehen!"
 
-#: register/email.py:87
+#: register/email.py:113
 msgid "BwB - Registration"
 msgstr "BwB - Registrierung"
 
-#: register/forms.py:21
+#: register/forms.py:23
 msgid ""
 "Due to too many registrations, it is currently not possible to register for "
 "a bicycle."
 msgstr ""
 "Auf Grunde zu vieler Registrierungen, ist die Anmeldung zur Zeit geschlossen."
 
-#: register/forms.py:24
+#: register/forms.py:26
 msgid "This is not a properly formatted phone number."
 msgstr "Die Formatierung der Telefonnummer ist nicht korrekt."
 
-#: register/forms.py:25
+#: register/forms.py:27
 msgid "This is not a valid phone number."
 msgstr "Dies ist keine korrekte Telfonnummer."
 
-#: register/forms.py:26
+#: register/forms.py:28
 msgid "This is not a valid mobile phone number."
 msgstr "Dies ist keine korrekte Mobilfunknummer."
 
-#: register/forms.py:29
+#: register/forms.py:31
 msgid "You need to agree with the terms and conditions."
 msgstr "Du musst dich mit unseren Geschäftsbedingungen einverstanden erkären."
 
-#: register/forms.py:31
+#: register/forms.py:33
 msgid ""
 "A user with this name and date of birth is already registered. It is not "
 "allowed to register multiple times!"
@@ -120,71 +124,71 @@ msgstr ""
 "Es ist bereits eine Person mit dem gleichen Namen und Geburtsdatum "
 "registriert. Es ist nicht gestattet sich mehrere Male zu registrieren."
 
-#: register/forms.py:33
+#: register/forms.py:35
 msgid "Please fill out email or mobile phone number."
 msgstr "Bitte gib eine Emailadresse oder Mobilfunknummer an."
 
-#: register/forms.py:106
-msgid "First name"
-msgstr "Vorname"
-
-#: register/forms.py:108
-msgid "Last name"
-msgstr "Nachname"
-
-#: register/forms.py:110
-msgid "Date of birth"
-msgstr "Geburtsdatum"
-
-#: register/forms.py:112
+#: register/forms.py:115
 msgid "Email"
 msgstr "Email"
 
-#: register/forms.py:115
+#: register/forms.py:119
 msgid "Mobile phone number"
 msgstr "Mobilfunknummer"
 
-#: register/forms.py:119
+#: register/forms.py:123
 msgid "Bicycle kind"
 msgstr "Fahrradtyp"
 
-#: register/forms.py:122
+#: register/forms.py:126
 msgid "Agree with Terms and Conditions"
 msgstr "Ich erkläre mich mit den Geschäftsbedingung einverstanden."
 
-#: register/forms.py:130
+#: register/forms.py:132 staff/forms.py:18 staff/forms.py:111
+msgid "First name"
+msgstr "Vorname"
+
+#: register/forms.py:133 staff/forms.py:19 staff/forms.py:112
+msgid "Last name"
+msgstr "Nachname"
+
+#: register/forms.py:134 staff/forms.py:20 staff/forms.py:113
+msgid "Date of birth"
+msgstr "Geburtsdatum"
+
+#: register/forms.py:143
 msgid "You can only buy one bike per person."
 msgstr "Du kannst nur ein Fahrrad kaufen."
 
-#: register/forms.py:131
+#: register/forms.py:144
 msgid "Please do not register twice."
 msgstr "Bitte registriere Dich nicht zwei Mal."
 
-#: register/forms.py:132
+#: register/forms.py:145
 msgid "If you want a bike for your children, please also register them."
 msgstr ""
 "Wenn du ein Fahrrad für deine Kinder kaufen möchtest, registriere sie "
 "separat unter ihren Namen."
 
-#: register/forms.py:134
+#: register/forms.py:147
 msgid "We do not sell new bikes."
 msgstr "Wir verkaufen keine neuen Fahrräder."
 
-#: register/forms.py:135
+#: register/forms.py:148
 msgid "All bikes are donated and used."
 msgstr "Alle Fahrräder wurden gespendet und sind gebraucht."
 
-#: register/forms.py:136
+#: register/forms.py:149
 msgid "We only sell road-worthy bikes."
 msgstr "Wir verkaufen nur verkehrstüchtige Fahrräder."
 
-#: register/forms.py:137
+#: register/forms.py:150
 msgid "You can resell your bike to us, if you do not need it anymore."
 msgstr ""
 "Wir kaufen Dein Fahrrad für den Kaufpreis zurück, wenn Du es nicht mehr "
 "benötigst."
 
-#: register/forms.py:139
+#: register/forms.py:152
 msgid ""
 "Our bikes always need repair work. Please bring some time and help us to "
 "repair your bike."
@@ -192,15 +196,15 @@ msgstr ""
 "Unsere Fahrräder benötigen immer kleinere Reperaturen. Bitte bringe etwas "
 "Zeit und Motivation mit."
 
-#: register/forms.py:143
+#: register/forms.py:156
 msgid "Terms of use"
 msgstr "Geschäftsbedingungen"
 
-#: register/forms.py:144
+#: register/forms.py:157
 msgid "Our terms of use are the following:"
 msgstr "Unsere Geschäftsbedingungen:"
 
-#: register/forms.py:167
+#: register/forms.py:185
 msgid "Submit"
 msgstr "Senden"
 
