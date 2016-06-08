@@ -1,9 +1,8 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Div
 from django import forms
-from django.shortcuts import get_object_or_404
-
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 from django.utils.formats import date_format
 from django.utils.translation import ugettext_lazy
 
@@ -103,7 +102,7 @@ class InviteCandidateForm(forms.Form):
             self.fields['invitation_event_id'] = forms.ChoiceField(
                 choices=event_choices)
 
-            layout = [Field('invitation_event_id', required='')]
+            layout = [Field('invitation_event_id')]
             layout += get_hidden_field('candidate_id', candidate_id)
             layout += get_hidden_field('event_id', event_id)
 
@@ -206,10 +205,10 @@ class HandoverForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
 
-        layout = [Field('bicycle_number', required=''),
-                  Field('lock_combination', required=''),
-                  Field('color', required=''),
-                  Field('brand', required='')]
+        layout = [Field('bicycle_number'),
+                  Field('lock_combination'),
+                  Field('color'),
+                  Field('brand')]
         layout += get_hidden_fields(candidate_id, event_id, bicycle_id)
         layout += ['general_remarks']
 
