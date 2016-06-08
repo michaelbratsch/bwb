@@ -11,9 +11,9 @@ from staff.views import HandoverBicycleView, CandidateOverviewView
 from staff.views import RefundBicycleView, InviteCandidateView
 
 
-event_pattern = r'^%s/(?P<event_id>[0-9]+)/$'
-candidate_pattern = r'^%s/(?P<candidate_id>[0-9]+)/$'
-bicycle_pattern = r'^%s/(?P<bicycle_id>[0-9]+)/$'
+EVENT_PATTERN = r'^%s/(?P<event_id>[0-9]+)/$'
+CANDIDATE_PATTERN = r'^%s/(?P<candidate_id>[0-9]+)/$'
+BICYCLE_PATTERN = r'^%s/(?P<bicycle_id>[0-9]+)/$'
 
 urlpatterns = [
     url(regex=r'^$',
@@ -29,10 +29,10 @@ urlpatterns = [
     url(regex=r'^event_overview.html$',
         view=login_required(EventOverviewView.as_view()),
         name='event_overview'),
-    url(regex=event_pattern % 'event',
+    url(regex=EVENT_PATTERN % 'event',
         view=login_required(EventView.as_view()),
         name='event'),
-    url(regex=event_pattern % 'invite',
+    url(regex=EVENT_PATTERN % 'invite',
         view=login_required(AutoInviteView.as_view()),
         name='invite'),
     url(regex=r'^create_event/$',
@@ -42,29 +42,29 @@ urlpatterns = [
     # URLs related to candidates
     url(regex=r'^candidate_overview.html$',
         view=login_required(CandidateOverviewView.as_view(
-            get_query_set=lambda: Candidate.objects.all())),
+            query_set=Candidate.objects.all())),
         name='candidate_overview'),
     url(regex=r'^create_candidate.html$',
         view=login_required(CreateCandidateView.as_view()),
         name='create_candidate'),
 
 
-    url(regex=candidate_pattern % 'candidate',
+    url(regex=CANDIDATE_PATTERN % 'candidate',
         view=login_required(CandidateView.as_view()),
         name='candidate'),
-    url(regex=candidate_pattern % 'modify_candidate',
+    url(regex=CANDIDATE_PATTERN % 'modify_candidate',
         view=login_required(ModifyCandidateView.as_view()),
         name='modify_candidate'),
-    url(regex=candidate_pattern % 'handover_bicycle',
+    url(regex=CANDIDATE_PATTERN % 'handover_bicycle',
         view=login_required(HandoverBicycleView.as_view()),
         name='handover_bicycle'),
-    url(regex=candidate_pattern % 'refund_bicycle',
+    url(regex=CANDIDATE_PATTERN % 'refund_bicycle',
         view=login_required(RefundBicycleView.as_view()),
         name='refund_bicycle'),
-    url(regex=candidate_pattern % 'invite_candidate',
+    url(regex=CANDIDATE_PATTERN % 'invite_candidate',
         view=login_required(InviteCandidateView.as_view()),
         name='invite_candidate'),
-    url(regex=candidate_pattern % 'delete_candidate',
+    url(regex=CANDIDATE_PATTERN % 'delete_candidate',
         view=login_required(DeleteCandidateView.as_view()),
         name='delete_candidate')
 ]

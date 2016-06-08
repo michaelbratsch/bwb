@@ -9,9 +9,9 @@ from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.strategies import random_module
 
 from bwb.settings import MAX_NUMBER_OF_REGISTRATIONS
-from register.forms import invalid_number, multiple_registration_error,\
-    invalid_mobile_number, bad_format_number, terms_and_conditions_error,\
-    email_or_phone_error, too_many_registrations_error
+from register.forms import INVALID_NUMBER, MULTIPLE_REGISTRATION_ERROR,\
+    INVALID_MOBILE_NUMBER, BAD_FORMAT_NUMBER, TERMS_AND_CONDITIONS_ERROR,\
+    EMAIL_OR_PHONE_ERROR, TOO_MANY_REGISTRATIONS_ERROR
 from register.models import Candidate
 from tests.test_models import name_strategy, email_strategy, date_strategy,\
     bicycle_kind_strategy, phone_strategy_clean
@@ -119,7 +119,7 @@ class ContactViewTestCase(HypothesisTestCase):
             post_dict['last_name'] = post_dict['last_name'].upper()
 
         self.check_failed_post(field='',
-                               errors=multiple_registration_error,
+                               errors=MULTIPLE_REGISTRATION_ERROR,
                                post_dict=post_dict,
                                empty_outbox=False)
 
@@ -136,7 +136,7 @@ class ContactViewTestCase(HypothesisTestCase):
 
         post_dict['first_name'] = 'test'
         self.check_failed_post(field='',
-                               errors=too_many_registrations_error,
+                               errors=TOO_MANY_REGISTRATIONS_ERROR,
                                post_dict=post_dict,
                                empty_outbox=False)
 
@@ -192,7 +192,7 @@ class ContactViewTestCase(HypothesisTestCase):
     def test_missing_agree_post(self, **kwargs):
         kwargs['agree'] = ''
         self.check_failed_post(field='agree',
-                               errors=terms_and_conditions_error,
+                               errors=TERMS_AND_CONDITIONS_ERROR,
                                post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
@@ -204,7 +204,7 @@ class ContactViewTestCase(HypothesisTestCase):
     def test_missing_email_or_phone_post(self, **kwargs):
         kwargs['agree'] = 'True'
         self.check_failed_post(field='',
-                               errors=email_or_phone_error,
+                               errors=EMAIL_OR_PHONE_ERROR,
                                post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
@@ -231,15 +231,15 @@ class ContactViewTestCase(HypothesisTestCase):
     def test_invalid_phone_post(self, **kwargs):
         kwargs['mobile_number'] = '01631'
         self.check_failed_post(field='mobile_number',
-                               errors=invalid_number,
+                               errors=INVALID_NUMBER,
                                post_dict=kwargs)
         kwargs['mobile_number'] = '034021622483'
         self.check_failed_post(field='mobile_number',
-                               errors=invalid_mobile_number,
+                               errors=INVALID_MOBILE_NUMBER,
                                post_dict=kwargs)
         kwargs['mobile_number'] = None
         self.check_failed_post(field='mobile_number',
-                               errors=bad_format_number,
+                               errors=BAD_FORMAT_NUMBER,
                                post_dict=kwargs)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
@@ -252,7 +252,7 @@ class ContactViewTestCase(HypothesisTestCase):
     def test_valid_email_and_invalid_phone_post(self, **kwargs):
         kwargs['mobile_number'] = '88631'
         self.check_failed_post(field='mobile_number',
-                               errors=invalid_number,
+                               errors=INVALID_NUMBER,
                                post_dict=kwargs)
         self.check_failed_post(field='email',
                                errors=None,
@@ -284,7 +284,7 @@ class ContactViewTestCase(HypothesisTestCase):
         kwargs['email'] = 'qwer'
         kwargs['mobile_number'] = '88631'
         self.check_failed_post(field='mobile_number',
-                               errors=invalid_number,
+                               errors=INVALID_NUMBER,
                                post_dict=kwargs)
         self.check_failed_post(field='email',
                                errors=EmailValidator.message,

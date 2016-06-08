@@ -1,18 +1,17 @@
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, FormView
 from django.views.generic.base import TemplateView
 from django_tables2 import RequestConfig
 import random
 
-from django.http.response import HttpResponseRedirect
-
 from register.email import send_message_after_invitation
 from register.models import Candidate, Bicycle, HandoutEvent
-from register.models import User_Registration, Invitation
+from register.models import UserRegistration, Invitation
 from staff.forms import CreateCandidateForm, DeleteCandidateForm
-from staff.forms import HandoverForm,  EventForm, InviteForm, RefundForm
+from staff.forms import HandoverForm, EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
 from staff.tables import CandidateTable, BicycleTable, EventTable
 
@@ -66,7 +65,7 @@ class AutoInviteView(FormView):
 
         event = get_object_or_404(HandoutEvent, id=event_id)
 
-        for choice, _ in User_Registration.BICYCLE_CHOICES:
+        for choice, _ in UserRegistration.BICYCLE_CHOICES:
             number_of_winners = form.cleaned_data['choice_%s' % choice]
 
             # do have no bicycle and are registered with contact information
@@ -94,7 +93,7 @@ class AutoInviteView(FormView):
         event = get_object_or_404(HandoutEvent, id=event_id)
 
         context_dict = {'event': event,
-                        'bike_choices': User_Registration.BICYCLE_CHOICES}
+                        'bike_choices': UserRegistration.BICYCLE_CHOICES}
         return render(request, self.template_name, context_dict)
 
 
@@ -122,14 +121,10 @@ class EventView(View):
 
 class CandidateOverviewView(View):
     template_name = 'staff/candidate_overview.html'
-
-    def get_query_set(self):
-        # Define this function in urls.py
-        assert False, "Needs to be implemented."
+    query_set = None
 
     def get(self, request, *args, **kwargs):
-        queryset = self.get_query_set()
-        candidates_table = CandidateTable(queryset)
+        candidates_table = CandidateTable(self.query_set)
         RequestConfig(request, paginate={'per_page': 40}).configure(
             candidates_table)
 
@@ -181,7 +176,7 @@ class CandidateMixin(object):
 
         return context_dict
 
-    def get(self, request, candidate_id, *args, **kwargs):
+    def get(self, request, candidate_id):
         event_id = request.GET.get('event_id')
         bicycle_id = request.GET.get('bicycle_id')
 
@@ -191,7 +186,7 @@ class CandidateMixin(object):
 
         return render(request, self.template_name, context_dict)
 
-    def post(self, request, candidate_id, *args, **kwargs):
+    def post(self, request, candidate_id):
         event_id = request.POST.get('event_id')
         bicycle_id = request.POST.get('bicycle_id')
 

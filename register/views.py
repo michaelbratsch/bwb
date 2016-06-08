@@ -8,8 +8,8 @@ from django.utils.translation import get_language
 
 from register.email import send_message_after_registration
 from register.forms import RegistrationForm, open_for_registration
-from register.forms import too_many_registrations_error
-from register.models import User_Registration, Candidate
+from register.forms import TOO_MANY_REGISTRATIONS_ERROR
+from register.models import UserRegistration, Candidate
 
 
 class GreetingsView(View):
@@ -28,7 +28,7 @@ class RegistrationView(FormView):
     success_url = reverse_lazy('index')
 
     def form_valid(self, form):
-        assert open_for_registration(), too_many_registrations_error
+        assert open_for_registration(), TOO_MANY_REGISTRATIONS_ERROR
 
         form_data = {
             'first_name': form.cleaned_data['first_name'],
@@ -52,7 +52,7 @@ class RegistrationView(FormView):
         if mobile_number:
             creation_dict['mobile_number'] = mobile_number
 
-        registration = User_Registration.objects.create(**creation_dict)
+        registration = UserRegistration.objects.create(**creation_dict)
 
         send_message_after_registration(registration=registration,
                                         request=self.request)
@@ -68,9 +68,9 @@ class RegistrationView(FormView):
 
     def get(self, request, *args, **kwargs):
         if not open_for_registration():
-            raise Http404(too_many_registrations_error)
+            raise Http404(TOO_MANY_REGISTRATIONS_ERROR)
 
-        context_dict = {'choices': User_Registration.BICYCLE_CHOICES,
+        context_dict = {'choices': UserRegistration.BICYCLE_CHOICES,
                         'show_steps': True,
                         'step_2': 'class="active"',
                         'form': RegistrationForm()}
@@ -82,7 +82,7 @@ class ThanksView(View):
 
     def get(self, request, user_id, *args, **kwargs):
         registration = get_object_or_404(
-            User_Registration, identifier=user_id)
+            UserRegistration, identifier=user_id)
         registration.validate_email()
 
         context_dict = {
@@ -98,7 +98,7 @@ class CurrentInLineView(View):
 
     def get(self, request, user_id, *args, **kwargs):
         registration = get_object_or_404(
-            User_Registration, identifier=user_id)
+            UserRegistration, identifier=user_id)
         registration.validate_email()
 
         context_dict = {

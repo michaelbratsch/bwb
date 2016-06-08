@@ -27,8 +27,8 @@ urlpatterns = i18n_patterns(
         name='login'),
     url(regex=r'^logout/$', view=logout, name='logout'),
     url(r'^i18n/', include('django.conf.urls.i18n'), name='set_language'),
-    url(r'^admin/',    admin.site.urls),
+    url(r'^admin/', admin.site.urls),
     url(r'^register/', include('register.urls', namespace='register')),
-    url(r'^staff/',    include('staff.urls', namespace='staff')),
-    url(r'^$',         GreetingsView.as_view(),  name='index')
+    url(r'^staff/', include('staff.urls', namespace='staff')),
+    url(r'^$', GreetingsView.as_view(), name='index')
 )

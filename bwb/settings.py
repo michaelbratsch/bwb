@@ -14,6 +14,8 @@ import os
 
 from django.utils.translation import ugettext_lazy
 
+# pylint: disable=unused-import
+
 # Email section
 from .email_settings import EMAIL_HOST  # noqa @UnusedImport
 from .email_settings import EMAIL_HOST_PASSWORD  # noqa @UnusedImport

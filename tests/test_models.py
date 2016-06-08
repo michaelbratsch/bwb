@@ -9,17 +9,17 @@ from hypothesis.extra.django.models import models
 from hypothesis.strategies import integers, random_module
 from hypothesis.strategies import just, text, builds, lists, sampled_from
 
-from register.forms import parse_mobile_number, mobile_phone_prefixes
-from register.models import Candidate, User_Registration, max_name_length
+from register.forms import parse_mobile_number, MOBILE_PHONE_PREFIXES
+from register.models import Candidate, UserRegistration, MAX_NAME_LENGTH
 
 
 # filter text that only contains of whitespace
-name_strategy = text(min_size=1, max_size=max_name_length).filter(lambda x:
+name_strategy = text(min_size=1, max_size=MAX_NAME_LENGTH).filter(lambda x:
                                                                   x.strip())
 date_strategy = builds(target=Faker('de').date)
 
 bicycle_kind_strategy = sampled_from(
-    [value for value, name in User_Registration.BICYCLE_CHOICES])
+    [value for value, name in UserRegistration.BICYCLE_CHOICES])
 
 
 def create_email_address():
@@ -37,7 +37,7 @@ email_strategy = builds(target=create_email_address)
 
 
 def create_mobile_number():
-    prefix = sampled_from(mobile_phone_prefixes).example()
+    prefix = sampled_from(MOBILE_PHONE_PREFIXES).example()
     number_strat = integers(min_value=1000000, max_value=99999999)
     counter = 0
     while True:
@@ -74,7 +74,7 @@ candidate = models(**candidate_dict)
 
 
 def generate_email_registration(candidate):
-    return models(model=User_Registration,
+    return models(model=UserRegistration,
                   email=email_strategy,
                   candidate=just(candidate))
 
@@ -83,7 +83,7 @@ candidate_with_email = models(**candidate_dict).flatmap(
 
 
 def generate_phone_registration(candidate):
-    return models(model=User_Registration,
+    return models(model=UserRegistration,
                   mobile_number=phone_strategy_clean,
                   candidate=just(candidate))
 
@@ -92,7 +92,7 @@ candidate_with_phone = models(**candidate_dict).flatmap(
 
 
 def generate_email_and_phone_registration(candidate):
-    return models(model=User_Registration,
+    return models(model=UserRegistration,
                   email=email_strategy,
                   mobile_number=phone_strategy_clean,
                   candidate=just(candidate))
@@ -119,7 +119,7 @@ class ModelTestCase(HypothesisTestCase):
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(lists(candidate), random_module())
     def test_valid_mobile_number(self, registrations, dummy):
-        self.assertFalse(User_Registration.objects.count())
+        self.assertFalse(UserRegistration.objects.count())
 
     # ToDo: fix this test (it seems that it is only
     #       due to an error in code for testing)
@@ -127,7 +127,7 @@ class ModelTestCase(HypothesisTestCase):
     # @given(lists(candidate_with_email_and_phone))
     # def test_registrations_and_candidates(self, candidates):
     #     self.assertEqual(Candidate.objects.count(),
-    #                      User_Registration.objects.count())
+    #                      UserRegistration.objects.count())
 
 #     @settings(suppress_health_check=[HealthCheck.too_slow])
 #     @given(registration_strategy)
@@ -143,7 +143,7 @@ class ModelTestCase(HypothesisTestCase):
 #            random_module())
 #     def test_unique_identifiers(self, c1, c2, c3, c4, dummy):
 #         """Identifiers of registration shall be unique."""
-#         identifier_set = set(User_Registration.objects.values_list(
+#         identifier_set = set(UserRegistration.objects.values_list(
 #             'identifier', flat=True))
 #         self.assertEqual(
-#             len(identifier_set), User_Registration.objects.count())
+#             len(identifier_set), UserRegistration.objects.count())

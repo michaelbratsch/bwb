@@ -38,9 +38,9 @@ def add_candidate(first_name, last_name, date_of_birth):
 
 
 def add_registration(candidate, bicycle_kind, email):
-    return User_Registration.objects.create(candidate=candidate,
-                                            bicycle_kind=bicycle_kind,
-                                            email=email)
+    return UserRegistration.objects.create(candidate=candidate,
+                                           bicycle_kind=bicycle_kind,
+                                           email=email)
 
 
 def add_event(due_date):
@@ -57,6 +57,6 @@ if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bwb.settings')
     import django
     django.setup()
-    from register.models import User_Registration, Candidate, Bicycle
+    from register.models import UserRegistration, Candidate, Bicycle
     from register.models import HandoutEvent
     populate()

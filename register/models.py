@@ -2,22 +2,20 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
-from phonenumber_field.modelfields import PhoneNumberField
 import hashlib
 import os
-
-from django.utils.encoding import python_2_unicode_compatible
+from phonenumber_field.modelfields import PhoneNumberField
 
 from bwb.settings import LANGUAGE_CODE
 from register.email import get_url_parameter
 
 
-max_name_length = 100
-identifier_length = 20
+MAX_NAME_LENGTH = 100
+IDENTIFIER_LENGTH = 20
 
 
 def get_hash_value():
-    return hashlib.sha224(os.urandom(64)).hexdigest()[:identifier_length]
+    return hashlib.sha224(os.urandom(64)).hexdigest()[:IDENTIFIER_LENGTH]
 
 
 def datetime_min():
@@ -25,30 +23,32 @@ def datetime_min():
                                timezone.get_default_timezone())
 
 
-@python_2_unicode_compatible
 class HandoutEvent(models.Model):
     due_date = models.DateTimeField()
+
+    def __unicode__(self):
+        return str(self.due_date)
 
     @property
     def url_parameter(self):
         return get_url_parameter('event_id', self.id)
 
-    def __str__(self):
-        return str(self.due_date)
 
-
-@python_2_unicode_compatible
 class Candidate(models.Model):
-    first_name = models.CharField(max_length=max_name_length)
-    last_name = models.CharField(max_length=max_name_length)
+    first_name = models.CharField(max_length=MAX_NAME_LENGTH)
+    last_name = models.CharField(max_length=MAX_NAME_LENGTH)
 
     date_of_birth = models.DateField()
+
+    def __unicode__(self):
+        return "%s %s %s" % (self.first_name, self.last_name,
+                             self.date_of_birth)
 
     @property
     def has_bicycle(self):
         """Does this Candidate have a bicycle."""
         try:
-            return self.bicycle is not None
+            return self.bicycle is not None  # pylint: disable=no-member
         except Bicycle.DoesNotExist:
             return False
 
@@ -108,8 +108,8 @@ class Candidate(models.Model):
         for this kind of bicycle."""
         without_bicycles = cls.objects.filter(bicycle__isnull=True)
         registered = without_bicycles.filter(user_registration__isnull=False)
-        return filter(lambda c: c.user_registration.bicycle_kind == kind,
-                      registered)
+        return [candidate for candidate in registered
+                if candidate.user_registration.bicycle_kind == kind]
 
     @classmethod
     def get_matching(cls, first_name, last_name, date_of_birth):
@@ -119,13 +119,8 @@ class Candidate(models.Model):
                                   first_name__iexact=first_name,
                                   last_name__iexact=last_name)
 
-    def __str__(self):
-        return "%s %s %s" % (self.first_name, self.last_name,
-                             self.date_of_birth)
 
-
-@python_2_unicode_compatible
-class User_Registration(models.Model):
+class UserRegistration(models.Model):
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
                                      related_name='user_registration')
 
@@ -145,7 +140,7 @@ class User_Registration(models.Model):
     bicycle_kind = models.IntegerField(choices=BICYCLE_CHOICES)
 
     identifier = models.CharField(default=get_hash_value,
-                                  max_length=identifier_length,
+                                  max_length=IDENTIFIER_LENGTH,
                                   primary_key=True)
 
     email = models.EmailField(blank=True)
@@ -155,6 +150,11 @@ class User_Registration(models.Model):
     mobile_number = PhoneNumberField(blank=True, default='', null=True)
 
     time_of_registration = models.DateTimeField(default=timezone.now)
+
+    def __unicode__(self):
+        return "%s %s %s %s " % (
+            self.candidate, self.email, self.mobile_number,
+            self.get_bicycle_kind_display())
 
     def number_in_line(self):
         """Current number of people in line waiting for this kind of
@@ -173,15 +173,9 @@ class User_Registration(models.Model):
         if not self.email_validated:
             self.email_validated = True
             self.time_of_email_validation = timezone.now()
-            self.save()
-
-    def __str__(self):
-        return "%s %s %s %s " % (
-            self.candidate, self.email, self.mobile_number,
-            self.get_bicycle_kind_display())
+            self.save()  # pylint: disable=no-member
 
 
-@python_2_unicode_compatible
 class Invitation(models.Model):
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE,
                                   related_name='invitations')
@@ -192,11 +186,10 @@ class Invitation(models.Model):
 
     time_of_invitation = models.DateTimeField(default=timezone.now)
 
-    def __str__(self):
+    def __unicode__(self):
         return '%s %s' % (self.candidate, self.handout_event)
 
 
-@python_2_unicode_compatible
 class Bicycle(models.Model):
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
                                      related_name='bicycle')
@@ -207,13 +200,13 @@ class Bicycle(models.Model):
     brand = models.CharField(max_length=200)
     general_remarks = models.TextField(default='')
 
+    def __unicode__(self):
+        return "bicycle number: %s, color: %s, brand: %s" % (
+            self.bicycle_number, self.color, self.brand)
+
     @property
     def url_parameter(self):
         return get_url_parameter('bicycle_id', self.id)
-
-    def __str__(self):
-        return "bicycle number: %s, color: %s, brand: %s" % (
-            self.bicycle_number, self.color, self.brand)
 
     def short_str(self):
         return '#%s %s %s' % (

@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils.formats import date_format
 from django.utils.translation import ugettext_lazy
 
-from register.forms import SelectDateOfBirthWidget, multiple_registration_error
+from register.forms import SelectDateOfBirthWidget, MULTIPLE_REGISTRATION_ERROR
 from register.models import Bicycle, Candidate
 
 
@@ -21,8 +21,7 @@ class CreateCandidateForm(forms.ModelForm):
                   'date_of_birth': ugettext_lazy('Date of birth')}
         widgets = {'date_of_birth': SelectDateOfBirthWidget}
 
-    def __init__(self, candidate_id=None, event_id=None, bicycle_id=None,
-                 *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(CreateCandidateForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
@@ -46,7 +45,7 @@ class CreateCandidateForm(forms.ModelForm):
         if Candidate.get_matching(first_name=first_name,
                                   last_name=last_name,
                                   date_of_birth=date_of_birth):
-            raise ValidationError(multiple_registration_error)
+            raise ValidationError(MULTIPLE_REGISTRATION_ERROR)
 
         return cleaned_data
 
@@ -87,7 +86,8 @@ class InviteCandidateForm(forms.Form):
     candidate_id = forms.IntegerField(min_value=0)
     invitation_event_id = forms.IntegerField(min_value=0)
 
-    def __init__(self, candidate_id=None, event_id=None, bicycle_id=None,
+    def __init__(self, candidate_id=None, event_id=None,
+                 bicycle_id=None,  # pylint: disable=unused-argument
                  *args, **kwargs):
         super(InviteCandidateForm, self).__init__(*args, **kwargs)
 
@@ -167,7 +167,7 @@ class ModifyCandidateForm(forms.ModelForm):
                 first_name=first_name,
                 last_name=last_name,
                 date_of_birth=date_of_birth).exclude(id=candidate_id):
-            raise ValidationError(multiple_registration_error)
+            raise ValidationError(MULTIPLE_REGISTRATION_ERROR)
 
         return cleaned_data
 

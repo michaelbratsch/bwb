@@ -2,16 +2,15 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, HTML, Div
 from datetime import datetime
 from django import forms
-from django.forms.widgets import SelectDateWidget, TextInput
-from phonenumber_field.formfields import PhoneNumberField
-from phonenumbers.phonenumberutil import NumberParseException
-import phonenumbers
-
 from django.core.exceptions import ValidationError
+from django.forms.widgets import SelectDateWidget, TextInput
 from django.utils.translation import ugettext as _, ugettext_lazy
+from phonenumber_field.formfields import PhoneNumberField
+import phonenumbers
+from phonenumbers.phonenumberutil import NumberParseException
 
 from bwb.settings import MAX_NUMBER_OF_REGISTRATIONS
-from register.models import User_Registration, Candidate
+from register.models import UserRegistration, Candidate
 
 
 # ToDo: Only take people into account that do not have a bicycle.
@@ -19,25 +18,25 @@ def open_for_registration():
     return Candidate.total_in_line() < MAX_NUMBER_OF_REGISTRATIONS
 
 
-too_many_registrations_error = _(
+TOO_MANY_REGISTRATIONS_ERROR = _(
     'Due to too many registrations, it is currently not possible to register '
     'for a bicycle.')
 
-bad_format_number = _('This is not a properly formatted phone number.')
-invalid_number = _('This is not a valid phone number.')
-invalid_mobile_number = _('This is not a valid mobile phone number.')
+BAD_FORMAT_NUMBER = _('This is not a properly formatted phone number.')
+INVALID_NUMBER = _('This is not a valid phone number.')
+INVALID_MOBILE_NUMBER = _('This is not a valid mobile phone number.')
 
-terms_and_conditions_error = _(
+TERMS_AND_CONDITIONS_ERROR = _(
     'You need to agree with the terms and conditions.')
-multiple_registration_error = _(
+MULTIPLE_REGISTRATION_ERROR = _(
     'A user with this name and date of birth is already registered. '
     'It is not allowed to register multiple times!')
-email_or_phone_error = _('Please fill out email or mobile phone number.')
+EMAIL_OR_PHONE_ERROR = _('Please fill out email or mobile phone number.')
 
 
 # ToDo: get these prefixes from somewhere else, otherwise they will
 # eventually become outdated
-mobile_phone_prefixes = ['01511',  # Deutsche Telekom
+MOBILE_PHONE_PREFIXES = ['01511',  # Deutsche Telekom
                          '01512',
                          '01514',
                          '01515',
@@ -74,7 +73,7 @@ mobile_phone_prefixes = ['01511',  # Deutsche Telekom
 
 def parse_mobile_number(value):
     def is_mobile_number(parsed_number):
-        for prefix in mobile_phone_prefixes:
+        for prefix in MOBILE_PHONE_PREFIXES:
             if str(parsed_number.national_number).startswith(prefix[1:]):
                 return True
         return False
@@ -82,13 +81,13 @@ def parse_mobile_number(value):
     try:
         parsed_number = phonenumbers.parse(value, 'DE')
     except NumberParseException:
-        raise ValidationError(bad_format_number)
+        raise ValidationError(BAD_FORMAT_NUMBER)
 
     if not phonenumbers.is_valid_number_for_region(parsed_number, 'de'):
-        raise ValidationError(invalid_number)
+        raise ValidationError(INVALID_NUMBER)
 
     if not is_mobile_number(parsed_number):
-        raise ValidationError(invalid_mobile_number)
+        raise ValidationError(INVALID_MOBILE_NUMBER)
 
     return phonenumbers.format_number(parsed_number,
                                       phonenumbers.PhoneNumberFormat.E164)
@@ -118,7 +117,7 @@ class RegistrationForm(forms.ModelForm):
         required=False,
         label=ugettext_lazy('Mobile phone number'))
     bicycle_kind = forms.ChoiceField(
-        choices=User_Registration.BICYCLE_CHOICES,
+        choices=UserRegistration.BICYCLE_CHOICES,
         required=True,
         label=ugettext_lazy('Bicycle kind'))
     agree = forms.BooleanField(
@@ -155,7 +154,7 @@ class RegistrationForm(forms.ModelForm):
         content_dict = {
             'heading': _("Terms of use"),
             'subheading': _("Our terms of use are the following:"),
-            'body': " ".join(map(lambda x: '<li>%s</li>' % x, lines_of_body))}
+            'body': " ".join('<li>%s</li>' % line for line in lines_of_body)}
 
         def wrap_field(*args):
             return Div(*args, css_class='col-md-6 col-xs-12')
@@ -196,21 +195,21 @@ class RegistrationForm(forms.ModelForm):
     def clean_agree(self):
         agree = bool(self.data.get('agree'))
         if not agree:
-            raise ValidationError(terms_and_conditions_error)
+            raise ValidationError(TERMS_AND_CONDITIONS_ERROR)
         return agree
 
     def clean(self):
         cleaned_data = super(RegistrationForm, self).clean()
 
         if not open_for_registration():
-            raise ValidationError(too_many_registrations_error)
+            raise ValidationError(TOO_MANY_REGISTRATIONS_ERROR)
 
         email = cleaned_data.get('email')
         mobile_number = cleaned_data.get('mobile_number')
 
         # Email or phone number needs to be present
         if not (email or mobile_number):
-            raise ValidationError(email_or_phone_error)
+            raise ValidationError(EMAIL_OR_PHONE_ERROR)
 
         first_name = cleaned_data.get('first_name')
         last_name = cleaned_data.get('last_name')
@@ -219,6 +218,6 @@ class RegistrationForm(forms.ModelForm):
         if Candidate.get_matching(first_name=first_name,
                                   last_name=last_name,
                                   date_of_birth=date_of_birth):
-            raise ValidationError(multiple_registration_error)
+            raise ValidationError(MULTIPLE_REGISTRATION_ERROR)
 
         return cleaned_data

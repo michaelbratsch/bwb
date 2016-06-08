@@ -1,20 +1,24 @@
 from django.conf import settings
 from django.conf.global_settings import DATETIME_FORMAT
+from django.core.mail import EmailMessage, send_mail
 from django.core.urlresolvers import reverse
 from django.utils import translation, formats
-
-from django.core.mail import EmailMessage, send_mail
 from django.utils.translation import ugettext
+
 
 # To support Python 2 and 3
 try:
+    # pylint: disable=import-error, no-name-in-module
     from urlparse import urljoin
 except ImportError:
+    # pylint: disable=import-error, no-name-in-module
     from urllib.parse import urljoin
 
 try:
+    # pylint: disable=import-error, no-name-in-module
     from urllib import urlencode
 except ImportError:
+    # pylint: disable=import-error, no-name-in-module
     from urllib.parse import urlencode
 
 
