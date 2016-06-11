@@ -1,10 +1,9 @@
 from django.core.urlresolvers import reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
+from django.utils.translation import get_language
 from django.views.generic import View
 from django.views.generic.edit import FormView
-
-from django.utils.translation import get_language
 
 from register.email import send_message_after_registration
 from register.forms import RegistrationForm, open_for_registration
@@ -83,13 +82,11 @@ class ThanksView(View):
     def get(self, request, user_id, *args, **kwargs):
         registration = get_object_or_404(
             UserRegistration, identifier=user_id)
-        registration.validate_email()
 
         context_dict = {
             'show_steps': True,
             'step_3': 'class="active"',
-            'registration': registration,
-            'bicycle_kind': registration.get_bicycle_kind_display()}
+            'registration': registration}
         return render(request, self.template_name, context_dict)
 
 
@@ -99,10 +96,10 @@ class CurrentInLineView(View):
     def get(self, request, user_id, *args, **kwargs):
         registration = get_object_or_404(
             UserRegistration, identifier=user_id)
+
+        first_time = not registration.email_validated
         registration.validate_email()
 
-        context_dict = {
-            'already_viewed': registration.email_validated,
-            'number_in_line': registration.number_in_line(),
-            'bicycle_kind': registration.get_bicycle_kind_display()}
+        context_dict = {'first_time': first_time,
+                        'registration': registration}
         return render(request, self.template_name, context_dict)

@@ -1,16 +1,18 @@
-<!DOCTYPE html>
-
 {% extends 'base.html' %}
 
 {% load staticfiles %}
 
 {% block body_block %}
-    {% if not already_viewed %}
-        <div class="page-header">
-            <h1>{% load i18n %}{% blocktrans %}Thank you for validating your
-            email address.{% endblocktrans %}</h1>
-        </div>
+    <div class="page-header">
+        {% load i18n %}{% trans "Hello " %}
+        {{ registration.candidate.first_name }},
+    </div>
+    {% if first_time %}
+        {% blocktrans %}Thank you for validating your
+        email address.{% endblocktrans %}
+        <br>
     {% endif %}
-    <h1>{% trans "Currently you are number" %} {{ number_in_line }}
-    {% trans "in line waiting for a" %} {{ bicycle_kind }}.</h1>
+    {% trans "Currently you are number" %} {{ registration.number_in_line }}
+    {% trans "in line waiting for a" %}
+    {{ registration.get_bicycle_kind_display }}.
 {% endblock %}

@@ -1,40 +1,35 @@
-<!DOCTYPE html>
-
 {% extends 'base.html' %}
 
 {% load staticfiles %}
 
 {% block body_block %}
     <div class="page-header">
-        <h1>
-            {% load i18n %}{% trans "Congratulations" %}
-            {{ registration.candidate.first_name}},
-        </h1>
+        {% load i18n %}{% trans "Congratulations" %}
+        {{ registration.candidate.first_name}},
     </div>
 
-    <h2>
-        {% trans "You are now registered for a" %} {{ bicycle_kind }}
-        {% trans "and officially on our waiting list. We also sent you an" %}
-        {% if registration.email %}
-            {% blocktrans %}email with a link to confirm your email address
-            and to check you current status.{% endblocktrans %}
-        {% else %}
-            {% trans "SMS." %}
-        {% endif %}
-        {% blocktrans %}Please wait until your bike is prepared for you and
-        you received an invitation from us by{% endblocktrans %}
-        {% if registration.email %}
-            {% trans "email." %}
-        {% else %}
-            {% trans "SMS." %}
-        {% endif %}
-        <br><br>
-        {% trans "If you have further questions, send us an email:" %}
-        <br>
-        bikeswithoutborders@gmx.de
-        <br><br>
-        {% trans "Your" %},
-        <br>
-        {% trans "BwB-Team" %}
-    </h2>
+    {% trans "You are now registered for a" %}
+    {{ registration.get_bicycle_kind_display }}
+    {% trans "and officially on our waiting list. We also sent you an" %}
+    {% if registration.email %}
+        {% blocktrans %}email with a link to confirm your email address
+        and to check you current status.{% endblocktrans %}
+    {% else %}
+        {% trans "SMS." %}
+    {% endif %}
+    {% blocktrans %}Please wait until your bike is prepared for you and
+    you received an invitation from us by{% endblocktrans %}
+    {% if registration.email %}
+        {% trans "email." %}
+    {% else %}
+        {% trans "SMS." %}
+    {% endif %}
+    <br><br>
+    {% trans "If you have further questions, send us an email:" %}
+    <br>
+    bikeswithoutborders@gmx.de
+    <br><br>
+    {% trans "Your" %},
+    <br>
+    {% trans "BwB-Team" %}
 {% endblock %}

@@ -52,21 +52,24 @@
 
          <!-- Bootstrap -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css"
+        property="stylesheet">
 
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
         <script src="https://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
 
         <!-- Datetimepicker -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css"
+        property="stylesheet">
 
         {% block script_block %}{% endblock %}
 
 
         {% load staticfiles %}
-        <link href="{% static 'css/base.css' %}" rel="stylesheet">
+        <link href="{% static 'css/base.css' %}" rel="stylesheet"
+        property="stylesheet">
         <img src="{% static 'logo/bwb_with_text.svg' %}" alt="BwB-Logo"
-        class="background-image" width="250px">
+        class="background-image" width="250">
     </body>
 </html>

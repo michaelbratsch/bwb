@@ -173,9 +173,11 @@ class RegistrationForm(forms.ModelForm):
                         </label>
                         <div class="controls" id="id_terms_of_use">
                             <div style="border: 1px solid #e5e4e4;
-                            overflow: auto; padding: 10px;">
+                            overflow: auto;">
                                 <p>%(subheading)s</p>
-                                %(body)s
+                                <ul>
+                                    %(body)s
+                                </ul>
                             </div>
                         </div>""" % content_dict),
                 Field('agree'), css_class='col-xs-12')

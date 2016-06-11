@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-
 {% extends 'base.html' %}
 
 {% load staticfiles %}
 
 {% block body_block %}
-<div class="page-header">
-    <h2>{% load i18n %}{% trans "Register for a bike" %}</h2>
-    <h3>{% trans "To register, please fill out the following form." %}</h3>
-</div>
+    <div class="page-header">
+        {% load i18n %}{% trans "Register for a bike" %}
+    </div>
+    {% trans "To register, please fill out the following form:" %}
 
     {% load crispy_forms_tags %}
     {% crispy form %}

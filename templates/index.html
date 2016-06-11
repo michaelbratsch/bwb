@@ -1,44 +1,37 @@
-<!DOCTYPE html>
-
 {% extends 'base.html' %}
 
 {% load staticfiles %}
 
 {% block body_block %}
     <div class="page-header">
-        <h1>{% load i18n %}
-            <strong>{% trans "Welcome" %}</strong>,
-            {% trans "you want to register for a „Bike without Borders“ Bike?" %}
-        </h1>
+        {% load i18n %}
+        <strong>{% trans "Welcome" %}</strong>,
+        {% trans "you want to register for a „Bike without Borders“ Bike?" %}
     </div>
-    <h2>
-    {% get_current_language as LANGUAGE_CODE %}
-    {% get_available_languages as LANGUAGES %}
-    {% get_language_info_list for LANGUAGES as languages %}
-    {% trans "Please choose your language first!" %}<br><br>
+    <h3>
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% trans "Please choose your language first!" %}
+    </h3>
 
     {% for language in languages %}
-    {% cycle '<div class="row">' '' %}
-        <div class="col-xs-12 col-md-5 col-lg-4" style="padding:7px">
-            <form action="{% url 'set_language' %}" method="post"
-            class="post-form">
-                {% csrf_token %}
-                <input name="language" type="hidden"
-                value="{{ language.code }}"/>
-                <input name="next" type="hidden"
-                value="{% url 'register:greeting' %}">
+        <form action="{% url 'set_language' %}" method="post"
+        class="post-form col-xs-12 col-md-6 col-lg-4"
+        style="padding:10px">
+            {% csrf_token %}
+            <input name="language" type="hidden"
+            value="{{ language.code }}"/>
+            <input name="next" type="hidden"
+            value="{% url 'register:greeting' %}">
 
-                <button class="btn btn-info btn-lg btn-block"
-                type="submit" value="Submit">
-                    {% ifnotequal language.code LANGUAGE_CODE %}
-                        {% trans language.name %}
-                    {% endifnotequal %}
-                    {{ language.name_local }}
-                </button>
-            </form>
-        </div>
-        <div class="clearfix visible-xs"></div>
-    {% cycle '' '</div>' %}
+            <button class="btn btn-info btn-lg btn-block"
+            type="submit" value="Submit">
+                {% ifnotequal language.code LANGUAGE_CODE %}
+                    {% trans language.name %}
+                {% endifnotequal %}
+                {{ language.name_local }}
+            </button>
+        </form>
     {% endfor %}
-    </h2>
 {% endblock %}
