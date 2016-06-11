@@ -38,7 +38,7 @@ def send_message(registration, subject, message):
     if registration.email:
         send_mail(subject=subject,
                   message=message,
-                  from_email='webmaster@bikeswithoutborders.de',
+                  from_email=settings.EMAIL_FROM_ADDRESS,
                   recipient_list=[registration.email],
                   fail_silently=False)
 
@@ -52,8 +52,8 @@ def send_message(registration, subject, message):
         email = EmailMessage(subject=subject,
                              body=message,
                              headers=smsgate_headers,
-                             from_email='webmaster@bikeswithoutborders.de',
-                             to=['smsgate@bikeswithoutborders.de'])
+                             from_email=settings.EMAIL_FROM_ADDRESS,
+                             to=[settings.SMS_GATEWAY_ADDRESS])
 
         email.send(fail_silently=False)
     else:

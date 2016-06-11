@@ -10,20 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
+from django.utils.translation import ugettext_lazy
 import os
 
-from django.utils.translation import ugettext_lazy
-
 # pylint: disable=unused-import
-
 # Email section
+from .email_settings import EMAIL_FROM_ADDRESS  # noqa @UnusedImport
 from .email_settings import EMAIL_HOST  # noqa @UnusedImport
 from .email_settings import EMAIL_HOST_PASSWORD  # noqa @UnusedImport
 from .email_settings import EMAIL_HOST_USER  # noqa @UnusedImport
-from .email_settings import EMAIL_PORT, EMAIL_USE_TLS  # noqa @UnusedImport
+from .email_settings import EMAIL_PORT  # noqa @UnusedImport
+from .email_settings import EMAIL_USE_TLS  # noqa @UnusedImport
 # SECURITY WARNING: keep the secret key used in production secret!
 from .secret_key import SECRET_KEY  # noqa @UnusedImport
 # SMS section
+from .sms_settings import SMS_GATEWAY_ADDRESS  # noqa @UnusedImport
 from .sms_settings import SMS_GATE_AUTH_METHOD  # noqa @UnusedImport
 from .sms_settings import SMS_GATE_PASSWORD  # noqa @UnusedImport
 from .sms_settings import SMS_GATE_USER  # noqa @UnusedImport
@@ -31,6 +32,7 @@ from .sms_settings import SMS_GATE_USER  # noqa @UnusedImport
 
 # Maximum number of people that can register
 MAX_NUMBER_OF_REGISTRATIONS = 200
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

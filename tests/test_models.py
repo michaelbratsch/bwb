@@ -1,13 +1,13 @@
-import phonenumbers
-
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from faker import Faker
 from hypothesis import given, settings, HealthCheck
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.extra.django.models import models
 from hypothesis.strategies import integers, random_module
 from hypothesis.strategies import just, text, builds, lists, sampled_from
+import phonenumbers
+
+from faker import Faker
 
 from register.forms import parse_mobile_number, MOBILE_PHONE_PREFIXES
 from register.models import Candidate, UserRegistration, MAX_NAME_LENGTH
@@ -103,14 +103,17 @@ candidate_with_email_and_phone = models(**candidate_dict).flatmap(
 
 class ModelTestCase(HypothesisTestCase):
 
+    @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(candidate_with_phone, random_module())
     def test_phone(self, registration, dummy):
         self.assertTrue(registration.mobile_number.is_valid())
 
+    @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(candidate_with_email)
     def test_email(self, registration):
         self.assertFalse(registration.mobile_number)
 
+    @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(candidate_with_email_and_phone, random_module())
     def test_email_and_phone(self, registration, dummy):
         if registration.mobile_number:

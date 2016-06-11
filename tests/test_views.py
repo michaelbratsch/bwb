@@ -1,14 +1,14 @@
 from django.core import mail
 from django.core.urlresolvers import reverse
+from django.core.validators import EmailValidator
 from django.forms.fields import Field
 from django.utils.html import escape
-
-from django.core.validators import EmailValidator
 from hypothesis import given, settings, HealthCheck, example
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.strategies import random_module
 
 from bwb.settings import MAX_NUMBER_OF_REGISTRATIONS
+from bwb.sms_settings import SMS_GATEWAY_ADDRESS
 from register.forms import INVALID_NUMBER, MULTIPLE_REGISTRATION_ERROR,\
     INVALID_MOBILE_NUMBER, BAD_FORMAT_NUMBER, TERMS_AND_CONDITIONS_ERROR,\
     EMAIL_OR_PHONE_ERROR, TOO_MANY_REGISTRATIONS_ERROR
@@ -42,9 +42,15 @@ class ContactViewTestCase(HypothesisTestCase):
                                                kwargs={'user_id': identifier}))
 
         if 'email' in post_dict:
-            self.assertEqual(len(mail.outbox),  # @UndefinedVariable
-                             number_of_emails)
-            self.assertEqual(mail.outbox[0].to[0], post_dict['email'])
+            email_address = post_dict['email']
+        elif 'mobile_number' in post_dict:
+            email_address = SMS_GATEWAY_ADDRESS
+        else:
+            self.asserFalse(True)
+
+        self.assertEqual(len(mail.outbox),  # @UndefinedVariable
+                         number_of_emails)
+        self.assertEqual(mail.outbox[0].to[0], email_address)
 
     @settings(suppress_health_check=[HealthCheck.too_slow])
     @given(first_name=name_strategy,
