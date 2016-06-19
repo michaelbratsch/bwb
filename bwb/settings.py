@@ -30,10 +30,6 @@ from .sms_settings import SMS_GATE_PASSWORD  # noqa @UnusedImport
 from .sms_settings import SMS_GATE_USER  # noqa @UnusedImport
 
 
-# Maximum number of people that can register
-MAX_NUMBER_OF_REGISTRATIONS = 200
-
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -63,7 +59,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_tables2',
-    'crispy_forms'
+    'crispy_forms',
+    'solo'
 ]
 
 MIDDLEWARE_CLASSES = [

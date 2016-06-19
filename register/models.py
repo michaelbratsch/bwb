@@ -5,6 +5,7 @@ from django.utils import timezone
 import hashlib
 import os
 from phonenumber_field.modelfields import PhoneNumberField
+from solo.models import SingletonModel
 
 from bwb.settings import LANGUAGE_CODE
 from register.email import get_url_parameter
@@ -218,3 +219,13 @@ class Bicycle(models.Model):
         add_info = "lock combination: %s, general remarks: %s" % (
             self.lock_combination, self.general_remarks)
         return '%s\n%s' % (self, add_info)
+
+
+class SiteConfiguration(SingletonModel):
+    # so many people can be registered without a bicycle
+    max_number_of_registrations = models.PositiveIntegerField(default=200)
+    # maximum number of times people will be invited to events
+    max_number_of_autoinvites = models.PositiveIntegerField(default=2)
+
+    def __unicode__(self):
+        return "Site Configuration"

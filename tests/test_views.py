@@ -7,12 +7,11 @@ from hypothesis import given, settings, HealthCheck, example
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.strategies import random_module
 
-from bwb.settings import MAX_NUMBER_OF_REGISTRATIONS
 from bwb.sms_settings import SMS_GATEWAY_ADDRESS
 from register.forms import INVALID_NUMBER, MULTIPLE_REGISTRATION_ERROR,\
     INVALID_MOBILE_NUMBER, BAD_FORMAT_NUMBER, TERMS_AND_CONDITIONS_ERROR,\
     EMAIL_OR_PHONE_ERROR, TOO_MANY_REGISTRATIONS_ERROR
-from register.models import Candidate
+from register.models import Candidate, SiteConfiguration
 from tests.test_models import name_strategy, email_strategy, date_strategy,\
     bicycle_kind_strategy, phone_strategy_clean
 
@@ -135,7 +134,8 @@ class ContactViewTestCase(HypothesisTestCase):
                      'bicycle_kind': 2,
                      'email': 'asdf@gmx.de'}
 
-        for registration_number in range(MAX_NUMBER_OF_REGISTRATIONS):
+        for registration_number in range(
+                SiteConfiguration.get_solo().max_number_of_registrations):
             post_dict['first_name'] = str(registration_number)
             self.successful_post(post_dict=post_dict,
                                  number_of_emails=registration_number + 1)

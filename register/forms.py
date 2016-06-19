@@ -9,13 +9,13 @@ from phonenumber_field.formfields import PhoneNumberField
 import phonenumbers
 from phonenumbers.phonenumberutil import NumberParseException
 
-from bwb.settings import MAX_NUMBER_OF_REGISTRATIONS
-from register.models import UserRegistration, Candidate
+from register.models import UserRegistration, Candidate, SiteConfiguration
 
 
 # ToDo: Only take people into account that do not have a bicycle.
 def open_for_registration():
-    return Candidate.total_in_line() < MAX_NUMBER_OF_REGISTRATIONS
+    return Candidate.total_in_line() < SiteConfiguration.get_solo(
+    ).max_number_of_registrations
 
 
 TOO_MANY_REGISTRATIONS_ERROR = _(

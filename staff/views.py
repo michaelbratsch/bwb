@@ -8,7 +8,7 @@ from django_tables2 import RequestConfig
 import random
 
 from register.email import send_message_after_invitation
-from register.models import Candidate, Bicycle, HandoutEvent
+from register.models import Candidate, Bicycle, HandoutEvent, SiteConfiguration
 from register.models import UserRegistration, Invitation
 from staff.forms import CreateCandidateForm, DeleteCandidateForm
 from staff.forms import HandoverForm, EventForm, InviteForm, RefundForm
@@ -71,8 +71,10 @@ class AutoInviteView(FormView):
             # do have no bicycle and are registered with contact information
             candidate = Candidate.registered_and_without_bicycle(choice)
 
-            # are not invited yet
-            candidate = [c for c in candidate if c.invitations.count() == 0]
+            # people that have not already been invited so many times
+            candidate = [
+                c for c in candidate if c.invitations.count() <
+                SiteConfiguration.get_solo().max_number_of_autoinvites]
 
             winners = random.sample(candidate, min(len(candidate),
                                                    number_of_winners))
