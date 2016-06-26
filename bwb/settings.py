@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_tables2',
     'crispy_forms',
-    'solo'
+    'solo',
+    'django_filters'
 ]
 
 MIDDLEWARE_CLASSES = [

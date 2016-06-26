@@ -10,6 +10,7 @@ import random
 from register.email import send_message_after_invitation
 from register.models import Candidate, Bicycle, HandoutEvent, SiteConfiguration
 from register.models import UserRegistration, Invitation
+from staff.filters import CandidateFilter, BicycleFilter
 from staff.forms import CreateCandidateForm, DeleteCandidateForm
 from staff.forms import HandoverForm, EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
@@ -25,10 +26,11 @@ class BicycleOverviewView(View):
 
     def get(self, request, *args, **kwargs):
         queryset = Bicycle.objects.all()
-        table = BicycleTable(queryset)
+        matches = BicycleFilter(request.GET, queryset=queryset)
+        table = BicycleTable(matches.qs)
         RequestConfig(request, paginate={'per_page': 40}).configure(table)
 
-        context_dict = {'bicycles': table}
+        context_dict = {'bicycles': table, 'filter': matches}
         return render(request, self.template_name, context_dict)
 
 
@@ -126,12 +128,13 @@ class CandidateOverviewView(View):
     query_set = None
 
     def get(self, request, *args, **kwargs):
-        candidates_table = CandidateTable(self.query_set)
+        matches = CandidateFilter(request.GET, queryset=self.query_set)
+        candidates_table = CandidateTable(matches.qs)
         RequestConfig(request, paginate={'per_page': 40}).configure(
             candidates_table)
 
-        context_dict = {'candidate': Candidate.objects.all(),
-                        'candidates_table': candidates_table}
+        context_dict = {'candidates_table': candidates_table,
+                        'filter': matches}
         return render(request, self.template_name, context_dict)
 
 

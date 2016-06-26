@@ -64,24 +64,20 @@ class EventTable(tables.Table):
 
     class Meta(object):
         model = Candidate
-        attrs = {'class': 'bootstrap', 'width': '1000%'}
+        attrs = {'class': 'bootstrap', 'width': '100%'}
         template = 'django_tables2/bootstrap.html'
         empty_text = "There are currently no canditates in the database."
+        sequence = ('id', 'status', '...')
 
 
 class CandidateTable(EventTable):
 
-    current_status = tables.Column(
-        verbose_name='Status',
-        accessor='get_status',
-        orderable=False)
-
     class Meta(object):
         model = Candidate
-        attrs = {'class': 'bootstrap', 'width': '1000%'}
+        attrs = {'class': 'bootstrap', 'width': '100%'}
         template = 'django_tables2/bootstrap.html'
         empty_text = "There are currently no canditates in the database."
-        sequence = ('current_status', '...')
+        sequence = ('id', 'status', '...')
 
 
 class BicycleTable(tables.Table):

@@ -19,7 +19,7 @@
         <div style="line-height:40%;"><br></div>
         {% for invitation in candidate.invitations.all %}
             {{ invitation.handout_event.due_date }} (invited on:
-            {{ invitation.time_of_invitation }})<br>
+            {{ invitation.date_of_invitation }})<br>
         {% endfor %}
     {% else %}
         Is not invited to any event.
@@ -33,7 +33,7 @@
         {{ candidate.user_registration.get_bicycle_kind_display }}<br>
         {{ candidate.user_registration.email }}<br>
         {{ candidate.user_registration.mobile_number }}<br>
-        {{ candidate.user_registration.time_of_registration }}<br>
+        {{ candidate.user_registration.date_of_registration }}<br>
     {% else %}
         Has been added by staff without a registration.
     {% endif %}

@@ -16,7 +16,7 @@
         {% for invitation in candidate.invitations.all %}
             <ul>
             {{ invitation.handout_event.due_date }} (invited on:
-            {{ invitation.time_of_invitation }})
+            {{ invitation.date_of_invitation }})
             </ul>
         {% endfor %}
 

@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 import hashlib
 import os
@@ -41,9 +43,25 @@ class Candidate(models.Model):
 
     date_of_birth = models.DateField()
 
+    WITH_BICYCLE = 1
+    INVITED = 2
+    WAITING = 3
+    LOOSE = 4
+    NOT_SHOWING_UP = 5
+
+    CANDIDATE_STATUS = (
+        (WAITING, "waiting"),
+        (INVITED, "invited"),
+        (WITH_BICYCLE, "bicycle received"),
+        (LOOSE, "loose"),
+        (NOT_SHOWING_UP, "not showing up"))
+
+    status = models.IntegerField(choices=CANDIDATE_STATUS,
+                                 default=WAITING)
+
     def __unicode__(self):
-        return "%s %s %s" % (self.first_name, self.last_name,
-                             self.date_of_birth)
+        return "%s %s %s %s" % (self.status, self.first_name, self.last_name,
+                                self.date_of_birth)
 
     @property
     def has_bicycle(self):
@@ -53,43 +71,26 @@ class Candidate(models.Model):
         except Bicycle.DoesNotExist:
             return False
 
-    # ToDo: introduce test that checks get_status with
-    # get_status_and_candidates
-    @property
+    # ToDo: add missing statuses
     def get_status(self):
-        number_of_inviations = self.invitations.count()
+        number_of_invitations = self.invitations.count()
         if self.has_bicycle:
-            return 'bicycle received'
-        elif number_of_inviations:
-            return 'invited %sx' % number_of_inviations
+            return self.WITH_BICYCLE
+        elif number_of_invitations > 0:
+            return self.INVITED
         else:
-            return 'waiting'
+            return self.WAITING
+
+    def update_status(self):
+        new_status = self.get_status()
+        if self.status != new_status:
+            self.status = new_status
+            self.save()  # pylint: disable=no-member
 
     @classmethod
     def get_status_and_candidates(cls):
-        """Returns a list of tuples which categorize all Candidates into
-        the groups waiting, invited and bicycle received."""
-        candidates_with_bicycles = set(Bicycle.objects.values_list(
-            'candidate_id', flat=True))
-
-        candidates_invited = set(Invitation.objects.values_list(
-            'candidate_id', flat=True))
-        candidates_invited -= candidates_with_bicycles
-
-        candidates_waiting = set(
-            Candidate.objects.values_list('id', flat=True))
-        candidates_waiting -= candidates_with_bicycles | candidates_invited
-
-        assert cls.objects.count() == (
-            len(candidates_invited) + len(candidates_waiting) +
-            len(candidates_with_bicycles))
-
-        def get_objects(id_list):
-            return cls.objects.in_bulk(id_list).values()
-
-        return [('waiting', get_objects(candidates_waiting)),
-                ('invited', get_objects(candidates_invited)),
-                ('bicycle received', get_objects(candidates_with_bicycles))]
+        return [(val, cls.objects.filter(status=key).all())
+                for key, val in cls.CANDIDATE_STATUS]
 
     @property
     def events_not_invited_to(self):
@@ -150,7 +151,7 @@ class UserRegistration(models.Model):
 
     mobile_number = PhoneNumberField(blank=True, default='', null=True)
 
-    time_of_registration = models.DateTimeField(default=timezone.now)
+    date_of_registration = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return "%s %s %s %s " % (
@@ -185,7 +186,7 @@ class Invitation(models.Model):
                                       on_delete=models.CASCADE,
                                       related_name='invitations')
 
-    time_of_invitation = models.DateTimeField(default=timezone.now)
+    date_of_invitation = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return '%s %s' % (self.candidate, self.handout_event)
@@ -200,6 +201,7 @@ class Bicycle(models.Model):
     color = models.CharField(max_length=200)
     brand = models.CharField(max_length=200)
     general_remarks = models.TextField(default='')
+    date_of_handout = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return "bicycle number: %s, color: %s, brand: %s" % (
@@ -219,6 +221,30 @@ class Bicycle(models.Model):
         add_info = "lock combination: %s, general remarks: %s" % (
             self.lock_combination, self.general_remarks)
         return '%s\n%s' % (self, add_info)
+
+
+@receiver(post_save, sender=Candidate)
+def handler_on_save(
+        instance, **kwargs):  # pylint: disable=unused-argument
+    instance.update_status()
+
+
+@receiver(post_save, sender=UserRegistration)
+def handler_on_registration_save(
+        instance, **kwargs):  # pylint: disable=unused-argument
+    instance.candidate.update_status()
+
+
+@receiver(post_save, sender=Invitation)
+def handler_on_invitation_save(
+        instance, **kwargs):  # pylint: disable=unused-argument
+    instance.candidate.update_status()
+
+
+@receiver(post_save, sender=Bicycle)
+def handler_on_bicycle_save(
+        instance, **kwargs):  # pylint: disable=unused-argument
+    instance.candidate.update_status()
 
 
 class SiteConfiguration(SingletonModel):
