@@ -4,45 +4,40 @@
 
 {% block sub_body_block %}
 <h3>
-    {% load i18n %}
-    {% blocktrans %}
     After submitting an invitation, the person receives immedidately an
     email or sms if contact information is present in the database.
-    {% endblocktrans %}
 
     <br><br>
 
     {% if candidate.invitations.all %}
 
-        {% trans "This person has already been invited to the following events:" %}
+        This person has already been invited to the following events:
         <div style="line-height:30%;"><br></div>
         {% for invitation in candidate.invitations.all %}
             <ul>
             {{ invitation.handout_event.due_date }} (invited on:
-            {{ invitation.time_of_invitation }})
+            {{ invitation.date_of_invitation }})
             </ul>
         {% endfor %}
 
     {% else %}
 
-        {% trans "This person has not been invited to an event yet." %}
+        This person has not been invited to an event yet.
 
     {% endif %}
 
     <div style="line-height:90%;"><br></div>
 
     {% if candidate.events_not_invited_to and not candidate.has_bicycle %}
-        {% trans "You can invite this person to one of the following events:" %}
+        You can invite this person to one of the following events:
 
         {% load crispy_forms_tags %}
         {% crispy form %}
 
     {% else %}
 
-        {% blocktrans %}
         Either there are no open events the person can be invited to or the
         person already has a bicycle.
-        {% endblocktrans %}
 
     {% endif %}
 

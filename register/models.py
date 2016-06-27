@@ -1,22 +1,24 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 import hashlib
 import os
+from phonenumber_field.modelfields import PhoneNumberField
+from solo.models import SingletonModel
 
-from django.utils.encoding import python_2_unicode_compatible
-
+from bwb.settings import LANGUAGE_CODE
 from register.email import get_url_parameter
 
 
-max_name_length = 100
-max_mobile_number_length = 16
-identifier_length = 20
+MAX_NAME_LENGTH = 100
+IDENTIFIER_LENGTH = 20
 
 
 def get_hash_value():
-    return hashlib.sha224(os.urandom(64)).hexdigest()[:identifier_length]
+    return hashlib.sha224(os.urandom(64)).hexdigest()[:IDENTIFIER_LENGTH]
 
 
 def datetime_min():
@@ -24,70 +26,71 @@ def datetime_min():
                                timezone.get_default_timezone())
 
 
-@python_2_unicode_compatible
 class HandoutEvent(models.Model):
     due_date = models.DateTimeField()
+
+    def __unicode__(self):
+        return str(self.due_date)
 
     @property
     def url_parameter(self):
         return get_url_parameter('event_id', self.id)
 
-    def __str__(self):
-        return str(self.due_date)
 
-
-@python_2_unicode_compatible
 class Candidate(models.Model):
-    first_name = models.CharField(max_length=max_name_length)
-    last_name = models.CharField(max_length=max_name_length)
+    first_name = models.CharField(max_length=MAX_NAME_LENGTH)
+    last_name = models.CharField(max_length=MAX_NAME_LENGTH)
 
     date_of_birth = models.DateField()
+
+    WITH_BICYCLE = 1
+    INVITED = 2
+    WAITING = 3
+    LOOSE = 4
+    NOT_SHOWING_UP = 5
+
+    CANDIDATE_STATUS = (
+        (WAITING, "waiting"),
+        (INVITED, "invited"),
+        (WITH_BICYCLE, "bicycle received"),
+        (LOOSE, "loose"),
+        (NOT_SHOWING_UP, "not showing up"))
+
+    status = models.IntegerField(choices=CANDIDATE_STATUS,
+                                 default=WAITING)
+
+    def __unicode__(self):
+        return "%s %s %s %s" % (self.status, self.first_name, self.last_name,
+                                self.date_of_birth)
 
     @property
     def has_bicycle(self):
         """Does this Candidate have a bicycle."""
         try:
-            return self.bicycle is not None
+            return self.bicycle is not None  # pylint: disable=no-member
         except Bicycle.DoesNotExist:
             return False
 
-    # ToDo: introduce test that checks get_status with
-    # get_status_and_candidates
-    @property
+    # ToDo: add missing statuses
     def get_status(self):
-        number_of_inviations = self.invitations.count()
+        number_of_invitations = self.invitations.count()
         if self.has_bicycle:
-            return 'bicycle received'
-        elif number_of_inviations:
-            return 'invited %sx' % number_of_inviations
+            return self.WITH_BICYCLE
+        elif number_of_invitations > 0:
+            return self.INVITED
         else:
-            return 'waiting'
+            return self.WAITING
+
+    def update_status(self):
+        new_status = self.get_status()
+        if self.status != new_status:
+            self.status = new_status
+            self.save()  # pylint: disable=no-member
 
     @classmethod
     def get_status_and_candidates(cls):
-        """Returns a list of tuples which categorize all Candidates into
-        the groups waiting, invited and bicycle received."""
-        candidates_with_bicycles = set(Bicycle.objects.values_list(
-            'candidate_id', flat=True))
-
-        candidates_invited = set(Invitation.objects.values_list(
-            'candidate_id', flat=True))
-        candidates_invited -= candidates_with_bicycles
-
-        candidates_waiting = set(
-            Candidate.objects.values_list('id', flat=True))
-        candidates_waiting -= candidates_with_bicycles | candidates_invited
-
-        assert cls.objects.count() == (
-            len(candidates_invited) + len(candidates_waiting) +
-            len(candidates_with_bicycles))
-
-        def get_objects(id_list):
-            return cls.objects.in_bulk(id_list).values()
-
-        return [('waiting', get_objects(candidates_waiting)),
-                ('invited', get_objects(candidates_invited)),
-                ('bicycle received', get_objects(candidates_with_bicycles))]
+        return [(val, cls.objects.filter(status=key).all())
+                for key, val in cls.CANDIDATE_STATUS]
 
     @property
     def events_not_invited_to(self):
@@ -107,8 +110,8 @@ class Candidate(models.Model):
         for this kind of bicycle."""
         without_bicycles = cls.objects.filter(bicycle__isnull=True)
         registered = without_bicycles.filter(user_registration__isnull=False)
-        return filter(lambda c: c.user_registration.bicycle_kind == kind,
-                      registered)
+        return [candidate for candidate in registered
+                if candidate.user_registration.bicycle_kind == kind]
 
     @classmethod
     def get_matching(cls, first_name, last_name, date_of_birth):
@@ -118,18 +121,13 @@ class Candidate(models.Model):
                                   first_name__iexact=first_name,
                                   last_name__iexact=last_name)
 
-    def __str__(self):
-        return "%s %s %s" % (self.first_name, self.last_name,
-                             self.date_of_birth)
 
-
-@python_2_unicode_compatible
-class User_Registration(models.Model):
+class UserRegistration(models.Model):
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
                                      related_name='user_registration')
 
-    # ToDo: remember language of registration to send invitation email
-    # in right language
+    language = models.CharField(default=LANGUAGE_CODE,
+                                max_length=10)
 
     MALE = 1
     FEMALE = 2
@@ -144,17 +142,21 @@ class User_Registration(models.Model):
     bicycle_kind = models.IntegerField(choices=BICYCLE_CHOICES)
 
     identifier = models.CharField(default=get_hash_value,
-                                  max_length=identifier_length,
+                                  max_length=IDENTIFIER_LENGTH,
                                   primary_key=True)
 
-    email = models.EmailField()
-
-    mobile_number = models.CharField(max_length=max_mobile_number_length)
-
+    email = models.EmailField(blank=True)
     email_validated = models.BooleanField(default=False)
-
     time_of_email_validation = models.DateTimeField(default=datetime_min)
-    time_of_registration = models.DateTimeField(default=timezone.now)
+
+    mobile_number = PhoneNumberField(blank=True, default='', null=True)
+
+    date_of_registration = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return "%s %s %s %s " % (
+            self.candidate, self.email, self.mobile_number,
+            self.get_bicycle_kind_display())
 
     def number_in_line(self):
         """Current number of people in line waiting for this kind of
@@ -173,14 +175,9 @@ class User_Registration(models.Model):
         if not self.email_validated:
             self.email_validated = True
             self.time_of_email_validation = timezone.now()
-            self.save()
-
-    def __str__(self):
-        return "%s %s %s " % (self.candidate, self.email, self.mobile_number,
-                              self.get_bicycle_kind_display())
+            self.save()  # pylint: disable=no-member
 
 
-@python_2_unicode_compatible
 class Invitation(models.Model):
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE,
                                   related_name='invitations')
@@ -189,13 +186,12 @@ class Invitation(models.Model):
                                       on_delete=models.CASCADE,
                                       related_name='invitations')
 
-    time_of_invitation = models.DateTimeField(default=timezone.now)
+    date_of_invitation = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return '%s %s' % (self.candidate, self.handout_event)
 
 
-@python_2_unicode_compatible
 class Bicycle(models.Model):
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE,
                                      related_name='bicycle')
@@ -205,14 +201,15 @@ class Bicycle(models.Model):
     color = models.CharField(max_length=200)
     brand = models.CharField(max_length=200)
     general_remarks = models.TextField(default='')
+    date_of_handout = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return "bicycle number: %s, color: %s, brand: %s" % (
+            self.bicycle_number, self.color, self.brand)
 
     @property
     def url_parameter(self):
         return get_url_parameter('bicycle_id', self.id)
-
-    def __str__(self):
-        return "bicycle number: %s, color: %s, brand: %s" % (
-            self.bicycle_number, self.color, self.brand)
 
     def short_str(self):
         return '#%s %s %s' % (
@@ -224,3 +221,37 @@ class Bicycle(models.Model):
         add_info = "lock combination: %s, general remarks: %s" % (
             self.lock_combination, self.general_remarks)
         return '%s\n%s' % (self, add_info)
+
+
+@receiver(post_save, sender=Candidate)
+def handler_on_save(
+        instance, **kwargs):  # pylint: disable=unused-argument
+    instance.update_status()
+
+
+@receiver(post_save, sender=UserRegistration)
+def handler_on_registration_save(
+        instance, **kwargs):  # pylint: disable=unused-argument
+    instance.candidate.update_status()
+
+
+@receiver(post_save, sender=Invitation)
+def handler_on_invitation_save(
+        instance, **kwargs):  # pylint: disable=unused-argument
+    instance.candidate.update_status()
+
+
+@receiver(post_save, sender=Bicycle)
+def handler_on_bicycle_save(
+        instance, **kwargs):  # pylint: disable=unused-argument
+    instance.candidate.update_status()
+
+
+class SiteConfiguration(SingletonModel):
+    # so many people can be registered without a bicycle
+    max_number_of_registrations = models.PositiveIntegerField(default=200)
+    # maximum number of times people will be invited to events
+    max_number_of_autoinvites = models.PositiveIntegerField(default=2)
+
+    def __unicode__(self):
+        return "Site Configuration"

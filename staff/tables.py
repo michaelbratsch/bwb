@@ -4,15 +4,18 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils import formats
 from django.utils.html import format_html
 
-from register.email import get_url_parameter
-from register.models import Bicycle, Candidate, User_Registration
 import django_tables2 as tables
+from register.email import get_url_parameter
+from register.models import Bicycle, Candidate, UserRegistration
 
 
 def format_date(value):
     return formats.date_format(value,
                                formats.get_format(SHORT_DATE_FORMAT,
                                                   lang=settings.LANGUAGE_CODE))
+
+# pylint: disable=too-few-public-methods
+# pylint: disable=no-self-use
 
 
 class EventTable(tables.Table):
@@ -50,35 +53,31 @@ class EventTable(tables.Table):
 
     def render_wanted_bicycle(self, value):
         def get_display_value(value):
-            for v, n in User_Registration.BICYCLE_CHOICES:
-                if v == value:
-                    return n
+            for number, display_string in UserRegistration.BICYCLE_CHOICES:
+                if number == value:
+                    return display_string
             assert False, "Key not found"
         return get_display_value(value)
 
     def render_bicycle(self, value):
         return value.short_str()
 
-    class Meta:
+    class Meta(object):
         model = Candidate
-        attrs = {'class': 'bootstrap', 'width': '1000%'}
+        attrs = {'class': 'bootstrap', 'width': '100%'}
         template = 'django_tables2/bootstrap.html'
         empty_text = "There are currently no canditates in the database."
+        sequence = ('id', 'status', '...')
 
 
 class CandidateTable(EventTable):
 
-    current_status = tables.Column(
-        verbose_name='Status',
-        accessor='get_status',
-        orderable=False)
-
-    class Meta:
+    class Meta(object):
         model = Candidate
-        attrs = {'class': 'bootstrap', 'width': '1000%'}
+        attrs = {'class': 'bootstrap', 'width': '100%'}
         template = 'django_tables2/bootstrap.html'
         empty_text = "There are currently no canditates in the database."
-        sequence = ('current_status', '...')
+        sequence = ('id', 'status', '...')
 
 
 class BicycleTable(tables.Table):
@@ -91,7 +90,7 @@ class BicycleTable(tables.Table):
                          get_url_parameter('bicycle_id', value))
         return format_html('<a href="%s">%s</a>' % (candidate_url, value))
 
-    class Meta:
+    class Meta(object):
         model = Bicycle
         attrs = {'class': 'bootstrap', 'width': '100%'}
         template = 'django_tables2/bootstrap.html'

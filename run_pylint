@@ -1,0 +1,3 @@
+#!/bin/bash
+
+pylint --load-plugins=pylint_django register bwb staff --disable=missing-docstring --disable=wrong-import-order -j 2

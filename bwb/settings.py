@@ -13,15 +13,22 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 from django.utils.translation import ugettext_lazy
 import os
 
+# pylint: disable=unused-import
 # Email section
-from .email_settings import EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER
-from .email_settings import EMAIL_PORT, EMAIL_USE_TLS
-
-# SMS section
-from .sms_settings import SMS_GATE_USER, SMS_GATE_PASSWORD, SMS_GATE_AUTH_METHOD
-
+from .email_settings import EMAIL_FROM_ADDRESS  # noqa @UnusedImport
+from .email_settings import EMAIL_HOST  # noqa @UnusedImport
+from .email_settings import EMAIL_HOST_PASSWORD  # noqa @UnusedImport
+from .email_settings import EMAIL_HOST_USER  # noqa @UnusedImport
+from .email_settings import EMAIL_PORT  # noqa @UnusedImport
+from .email_settings import EMAIL_USE_TLS  # noqa @UnusedImport
 # SECURITY WARNING: keep the secret key used in production secret!
-from .secret_key import SECRET_KEY
+from .secret_key import SECRET_KEY  # noqa @UnusedImport
+# SMS section
+from .sms_settings import SMS_GATEWAY_ADDRESS  # noqa @UnusedImport
+from .sms_settings import SMS_GATE_AUTH_METHOD  # noqa @UnusedImport
+from .sms_settings import SMS_GATE_PASSWORD  # noqa @UnusedImport
+from .sms_settings import SMS_GATE_USER  # noqa @UnusedImport
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -52,7 +59,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_tables2',
-    'crispy_forms'
+    'crispy_forms',
+    'solo',
+    'django_filters'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -104,16 +113,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'UserAttributeSimilarityValidator'),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'MinimumLengthValidator'),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'CommonPasswordValidator'),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'NumericPasswordValidator'),
     },
 ]
 

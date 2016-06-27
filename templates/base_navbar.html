@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-
-
 {% load i18n %}
 {% load staticfiles %}
-<link href="{% static 'css/base.css' %}" rel="stylesheet">
-<link href="{% static 'css/base_navbar.css' %}" rel="stylesheet">
+<link href="{% static 'css/base.css' %}" rel="stylesheet"
+property="stylesheet">
+<link href="{% static 'css/base_navbar.css' %}" rel="stylesheet"
+property="stylesheet">
 
 <nav class="navbar navbar-default navbar-fixed-top"
     role="navigation">
@@ -24,14 +23,14 @@
 
             {% if show_steps %}
                 {% autoescape off %}
-                <li {{step_1}}><a class= "navbar-mid" href="{% url 'register:greeting' %}">1 How?</a></li>
-                <li {{step_2}}><a class= "navbar-mid" href="{% url 'register:registration' %}">2 Register</a></li>
-                <li {{step_3}}><a class= "navbar-mid" href="#">3 Finish</a></li>
+                <li {{step_1}}><a class= "navbar-mid" href="{% url 'register:greeting' %}">{% trans "1 How?" %}</a></li>
+                <li {{step_2}}><a class= "navbar-mid" href="{% url 'register:registration' %}">{% trans "2 Register" %}</a></li>
+                <li {{step_3}}><a class= "navbar-mid" href="#">{% trans "3 Finish" %}</a></li>
                 {% endautoescape %}
             {% endif %}
 
             <li class="navbar-right">
-                <form action="{% url 'index' %}" method="post">
+                <form action="{% url 'set_language' %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <select name="language" class="form-control navbar-btn"
@@ -52,7 +51,7 @@
             </li>
             {% if user.is_authenticated %}
                 <li class="navbar-right"><a href="{% url 'logout' %}?next=/">
-                    {% trans "Logout" %}
+                    Logout
                 </a></li>
                 <li class="dropdown navbar-right">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -61,19 +60,19 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url 'staff:event_overview' %}">
-                            {% trans "Event View" %}
+                            Event View
                         </a></li>
                         <li><a href="{% url 'staff:candidate_overview' %}">
-                            {% trans "Candidate View" %}
+                            Candidate View
                         </a></li>
                         <li><a href="{% url 'staff:bicycle_overview' %}">
-                            {% trans "Bicycle View" %}
+                            Bicycle View
                         </a></li>
                     </ul>
                 </li>
             {% else %}
                 <li class="navbar-right"><a href="{% url 'login' %}">
-                    {% trans "Login" %}
+                    Login
                 </a></li>
             {% endif %}
         </ul>

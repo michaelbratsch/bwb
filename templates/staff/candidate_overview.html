@@ -4,24 +4,25 @@
 
 {% load staticfiles %}
 {% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
 
 {% block head_block %}
     <link href="{% static 'django_tables2/bootstrap.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block body_block %}
-<div class="page-header">
-    <h2>
-        {% load i18n %}
-        {% blocktrans %}
-        Overview of all people that are registered in the database.
-        {% endblocktrans %}
-    </h2>
-</div>
-{% render_table candidates_table %}
-<br><br>
-<a href="{% url 'staff:create_candidate' %}" class="btn btn-info"
-role="button">
-    {% trans "Add new person" %}
-</a>
+    <div class="page-header">
+        <h2>
+            Overview of all people that are registered in the database.
+        </h2>
+    </div>
+    <form action="" method="get">
+        {{ filter.form|crispy }}
+        <input type="submit" />
+    </form>
+    <br>
+    {% render_table candidates_table %}
+    <br><br>
+    <a href="{% url 'staff:create_candidate' %}" class="btn btn-info"
+    role="button"> Add new person </a>
 {% endblock %}

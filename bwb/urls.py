@@ -14,18 +14,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
+
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.contrib.auth.views import logout, login
-from django.conf.urls.i18n import i18n_patterns
 
 from .views import GreetingsView
+
 
 urlpatterns = i18n_patterns(
     url(regex=r'^login/$', view=login, kwargs={'template_name': 'login.html'},
         name='login'),
     url(regex=r'^logout/$', view=logout, name='logout'),
-    url(r'^admin/',    admin.site.urls),
+    url(r'^i18n/', include('django.conf.urls.i18n'), name='set_language'),
+    url(r'^admin/', admin.site.urls),
     url(r'^register/', include('register.urls', namespace='register')),
-    url(r'^staff/',    include('staff.urls', namespace='staff')),
-    url(r'^$',         GreetingsView.as_view(),  name='index')
+    url(r'^staff/', include('staff.urls', namespace='staff')),
+    url(r'^$', GreetingsView.as_view(), name='index')
 )

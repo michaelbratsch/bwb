@@ -1,16 +1,18 @@
+from django.core.urlresolvers import reverse_lazy
+from django.http import Http404
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, FormView
+from django.views.generic.base import TemplateView
 from django_tables2 import RequestConfig
 import random
 
-from django.core.urlresolvers import reverse_lazy
-from django.http import Http404
-from django.shortcuts import render, get_object_or_404
-from django.views.generic.base import TemplateView
-
-from register.models import Candidate, Bicycle, HandoutEvent
-from register.models import User_Registration, Invitation
-from staff.forms import CreateCandidateForm
-from staff.forms import HandoverForm,  EventForm, InviteForm, RefundForm
+from register.email import send_message_after_invitation
+from register.models import Candidate, Bicycle, HandoutEvent, SiteConfiguration
+from register.models import UserRegistration, Invitation
+from staff.filters import CandidateFilter, BicycleFilter
+from staff.forms import CreateCandidateForm, DeleteCandidateForm
+from staff.forms import HandoverForm, EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
 from staff.tables import CandidateTable, BicycleTable, EventTable
 
@@ -24,10 +26,11 @@ class BicycleOverviewView(View):
 
     def get(self, request, *args, **kwargs):
         queryset = Bicycle.objects.all()
-        table = BicycleTable(queryset)
+        matches = BicycleFilter(request.GET, queryset=queryset)
+        table = BicycleTable(matches.qs)
         RequestConfig(request, paginate={'per_page': 40}).configure(table)
 
-        context_dict = {'bicycles': table}
+        context_dict = {'bicycles': table, 'filter': matches}
         return render(request, self.template_name, context_dict)
 
 
@@ -64,21 +67,26 @@ class AutoInviteView(FormView):
 
         event = get_object_or_404(HandoutEvent, id=event_id)
 
-        for choice, _ in User_Registration.BICYCLE_CHOICES:
+        for choice, _ in UserRegistration.BICYCLE_CHOICES:
             number_of_winners = form.cleaned_data['choice_%s' % choice]
 
             # do have no bicycle and are registered with contact information
-            candidates = Candidate.registered_and_without_bicycle(choice)
+            candidate = Candidate.registered_and_without_bicycle(choice)
 
-            # are not invited yet
-            candidates = [c for c in candidates if c.invitations.count() == 0]
+            # people that have not already been invited so many times
+            candidate = [
+                c for c in candidate if c.invitations.count() <
+                SiteConfiguration.get_solo().max_number_of_autoinvites]
 
-            winners = random.sample(candidates, min(len(candidates),
-                                                    number_of_winners))
+            winners = random.sample(candidate, min(len(candidate),
+                                                   number_of_winners))
 
             for winner in winners:
                 Invitation.objects.create(handout_event=event,
                                           candidate=winner)
+
+                send_message_after_invitation(candidate=winner,
+                                              handout_event=event)
 
         self.success_url = reverse_lazy('staff:event',
                                         kwargs={'event_id': event.id})
@@ -89,7 +97,7 @@ class AutoInviteView(FormView):
         event = get_object_or_404(HandoutEvent, id=event_id)
 
         context_dict = {'event': event,
-                        'bike_choices': User_Registration.BICYCLE_CHOICES}
+                        'bike_choices': UserRegistration.BICYCLE_CHOICES}
         return render(request, self.template_name, context_dict)
 
 
@@ -117,19 +125,16 @@ class EventView(View):
 
 class CandidateOverviewView(View):
     template_name = 'staff/candidate_overview.html'
-
-    def get_query_set(self):
-        # Define this function in urls.py
-        assert False, "Needs to be implemented."
+    query_set = None
 
     def get(self, request, *args, **kwargs):
-        queryset = self.get_query_set()
-        candidates_table = CandidateTable(queryset)
+        matches = CandidateFilter(request.GET, queryset=self.query_set)
+        candidates_table = CandidateTable(matches.qs)
         RequestConfig(request, paginate={'per_page': 40}).configure(
             candidates_table)
 
-        context_dict = {'candidates': Candidate.objects.all(),
-                        'candidates_table': candidates_table}
+        context_dict = {'candidates_table': candidates_table,
+                        'filter': matches}
         return render(request, self.template_name, context_dict)
 
 
@@ -153,28 +158,53 @@ class CreateCandidateView(FormView):
 
 class CandidateMixin(object):
 
-    def get(self, request, candidate_id, *args, **kwargs):
+    def get_context_dict(self, candidate_id, event_id, bicycle_id, data=None):
         candidate = get_object_or_404(Candidate, id=candidate_id)
         context_dict = {'candidate': candidate,
                         'base_template_name': 'staff/base_candidate_view.html'}
 
-        event_id = request.GET.get('event_id')
-        bicycle_id = request.GET.get('bicycle_id')
+        if event_id:
+            event = get_object_or_404(HandoutEvent, id=event_id)
+            context_dict['event'] = event
+            context_dict['base_template_name'] = 'staff/base_event_view.html'
+        elif bicycle_id:
+            bicycle = get_object_or_404(Bicycle, id=bicycle_id)
+            context_dict['bicycle'] = bicycle
+            context_dict['base_template_name'] = 'staff/base_bicycle_view.html'
 
         if self.form_class:
             context_dict['form'] = self.form_class(
+                data=data,
                 candidate_id=candidate_id,
                 event_id=event_id,
                 bicycle_id=bicycle_id)
 
-        if event_id is not None:
-            event = get_object_or_404(HandoutEvent, id=event_id)
-            context_dict['event'] = event
-            context_dict['base_template_name'] = 'staff/base_event_view.html'
-        elif bicycle_id is not None:
-            bicycle = get_object_or_404(Bicycle, id=bicycle_id)
-            context_dict['bicycle'] = bicycle
-            context_dict['base_template_name'] = 'staff/base_bicycle_view.html'
+        return context_dict
+
+    def get(self, request, candidate_id):
+        event_id = request.GET.get('event_id')
+        bicycle_id = request.GET.get('bicycle_id')
+
+        context_dict = self.get_context_dict(candidate_id=candidate_id,
+                                             event_id=event_id,
+                                             bicycle_id=bicycle_id)
+
+        return render(request, self.template_name, context_dict)
+
+    def post(self, request, candidate_id):
+        event_id = request.POST.get('event_id')
+        bicycle_id = request.POST.get('bicycle_id')
+
+        context_dict = self.get_context_dict(candidate_id=candidate_id,
+                                             event_id=event_id,
+                                             bicycle_id=bicycle_id,
+                                             data=request.POST)
+
+        form = context_dict['form']
+
+        if form.is_valid():
+            self.form_valid(form)
+            return HttpResponseRedirect(self.success_url)
 
         return render(request, self.template_name, context_dict)
 
@@ -202,6 +232,28 @@ class CandidateMixin(object):
 class CandidateView(CandidateMixin, View):
     template_name = 'staff/candidate.html'
     form_class = None
+
+
+class DeleteCandidateView(CandidateMixin, FormView):
+    template_name = 'staff/delete_candidate.html'
+    form_class = DeleteCandidateForm
+
+    def form_valid(self, form):
+        candidate_id = form.cleaned_data['candidate_id']
+        candidate = get_object_or_404(Candidate, id=candidate_id)
+        candidate.delete()
+
+        event_id = form.cleaned_data.get('event_id')
+        bicycle_id = form.cleaned_data.get('bicycle_id')
+        if event_id:
+            self.success_url = reverse_lazy('staff:event',
+                                            kwargs={'event_id': event_id})
+        elif bicycle_id:
+            self.success_url = reverse_lazy('staff:bicycle_overview')
+        else:
+            self.success_url = reverse_lazy('staff:candidate_overview')
+
+        return super(DeleteCandidateView, self).form_valid(form)
 
 
 class ModifyCandidateView(CandidateMixin, FormView):
@@ -288,6 +340,9 @@ class InviteCandidateView(CandidateMixin, FormView):
 
         Invitation.objects.create(candidate=candidate,
                                   handout_event=invitation_event)
+
+        send_message_after_invitation(candidate=candidate,
+                                      handout_event=invitation_event)
 
         self.set_success_url(form)
 

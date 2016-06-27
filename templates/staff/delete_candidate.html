@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+
+{% extends 'staff/base_candidate.html' %}
+
+{% block sub_body_block %}
+    <p>Are you sure you want to delete "{{ candidate }}" from the database?</p>
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+{% endblock %}

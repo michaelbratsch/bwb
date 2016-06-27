@@ -7,17 +7,14 @@
 {% block body_block %}
 <div class="page-header">
     <h2>
-        {% load i18n %}
-        {% blocktrans %}
         Overview of all events to handout new bicycles.
-        {% endblocktrans %}
     </h2>
 </div>
 <h3>
-    {% trans "Existing events can be selected on the left." %}
+    Existing events can be selected on the left.
     <br><br>
     <a href="{% url 'staff:create_event' %}" class="btn btn-info" role="button">
-        {% trans "Create new event" %}
+        Create new event
     </a>
 </h3>
 {% endblock %}

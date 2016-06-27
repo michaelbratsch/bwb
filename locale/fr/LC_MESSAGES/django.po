@@ -3,83 +3,82 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Hannes Riehl <hannes.riehl@posteo.de>, 2016
+# Translators:
+# Tobias Boßmann <tobias.bossmann@gmx.de>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Bikes Without Borders Registration Form\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-06-05 19:02+0000\n"
-"PO-Revision-Date: 2016-06-01 14:26+0000\n"
-"Last-Translator: Hannes Riehl <hannes.riehl@posteo.de>\n"
-"Language-Team: German (http://www.transifex.com/bikes-without-borders/bikes-"
-"without-borders-registration-form/language/de/)\n"
-"Language: de\n"
+"PO-Revision-Date: 2016-06-03 12:59+0000\n"
+"Last-Translator: Tobias Boßmann <tobias.bossmann@gmx.de>\n"
+"Language-Team: French (http://www.transifex.com/bikes-without-borders/bikes-"
+"without-borders-registration-form/language/fr/)\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: bwb/settings.py:135
 msgid "English"
-msgstr "Englisch"
+msgstr "Anglais"
 
 #: bwb/settings.py:136
 msgid "German"
-msgstr "Deutsch"
+msgstr "Allemand"
 
 #: bwb/settings.py:137
 msgid "French"
-msgstr "Französisch"
+msgstr "Français"
 
 #: bwb/settings.py:138
 msgid "Arabic"
-msgstr "Arabisch"
+msgstr "Arabe"
 
 #: bwb/settings.py:139
 msgid "Persian"
-msgstr "Persisch"
+msgstr "Perse"
 
 #: register/email.py:66 register/email.py:89
 msgid "Hello"
-msgstr "Hallo"
+msgstr "Bonjour"
 
 #: register/email.py:69
 msgid "We have a "
-msgstr ""
+msgstr "On a un"
 
 #: register/email.py:71
 msgid " that is reserved for you. Please come by on "
-msgstr ""
+msgstr "qui est réservé pour toi. S'il te plaît, viens nous voir"
 
 #: register/email.py:73
 msgid ", so that we can fix it together with your help."
-msgstr ""
+msgstr "pour qu'on puisse réparer le vélo avec toi."
 
 #: register/email.py:76
-#, fuzzy
-#| msgid "Your"
 msgid "Your,"
-msgstr "Euer"
+msgstr "Sincères salutations"
 
 #: register/email.py:76 templates/register/thanks.html:38
 msgid "BwB-Team"
-msgstr "BwB-Team"
+msgstr "Ton équipe de Bikes without Borders"
 
 #: register/email.py:80
 msgid "BwB - Get your bike"
-msgstr ""
+msgstr "BwB - Obtiens ton vélo."
 
 #: register/email.py:101 register/email.py:107
 msgid "Thank you for registering for a bike."
-msgstr "Danke, dass Du Dich für ein Fahrrad registriert hast."
+msgstr "Merci d'avoir enrégistré pour un vélo."
 
 #: register/email.py:102
 msgid ""
 "To verify your email address and to check your current number in line, "
 "please click the following link:"
 msgstr ""
-"Um deine Emailadresse zu bestätigen und Deine Position in der Warteschlange "
-"zu überprüfen, klicke bitte den folgenden Link:"
+"Afin de pouvoir vérifier ton adresse mail et ta position dans la file "
+"d'attente, stp, appuye sur le lien suivant:"
 
 #: register/email.py:108
 msgid "You will be notified when your bike is ready."
@@ -87,126 +86,130 @@ msgstr ""
 
 #: register/email.py:110
 msgid "We hope to see you soon!"
-msgstr "Wir freuen uns Dich bald bei uns zu sehen!"
+msgstr "Nous sommes heureux de te revoir chez nous bientôt."
 
 #: register/email.py:113
 msgid "BwB - Registration"
-msgstr "BwB - Registrierung"
+msgstr "BwB - Enregistrement"
 
 #: register/forms.py:23
 msgid ""
 "Due to too many registrations, it is currently not possible to register for "
 "a bicycle."
 msgstr ""
-"Auf Grunde zu vieler Registrierungen, ist die Anmeldung zur Zeit geschlossen."
+"Suite à un très grand nombre de reservation, il n'est actuellement pas "
+"possible de s'enregistrer."
 
 #: register/forms.py:26
 msgid "This is not a properly formatted phone number."
-msgstr "Die Formatierung der Telefonnummer ist nicht korrekt."
+msgstr "Le format du numéro de téléphone n'est pas correct."
 
 #: register/forms.py:27
 msgid "This is not a valid phone number."
-msgstr "Dies ist keine korrekte Telfonnummer."
+msgstr "Ce n'est pas un numéro de téléphone correct."
 
 #: register/forms.py:28
 msgid "This is not a valid mobile phone number."
-msgstr "Dies ist keine korrekte Mobilfunknummer."
+msgstr "Ce n'est pas un numéro de portable correct."
 
 #: register/forms.py:31
 msgid "You need to agree with the terms and conditions."
-msgstr "Du musst dich mit unseren Geschäftsbedingungen einverstanden erkären."
+msgstr "Il faut que tu acceptes nos conditions générales."
 
 #: register/forms.py:33
 msgid ""
 "A user with this name and date of birth is already registered. It is not "
 "allowed to register multiple times!"
 msgstr ""
-"Es ist bereits eine Person mit dem gleichen Namen und Geburtsdatum "
-"registriert. Es ist nicht gestattet sich mehrere Male zu registrieren."
+"Il y a déjà une personne régistré avec ton nom et ta date de naissance. Il "
+"n'est pas possible de s'enregistrer plusieurs fois."
 
 #: register/forms.py:35
 msgid "Please fill out email or mobile phone number."
-msgstr "Bitte gib eine Emailadresse oder Mobilfunknummer an."
+msgstr "Saisie ton adresse mail ou ton numéro de téléphone, stp."
 
 #: register/forms.py:115
 msgid "Email"
-msgstr "Email"
+msgstr "Adresse mail"
 
 #: register/forms.py:119
 msgid "Mobile phone number"
-msgstr "Mobilfunknummer"
+msgstr "Numéro de téléphone portable"
 
 #: register/forms.py:123
 msgid "Bicycle kind"
-msgstr "Fahrradtyp"
+msgstr "Type de vélo"
 
 #: register/forms.py:126
 msgid "Agree with Terms and Conditions"
-msgstr "Ich erkläre mich mit den Geschäftsbedingung einverstanden."
+msgstr "J'accepte les conditions générales."
 
 #: register/forms.py:132 staff/forms.py:18 staff/forms.py:111
 msgid "First name"
-msgstr "Vorname"
+msgstr "Prénom"
 
 #: register/forms.py:133 staff/forms.py:19 staff/forms.py:112
 msgid "Last name"
-msgstr "Nachname"
+msgstr "Nom"
 
 #: register/forms.py:134 staff/forms.py:20 staff/forms.py:113
 msgid "Date of birth"
-msgstr "Geburtsdatum"
+msgstr "Date de naissance"
 
 #: register/forms.py:143
 msgid "You can only buy one bike per person."
-msgstr "Du kannst nur ein Fahrrad kaufen."
+msgstr "Tu peux acheter seulement un vélo."
 
 #: register/forms.py:144
 msgid "Please do not register twice."
-msgstr "Bitte registriere Dich nicht zwei Mal."
+msgstr "Ne t'enregistre pas plusieurs fois, stp."
 
 #: register/forms.py:145
 msgid "If you want a bike for your children, please also register them."
 msgstr ""
-"Wenn du ein Fahrrad für deine Kinder kaufen möchtest, registriere sie "
-"separat unter ihren Namen."
+"Si tu as besoin d'un vélo pour ton enfant, il faut l'enregistrer séparément "
+"avec son propre nom."
 
 #: register/forms.py:147
 msgid "We do not sell new bikes."
-msgstr "Wir verkaufen keine neuen Fahrräder."
+msgstr "On ne vend pas des vélos neufs."
 
 #: register/forms.py:148
 msgid "All bikes are donated and used."
-msgstr "Alle Fahrräder wurden gespendet und sind gebraucht."
+msgstr "Tous les vélos étaient donnés et ne sont pas neufs."
 
 #: register/forms.py:149
 msgid "We only sell road-worthy bikes."
-msgstr "Wir verkaufen nur verkehrstüchtige Fahrräder."
+msgstr ""
+"On vend uniquement des vélos qui  sont conformes à la\n"
+"réglementation technique par les autorités de contrôle."
 
 #: register/forms.py:150
 msgid "You can resell your bike to us, if you do not need it anymore."
 msgstr ""
-"Wir kaufen Dein Fahrrad für den Kaufpreis zurück, wenn Du es nicht mehr "
-"benötigst."
+"Si jamais tu n'as plus besoin de ton vélo tu peux nous le rendre et tu "
+"récupères le prix d'achat."
 
 #: register/forms.py:152
 msgid ""
 "Our bikes always need repair work. Please bring some time and help us to "
 "repair your bike."
 msgstr ""
-"Unsere Fahrräder benötigen immer kleinere Reperaturen. Bitte bringe etwas "
-"Zeit und Motivation mit."
+"En général, avant de distribuer nos vélos il faut réparer certains petits "
+"trucs (lumière, frein, sonnette). Pour ceci il nous faut un peu de ton "
+"temps, ton aide et ta motivation."
 
 #: register/forms.py:156
 msgid "Terms of use"
-msgstr "Geschäftsbedingungen"
+msgstr "Conditions générales"
 
 #: register/forms.py:157
 msgid "Our terms of use are the following:"
-msgstr "Unsere Geschäftsbedingungen:"
+msgstr "Nos conditions générales:"
 
 #: register/forms.py:185
 msgid "Submit"
-msgstr "Senden"
+msgstr "Envoyer"
 
 #: templates/base.html:14 templates/base_navbar.html:22
 msgid "Bikes without Borders"
@@ -214,138 +217,133 @@ msgstr "Bikes without Borders"
 
 #: templates/base_navbar.html:27
 msgid "1 How?"
-msgstr "1 Wie funktioniert es?"
+msgstr "1 Comment ça marche?"
 
 #: templates/base_navbar.html:28
 msgid "2 Register"
-msgstr "2 Registrierung"
+msgstr "2 Enregistrement"
 
 #: templates/base_navbar.html:29
 msgid "3 Finish"
-msgstr "3 Fertig"
+msgstr "3 C'est fait"
 
 #: templates/index.html:10
 msgid "Welcome"
-msgstr "Willkommen"
+msgstr "Bienvenus"
 
 #: templates/index.html:11
 msgid "you want to register for a „Bike without Borders“ Bike?"
-msgstr ""
-"Du möchtest Dich für ein \"Bikes without Borders\" Fahrrad registrieren?"
+msgstr "Tu voudrais t'enrégistrer pour un vélo de \"Bikes without Borders\"?"
 
 #: templates/index.html:18
 msgid "Please choose your language first!"
-msgstr "Bitte wähle zunächst Deine Sprache!"
+msgstr "Choisis ta langue, stp."
 
 #: templates/register/current_in_line.html:10
 msgid ""
 "Thank you for validating your\n"
 "            email address."
-msgstr ""
-"Danke für die Bestätigung Deiner\n"
-"Emailadresse."
+msgstr "Merci pour la confirmation de ton adresse mail."
 
 #: templates/register/current_in_line.html:14
 msgid "Currently you are number"
-msgstr "Du bist zur Zeit Nummer"
+msgstr "Tu es actuellement le numéro"
 
 #: templates/register/current_in_line.html:15
 msgid "in line waiting for a"
-msgstr "in der Warteschlange für ein"
+msgstr "dans la liste d'attente pour un"
 
 #: templates/register/greeting.html:8
 msgid "How does it work?"
-msgstr "Wie funktioniert es?"
+msgstr "Comment ça marche?"
 
 #: templates/register/greeting.html:11
 msgid ""
 "BwB volunteers repair and sell donated bikes\n"
 "        together with refugees for refugees."
 msgstr ""
-"Die Freiwilligen von BwB reparieren und verkaufen gespendete Fahrräder. Mit "
-"und an Geflüchtete."
+"Les bénévoles de BwB réparent et vendet des vélos, avec et pour des réfugiés."
 
 #: templates/register/greeting.html:15
 msgid ""
 "Register online with your email address or your\n"
 "            phone number: you are now on our waiting list."
 msgstr ""
-"Registriere Dich online mit Deiner Emailadresse oder Deiner Mobilfunknummer: "
-"Du befindest Dich jetzt auf unserer Warteliste."
+"Enregistre toi en ligne avec ton adresse mail ou ton numéro de téléphone "
+"portable: Maintenant, tu es sur notre liste d'attente."
 
 #: templates/register/greeting.html:19
 msgid "Wait until you get invitation from us by email or sms."
-msgstr "Warte bis wir Dir eine Einladung per Email oder SMS schicken."
+msgstr "Attends juqu'à ce que tu reçois une invitation par mail ou texto/sms."
 
 #: templates/register/greeting.html:22
 msgid "Confirm the invitation, if you have time to pick up your bike."
-msgstr "Bestätige die Einladung, wenn du Zeit hast dein Fahrrad abzuholen."
+msgstr "Dès que tu as reçu l'invitation, il faut que tu la confirme."
 
 #: templates/register/greeting.html:25
 msgid "Come to our Workshop and bring your passport or registration document."
 msgstr ""
-"Komme zu unserer Werkstatt und bringe Deinen Pass oder ein anderes "
-"Ausweisdokument mit Dir."
+"Viens dans notre atelier et rammène ton passport, Ausweis ou autre document "
+"d'identification."
 
 #: templates/register/greeting.html:28
 msgid "Repair your bike together with us, buy it for 10€ and get a lock."
 msgstr ""
-"Repariere Dein Fahrrad zusammen mit unseren Helfern, registriere es für 10€ "
-"und erhalte ein Schloss."
+"Répare ton vélo à l'aide des bénévoles, enregistre ton vélo et paie les 10€ "
+"et récupère ton anti-vol."
 
 #: templates/register/greeting.html:36
 msgid "Register now!"
-msgstr "Registriere Dich jetzt!"
+msgstr "Enregistre-toi maintenant."
 
 #: templates/register/registration.html:9
 msgid "Register for a bike"
-msgstr "Registriere Dich für ein Fahrrad"
+msgstr "Enregistre-toi pour un vélo."
 
 #: templates/register/registration.html:10
 msgid "To register, please fill out the following form."
-msgstr "Fülle bitte das folgende Formular aus, um Dich zu registrieren."
+msgstr "Rempli le formulaire suivant, stp, afin de t'enregistrer."
 
 #: templates/register/thanks.html:10
 msgid "Congratulations"
-msgstr "Glückwunsch"
+msgstr "Félicitations."
 
 #: templates/register/thanks.html:16
 msgid "You are now registered for a"
-msgstr "Du hast dich für ein"
+msgstr "Tu t'es enregistré pour un"
 
 #: templates/register/thanks.html:17
 msgid "and officially on our waiting list. We also sent you an"
-msgstr ""
-"registrierst und befindest Dich in unserer Warteschlange. Wir haben Dir eine"
+msgstr "et tu trouves maintenant sur notre liste d'attente. On t'a envoyé un"
 
 #: templates/register/thanks.html:19
 msgid ""
 "email with a link to confirm your email address\n"
 "            and to check you current status."
 msgstr ""
-"Email mit einem Link geschickt, über den Du Deine Emailadresse bestätigen "
-"und Deine Position in der Warteschlange sehen kannst."
+"mail avec un lien, avec lequel tu peux confirmer ton adresse mail et "
+"vérifier ta position sur la liste d'attente."
 
 #: templates/register/thanks.html:22 templates/register/thanks.html:29
 msgid "SMS."
-msgstr "SMS."
+msgstr "texto/sms."
 
 #: templates/register/thanks.html:24
 msgid ""
 "Please wait until your bike is prepared for you and\n"
 "        you received an invitation from us by"
 msgstr ""
-"Bitte warte bis wir ein Fahrrad für Dich vorbereitet haben. Sobald Du an der "
-"Reihe bist, erhälst Du von uns eine Benachrichtigung per"
+"Stp, attends jusqu'au moment quand on a préparé un vélo pour toi. Tu seras "
+"informé dès que c'est ton tour, par"
 
 #: templates/register/thanks.html:27
 msgid "email."
-msgstr "Email."
+msgstr "mail."
 
 #: templates/register/thanks.html:32
 msgid "If you have further questions, send us an email:"
-msgstr "Wenn Du Fragen an uns hast, schreibe uns eine Email:"
+msgstr "Quand tu as une question, tu peux nous envoyer un mail:"
 
 #: templates/register/thanks.html:36
 msgid "Your"
-msgstr "Euer"
+msgstr "Cordialement,"

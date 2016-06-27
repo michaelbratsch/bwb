@@ -1,10 +1,12 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field
+from crispy_forms.layout import Submit, Layout, Field, Div
 from django import forms
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-
 from django.utils.formats import date_format
+from django.utils.translation import ugettext_lazy
 
+from register.forms import SelectDateOfBirthWidget, MULTIPLE_REGISTRATION_ERROR
 from register.models import Bicycle, Candidate
 
 
@@ -12,7 +14,39 @@ class CreateCandidateForm(forms.ModelForm):
 
     class Meta:
         model = Candidate
-        fields = ['first_name', 'last_name', 'date_of_birth']
+        fields = ('first_name', 'last_name', 'date_of_birth')
+        labels = {'first_name': ugettext_lazy('First name'),
+                  'last_name': ugettext_lazy('Last name'),
+                  'date_of_birth': ugettext_lazy('Date of birth')}
+        widgets = {'date_of_birth': SelectDateOfBirthWidget}
+
+    def __init__(self, *args, **kwargs):
+        super(CreateCandidateForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+
+        self.helper.layout = Layout(Div(Div(Field('first_name'),
+                                            Field('last_name'),
+                                            Field('date_of_birth'),
+                                            css_class="col-xs-12 col-md-8"),
+                                        css_class="form-group row"))
+
+        self.helper.add_input(Submit('submit', 'Submit',
+                                     css_class='col-xs-3 btn-info'))
+
+    def clean(self):
+        cleaned_data = super(CreateCandidateForm, self).clean()
+
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        date_of_birth = cleaned_data.get('date_of_birth')
+
+        if Candidate.get_matching(first_name=first_name,
+                                  last_name=last_name,
+                                  date_of_birth=date_of_birth):
+            raise ValidationError(MULTIPLE_REGISTRATION_ERROR)
+
+        return cleaned_data
 
 
 def get_hidden_field(name, var):
@@ -30,12 +64,29 @@ def get_hidden_fields(candidate_id, event_id, bicycle_id):
             get_hidden_field('bicycle_id', bicycle_id))
 
 
+class DeleteCandidateForm(forms.Form):
+    event_id = forms.IntegerField(min_value=0, required=False)
+    bicycle_id = forms.IntegerField(min_value=0, required=False)
+    candidate_id = forms.IntegerField(min_value=0)
+
+    def __init__(self, candidate_id=None, event_id=None, bicycle_id=None,
+                 *args, **kwargs):
+        super(DeleteCandidateForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(*get_hidden_fields(
+            candidate_id, event_id, bicycle_id))
+        self.helper.add_input(Submit('submit', 'Delete Candidate',
+                                     css_class='col-xs-3 btn-info'))
+
+
 class InviteCandidateForm(forms.Form):
     event_id = forms.IntegerField(min_value=0, required=False)
     candidate_id = forms.IntegerField(min_value=0)
     invitation_event_id = forms.IntegerField(min_value=0)
 
-    def __init__(self, candidate_id=None, event_id=None, bicycle_id=None,
+    def __init__(self, candidate_id=None, event_id=None,
+                 bicycle_id=None,  # pylint: disable=unused-argument
                  *args, **kwargs):
         super(InviteCandidateForm, self).__init__(*args, **kwargs)
 
@@ -51,7 +102,7 @@ class InviteCandidateForm(forms.Form):
             self.fields['invitation_event_id'] = forms.ChoiceField(
                 choices=event_choices)
 
-            layout = [Field('invitation_event_id', required='')]
+            layout = [Field('invitation_event_id')]
             layout += get_hidden_field('candidate_id', candidate_id)
             layout += get_hidden_field('event_id', event_id)
 
@@ -69,8 +120,12 @@ class ModifyCandidateForm(forms.ModelForm):
 
     class Meta:
         model = Candidate
-        fields = ['first_name', 'last_name', 'date_of_birth',
-                  'event_id', 'bicycle_id', 'candidate_id']
+        fields = ('first_name', 'last_name', 'date_of_birth',
+                  'event_id', 'bicycle_id', 'candidate_id')
+        labels = {'first_name': ugettext_lazy('First name'),
+                  'last_name': ugettext_lazy('Last name'),
+                  'date_of_birth': ugettext_lazy('Date of birth')}
+        widgets = {'date_of_birth': SelectDateOfBirthWidget}
 
     def __init__(self, candidate_id=None, event_id=None, bicycle_id=None,
                  *args, **kwargs):
@@ -81,20 +136,15 @@ class ModifyCandidateForm(forms.ModelForm):
         if candidate_id:
             candidate = get_object_or_404(Candidate, id=candidate_id)
 
-            # ToDo: replace following hack and find out why date_format is
-            # not working properly with i10n
-            from django.template import Template, Context
-            c = Context(dict(candidate=candidate))
-            date_of_birth = Template(
-                "{{ candidate.date_of_birth|date:'SHORT_DATE_FORMAT' }}"
-            ).render(c)
+            self.initial = {'first_name': candidate.first_name,
+                            'last_name': candidate.last_name,
+                            'date_of_birth': candidate.date_of_birth}
 
-            layout = [Field('first_name', required='',
-                            value=candidate.first_name),
-                      Field('last_name', required='',
-                            value=candidate.last_name),
-                      Field('date_of_birth', required='',
-                            id='datepicker', value=date_of_birth)]
+            layout = [Layout(Div(Div(Field('first_name'),
+                                     Field('last_name'),
+                                     Field('date_of_birth'),
+                                     css_class="col-xs-12 col-md-8"),
+                                 css_class="form-group row"))]
 
             layout += get_hidden_fields(candidate_id, event_id, bicycle_id)
 
@@ -102,6 +152,23 @@ class ModifyCandidateForm(forms.ModelForm):
 
             self.helper.add_input(Submit('submit', 'Submit',
                                          css_class='col-xs-3 btn-info'))
+
+    def clean(self):
+        cleaned_data = super(ModifyCandidateForm, self).clean()
+
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        date_of_birth = cleaned_data.get('date_of_birth')
+
+        candidate_id = cleaned_data['candidate_id']
+
+        if Candidate.get_matching(
+                first_name=first_name,
+                last_name=last_name,
+                date_of_birth=date_of_birth).exclude(id=candidate_id):
+            raise ValidationError(MULTIPLE_REGISTRATION_ERROR)
+
+        return cleaned_data
 
 
 class RefundForm(forms.Form):
@@ -138,10 +205,10 @@ class HandoverForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
 
-        layout = [Field('bicycle_number', required=''),
-                  Field('lock_combination', required=''),
-                  Field('color', required=''),
-                  Field('brand', required='')]
+        layout = [Field('bicycle_number'),
+                  Field('lock_combination'),
+                  Field('color'),
+                  Field('brand')]
         layout += get_hidden_fields(candidate_id, event_id, bicycle_id)
         layout += ['general_remarks']
 
@@ -152,6 +219,7 @@ class HandoverForm(forms.ModelForm):
 
 
 class EventForm(forms.Form):
+
     due_date = forms.DateTimeField(input_formats=['%d.%m.%Y %H:%M',
                                                   '%m/%d/%Y %I:%M %p'])
 
