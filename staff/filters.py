@@ -1,9 +1,10 @@
+from datetime import datetime, timedelta
 from django.forms.widgets import SelectDateWidget
-from django_filters import DateFilter
 from django_filters import FilterSet, CharFilter
-from django_filters.filters import ChoiceFilter
+from django_filters.filters import ChoiceFilter, MethodFilter
 
 from register.models import Candidate, Bicycle
+
 
 EMPTY_CHOICE = ('', '---------'),
 
@@ -18,9 +19,28 @@ class CandidateFilter(FilterSet):
         fields = ['first_name', 'last_name', 'status']
 
 
+class HandoutDateWidget(SelectDateWidget):
+
+    def __init__(self, *args, **kwargs):
+        current_year = datetime.now().year
+        super(HandoutDateWidget, self).__init__(
+            years=range(2016, current_year + 1)[::-1], *args, **kwargs)
+
+
 class BicycleFilter(FilterSet):
-    date_of_handout = DateFilter(widget=SelectDateWidget)
+    begin_date_of_handout = MethodFilter(widget=HandoutDateWidget)
+    end_date_of_handout = MethodFilter(widget=HandoutDateWidget)
 
     class Meta:
         model = Bicycle
-        fields = ['date_of_handout']
+        fields = ['begin_date_of_handout', 'end_date_of_handout']
+
+    # pylint: disable= no-self-use
+    def filter_begin_date_of_handout(self, queryset, value):
+        return queryset.filter(
+            date_of_handout__gt=value)
+
+    def filter_end_date_of_handout(self, queryset, value):
+        incr_date = datetime.strptime(value, '%Y-%m-%d') + timedelta(days=1)
+        return queryset.filter(
+            date_of_handout__lt=incr_date)
