@@ -4,4 +4,5 @@ bwb/email_settings.py
 bwb/sms_settings.py
 bwb/secret_key.py
 db.sqlite3
+static/*
 *.pyc
