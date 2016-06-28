@@ -1,8 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Div
-from datetime import datetime, timedelta
 from django import forms
-from django.core.exceptions import ValidationError
+from django.forms.fields import DateField
 from django.forms.widgets import SelectDateWidget
 from django_filters import FilterSet, CharFilter
 from django_filters.filters import ChoiceFilter, MethodFilter
@@ -72,14 +71,7 @@ class BicycleForm(forms.Form):
     def clean(self):
         for date_id in ['date_of_handout_begin', 'date_of_handout_end']:
             date_as_str = self.cleaned_data.get(date_id)
-            error_message = 'Format of %s is invalid.' % date_id
-            if not date_as_str:
-                raise ValidationError(error_message)
-
-            try:
-                datetime.strptime(date_as_str, '%Y-%m-%d')
-            except ValueError:
-                raise ValidationError(error_message)
+            DateField().to_python(date_as_str)
 
 
 class BicycleFilter(FilterSet):
@@ -94,9 +86,8 @@ class BicycleFilter(FilterSet):
     # pylint: disable= no-self-use
     def filter_date_of_handout_begin(self, queryset, value):
         return queryset.filter(
-            date_of_handout__gt=value)
+            date_of_handout__gt=DateField().to_python(value))
 
     def filter_date_of_handout_end(self, queryset, value):
-        incr_date = datetime.strptime(value, '%Y-%m-%d') + timedelta(days=1)
         return queryset.filter(
-            date_of_handout__lt=incr_date)
+            date_of_handout__date__lte=DateField().to_python(value))
