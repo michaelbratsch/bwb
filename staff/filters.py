@@ -1,3 +1,5 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Field, Div
 from datetime import datetime, timedelta
 from django.forms.widgets import SelectDateWidget
 from django_filters import FilterSet, CharFilter
@@ -14,6 +16,24 @@ class CandidateFilter(FilterSet):
     last_name = CharFilter(lookup_expr='icontains')
     status = ChoiceFilter(choices=EMPTY_CHOICE + Candidate.CANDIDATE_STATUS)
 
+    def __init__(self, *args, **kwargs):
+        super(CandidateFilter, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+
+        layout = Div(Div(Field('first_name'),
+                         css_class="col-xs-12 col-md-4"),
+                     Div(Field('last_name'),
+                         css_class="col-xs-12 col-md-4"),
+                     Div(Field('status'),
+                         css_class="col-xs-12 col-md-4"))
+
+        self.helper.layout = Layout(*layout)
+
+        self.helper.add_input(Submit('submit', 'Filter',
+                                     css_class='btn-info'))
+
     class Meta:
         model = Candidate
         fields = ['first_name', 'last_name', 'status']
@@ -22,25 +42,44 @@ class CandidateFilter(FilterSet):
 class HandoutDateWidget(SelectDateWidget):
 
     def __init__(self, *args, **kwargs):
-        current_year = datetime.now().year
+        min_year = Bicycle.objects.earliest(
+            'date_of_handout').date_of_handout.year
+        max_year = Bicycle.objects.latest(
+            'date_of_handout').date_of_handout.year
         super(HandoutDateWidget, self).__init__(
-            years=range(2016, current_year + 1)[::-1], *args, **kwargs)
+            years=range(min_year, max_year + 1)[::-1], *args, **kwargs)
 
 
 class BicycleFilter(FilterSet):
-    begin_date_of_handout = MethodFilter(widget=HandoutDateWidget)
-    end_date_of_handout = MethodFilter(widget=HandoutDateWidget)
+    date_of_handout_begin = MethodFilter(widget=HandoutDateWidget)
+    date_of_handout_end = MethodFilter(widget=HandoutDateWidget)
+
+    def __init__(self, *args, **kwargs):
+        super(BicycleFilter, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+
+        layout = Div(Div(Field('date_of_handout_begin'),
+                         css_class="col-xs-12 col-md-6"),
+                     Div(Field('date_of_handout_end'),
+                         css_class="col-xs-12 col-md-6"))
+
+        self.helper.layout = Layout(*layout)
+
+        self.helper.add_input(Submit('submit', 'Filter',
+                                     css_class='btn-info'))
 
     class Meta:
         model = Bicycle
-        fields = ['begin_date_of_handout', 'end_date_of_handout']
+        fields = ['date_of_handout_begin', 'date_of_handout_end']
 
     # pylint: disable= no-self-use
-    def filter_begin_date_of_handout(self, queryset, value):
+    def filter_date_of_handout_begin(self, queryset, value):
         return queryset.filter(
             date_of_handout__gt=value)
 
-    def filter_end_date_of_handout(self, queryset, value):
+    def filter_date_of_handout_end(self, queryset, value):
         incr_date = datetime.strptime(value, '%Y-%m-%d') + timedelta(days=1)
         return queryset.filter(
             date_of_handout__lt=incr_date)
