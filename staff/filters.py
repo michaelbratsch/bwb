@@ -1,6 +1,8 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Div
 from datetime import datetime, timedelta
+from django import forms
+from django.core.exceptions import ValidationError
 from django.forms.widgets import SelectDateWidget
 from django_filters import FilterSet, CharFilter
 from django_filters.filters import ChoiceFilter, MethodFilter
@@ -50,13 +52,10 @@ class HandoutDateWidget(SelectDateWidget):
             years=range(min_year, max_year + 1)[::-1], *args, **kwargs)
 
 
-class BicycleFilter(FilterSet):
-    date_of_handout_begin = MethodFilter(widget=HandoutDateWidget)
-    date_of_handout_end = MethodFilter(widget=HandoutDateWidget)
+class BicycleForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
-        super(BicycleFilter, self).__init__(*args, **kwargs)
-
+        super(BicycleForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'get'
 
@@ -70,7 +69,25 @@ class BicycleFilter(FilterSet):
         self.helper.add_input(Submit('submit', 'Filter',
                                      css_class='btn-info'))
 
+    def clean(self):
+        for date_id in ['date_of_handout_begin', 'date_of_handout_end']:
+            date_as_str = self.cleaned_data.get(date_id)
+            error_message = 'Format of %s is invalid.' % date_id
+            if not date_as_str:
+                raise ValidationError(error_message)
+
+            try:
+                datetime.strptime(date_as_str, '%Y-%m-%d')
+            except ValueError:
+                raise ValidationError(error_message)
+
+
+class BicycleFilter(FilterSet):
+    date_of_handout_begin = MethodFilter(widget=HandoutDateWidget)
+    date_of_handout_end = MethodFilter(widget=HandoutDateWidget)
+
     class Meta:
+        form = BicycleForm
         model = Bicycle
         fields = ['date_of_handout_begin', 'date_of_handout_end']
 
