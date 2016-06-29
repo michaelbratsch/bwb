@@ -1,7 +1,9 @@
 .project
 .pydevproject
 bwb/email_settings.py
+bwb/local_settings.py
 bwb/sms_settings.py
 bwb/secret_key.py
 db.sqlite3
+*.mo
 *.pyc
