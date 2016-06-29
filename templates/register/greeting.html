@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load solo_tags %}
 
 {% block body_block %}
     <div class="page-header">
@@ -26,7 +27,12 @@
             {% trans "Repair your bike together with us, buy it for 10€ and get a lock." %}
         </li>
     </ol>
-    {% if open_for_registration %}
+    {% get_solo 'register.SiteConfiguration' as site_config %}
+    {% if site_config.maintenance_mode %}
+    <div class="alert alert-danger">
+        {{ site_config.maintenance_message|linebreaks }}
+    </div>
+    {% elif open_for_registration %}
     <div class="form-group row">
         <div class="col-xs-12 col-md-5">
             <a href="{% url 'register:registration' %}"
@@ -34,6 +40,10 @@
                 {% trans "Register now!" %}
             </a>
         </div>
+    </div>
+    {% else %}
+    <div class="alert alert-danger">
+        {{ too_many_registrations_error|linebreaks }}
     </div>
     {% endif %}
 {% endblock %}

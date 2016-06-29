@@ -1,14 +1,29 @@
 {% extends 'base.html' %}
 
 {% load staticfiles %}
+{% load solo_tags %}
 
 {% block body_block %}
     <div class="page-header">
         {% load i18n %}{% trans "Register for a bike" %}
     </div>
-    {% trans "To register, please fill out the following form:" %}
 
+    {% get_solo 'register.SiteConfiguration' as site_config %}
+
+    {% if site_config.maintenance_mode %}
+    <div class="alert alert-danger">
+        {{ site_config.maintenance_message|linebreaks }}
+    </div>
+
+    {% elif open_for_registration %}
+    {% trans "To register, please fill out the following form:" %}
     {% load crispy_forms_tags %}
     {% crispy form %}
 
+    {% else %}
+    <div class="alert alert-danger">
+        {{ too_many_registrations_error|linebreaks }}
+    </div>
+
+    {% endif %}
 {% endblock %}
