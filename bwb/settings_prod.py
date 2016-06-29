@@ -44,7 +44,7 @@ LOCALE_PATHS = (
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [u'test2.bikeswithoutborders.de', u'127.0.0.1']
+ALLOWED_HOSTS = ['bikeswithoutborders.de']
 
 
 # Application definition
