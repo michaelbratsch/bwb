@@ -8,7 +8,7 @@ from django.views.generic.edit import FormView
 from register.email import send_message_after_registration
 from register.forms import RegistrationForm, open_for_registration
 from register.forms import TOO_MANY_REGISTRATIONS_ERROR
-from register.models import UserRegistration, Candidate, SiteConfiguration
+from register.models import UserRegistration, Candidate
 
 
 class GreetingsView(View):
