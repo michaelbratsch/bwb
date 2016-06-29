@@ -16,6 +16,7 @@ class GreetingsView(View):
 
     def get(self, request, *args, **kwargs):
         context_dict = {'open_for_registration': open_for_registration(),
+                        'too_many_registrations_error': TOO_MANY_REGISTRATIONS_ERROR,
                         'show_steps': True,
                         'step_1': 'class="active"'}
         return render(request, self.template_name, context_dict)
@@ -66,10 +67,10 @@ class RegistrationView(FormView):
         return super(RegistrationView, self).form_invalid(form)
 
     def get(self, request, *args, **kwargs):
-        if not open_for_registration():
-            raise Http404(TOO_MANY_REGISTRATIONS_ERROR)
 
-        context_dict = {'choices': UserRegistration.BICYCLE_CHOICES,
+        context_dict = {'open_for_registration': open_for_registration(),
+                        'too_many_registrations_error': TOO_MANY_REGISTRATIONS_ERROR,
+                        'choices': UserRegistration.BICYCLE_CHOICES,
                         'show_steps': True,
                         'step_2': 'class="active"',
                         'form': RegistrationForm()}

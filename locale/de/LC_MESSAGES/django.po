@@ -45,15 +45,15 @@ msgstr "Hallo"
 
 #: register/email.py:69
 msgid "We have a "
-msgstr ""
+msgstr "Wir haben ein "
 
 #: register/email.py:71
 msgid " that is reserved for you. Please come by on "
-msgstr ""
+msgstr " ,das für dich reserviert wurde. Bitte komme am"
 
 #: register/email.py:73
 msgid ", so that we can fix it together with your help."
-msgstr ""
+msgstr " zu uns, sodass wir es gemeinsam reparieren können."
 
 #: register/email.py:76
 #, fuzzy
@@ -67,7 +67,7 @@ msgstr "BwB-Team"
 
 #: register/email.py:80
 msgid "BwB - Get your bike"
-msgstr ""
+msgstr "BwB - Dein Fahrrad ist bereit"
 
 #: register/email.py:101 register/email.py:107
 msgid "Thank you for registering for a bike."
@@ -83,7 +83,7 @@ msgstr ""
 
 #: register/email.py:108
 msgid "You will be notified when your bike is ready."
-msgstr ""
+msgstr "Du wirst benachrichtigt, wenn Fahrrad bereit ist."
 
 #: register/email.py:110
 msgid "We hope to see you soon!"
@@ -98,7 +98,7 @@ msgid ""
 "Due to too many registrations, it is currently not possible to register for "
 "a bicycle."
 msgstr ""
-"Auf Grunde zu vieler Registrierungen, ist die Anmeldung zur Zeit geschlossen."
+"Auf Grund zu vieler Registrierungen, ist die Anmeldung zur Zeit geschlossen."
 
 #: register/forms.py:26
 msgid "This is not a properly formatted phone number."
@@ -243,7 +243,7 @@ msgid ""
 "            email address."
 msgstr ""
 "Danke für die Bestätigung Deiner\n"
-"Emailadresse."
+"            Emailadresse."
 
 #: templates/register/current_in_line.html:14
 msgid "Currently you are number"
@@ -263,7 +263,7 @@ msgid ""
 "        together with refugees for refugees."
 msgstr ""
 "Die Freiwilligen von BwB reparieren und verkaufen gespendete Fahrräder. Mit "
-"und an Geflüchtete."
+"        und an Geflüchtete."
 
 #: templates/register/greeting.html:15
 msgid ""
@@ -271,7 +271,7 @@ msgid ""
 "            phone number: you are now on our waiting list."
 msgstr ""
 "Registriere Dich online mit Deiner Emailadresse oder Deiner Mobilfunknummer: "
-"Du befindest Dich jetzt auf unserer Warteliste."
+"            Du befindest Dich jetzt auf unserer Warteliste."
 
 #: templates/register/greeting.html:19
 msgid "Wait until you get invitation from us by email or sms."
@@ -324,7 +324,7 @@ msgid ""
 "            and to check you current status."
 msgstr ""
 "Email mit einem Link geschickt, über den Du Deine Emailadresse bestätigen "
-"und Deine Position in der Warteschlange sehen kannst."
+"            und Deine Position in der Warteschlange sehen kannst."
 
 #: templates/register/thanks.html:22 templates/register/thanks.html:29
 msgid "SMS."

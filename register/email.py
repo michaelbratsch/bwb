@@ -5,6 +5,10 @@ from django.core.urlresolvers import reverse
 from django.utils import translation, formats
 from django.utils.translation import ugettext
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 # To support Python 2 and 3
 try:
@@ -49,6 +53,10 @@ def send_message(registration, subject, message):
             'X-SMSGate-Auth-Method': settings.SMS_GATE_AUTH_METHOD,
             'X-SMSGate-To': registration.mobile_number}
 
+        if len(message) > 160:
+            logger.warning("WARNING: Sending an SMS with more than 160 " \
+                           "characters. The message may get cut off.")
+
         email = EmailMessage(subject=subject,
                              body=message,
                              headers=smsgate_headers,
@@ -57,8 +65,8 @@ def send_message(registration, subject, message):
 
         email.send(fail_silently=False)
     else:
-        assert False, "Messages other than email or sms are currently not \
-                       supported."
+        assert False, "Messages other than email or sms are currently not " \
+                      "supported."
 
 
 def send_message_after_invitation(candidate, handout_event):

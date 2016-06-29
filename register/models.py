@@ -253,5 +253,8 @@ class SiteConfiguration(SingletonModel):
     # maximum number of times people will be invited to events
     max_number_of_autoinvites = models.PositiveIntegerField(default=2)
 
+    maintenance_mode = models.BooleanField(default=False)
+    maintenance_message = models.TextField(default="")
+
     def __unicode__(self):
         return "Site Configuration"
