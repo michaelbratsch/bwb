@@ -44,7 +44,7 @@ LOCALE_PATHS = (
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [u'test2.bikeswithoutborders.de']
+ALLOWED_HOSTS = [u'test2.bikeswithoutborders.de', u'127.0.0.1']
 
 
 # Application definition
@@ -172,13 +172,13 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': '/var/log/bwb/django.log',
         },
     },
     'loggers': {
-        'django': {
+        __name__: {
             'handlers': ['file'],
             'level': 'INFO',
             'propagate': True,
