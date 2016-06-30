@@ -25,3 +25,8 @@ body {
 .custom-row {
     padding: 3px 2px;
 }
+
+.footer-image {
+    display: block;
+    margin: 0 auto;
+}
