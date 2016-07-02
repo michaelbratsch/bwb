@@ -89,8 +89,9 @@ def parse_mobile_number(value):
     if not is_mobile_number(parsed_number):
         raise ValidationError(INVALID_MOBILE_NUMBER)
 
-    return phonenumbers.format_number(parsed_number,
-                                      phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+    return phonenumbers.format_number(
+        parsed_number,
+        phonenumbers.PhoneNumberFormat.INTERNATIONAL)
 
 
 class MyPhoneNumberField(PhoneNumberField):

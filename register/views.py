@@ -1,5 +1,4 @@
 from django.core.urlresolvers import reverse_lazy
-from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import get_language
 from django.views.generic import View
@@ -15,10 +14,11 @@ class GreetingsView(View):
     template_name = 'register/greeting.html'
 
     def get(self, request, *args, **kwargs):
-        context_dict = {'open_for_registration': open_for_registration(),
-                        'too_many_registrations_error': TOO_MANY_REGISTRATIONS_ERROR,
-                        'show_steps': True,
-                        'step_1': 'class="active"'}
+        context_dict = {
+            'open_for_registration': open_for_registration(),
+            'too_many_registrations_error': TOO_MANY_REGISTRATIONS_ERROR,
+            'show_steps': True,
+            'step_1': 'class="active"'}
         return render(request, self.template_name, context_dict)
 
 
@@ -68,12 +68,12 @@ class RegistrationView(FormView):
 
     def get(self, request, *args, **kwargs):
 
-        context_dict = {'open_for_registration': open_for_registration(),
-                        'too_many_registrations_error': TOO_MANY_REGISTRATIONS_ERROR,
-                        'choices': UserRegistration.BICYCLE_CHOICES,
-                        'show_steps': True,
-                        'step_2': 'class="active"',
-                        'form': RegistrationForm()}
+        context_dict = {
+            'too_many_registrations_error': TOO_MANY_REGISTRATIONS_ERROR,
+            'choices': UserRegistration.BICYCLE_CHOICES,
+            'show_steps': True,
+            'step_2': 'class="active"',
+            'form': RegistrationForm()}
         return render(request, self.template_name, context_dict)
 
 

@@ -7,22 +7,22 @@ from django.utils.translation import ugettext
 
 import logging
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 # To support Python 2 and 3
 try:
-    # pylint: disable=import-error, no-name-in-module
+    # pylint: disable=import-error, no-name-in-module, wrong-import-position
     from urlparse import urljoin
 except ImportError:
-    # pylint: disable=import-error, no-name-in-module
+    # pylint: disable=import-error, no-name-in-module, wrong-import-position
     from urllib.parse import urljoin
 
 try:
-    # pylint: disable=import-error, no-name-in-module
+    # pylint: disable=import-error, no-name-in-module, wrong-import-position
     from urllib import urlencode
 except ImportError:
-    # pylint: disable=import-error, no-name-in-module
+    # pylint: disable=import-error, no-name-in-module, wrong-import-position
     from urllib.parse import urlencode
 
 
@@ -54,7 +54,7 @@ def send_message(registration, subject, message):
             'X-SMSGate-To': registration.mobile_number}
 
         if len(message) > 160:
-            logger.warning("WARNING: Sending an SMS with more than 160 " \
+            LOGGER.warning("WARNING: Sending an SMS with more than 160 "
                            "characters. The message may get cut off.")
 
         email = EmailMessage(subject=subject,

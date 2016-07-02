@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load solo_tags %}
+{% load extras %}
 
 {% block body_block %}
     <div class="page-header">
@@ -9,21 +10,25 @@
     </div>
 
     {% get_solo 'register.SiteConfiguration' as site_config %}
+    {% open_for_registration as open %}
 
     {% if site_config.maintenance_mode %}
-    <div class="alert alert-danger">
-        {{ site_config.maintenance_message|linebreaks }}
-    </div>
 
-    {% elif open_for_registration %}
-    {% trans "To register, please fill out the following form:" %}
-    {% load crispy_forms_tags %}
-    {% crispy form %}
+        <div class="alert alert-danger">
+            {{ site_config.maintenance_message|linebreaks }}
+        </div>
+
+    {% elif open %}
+
+        {% trans "To register, please fill out the following form:" %}
+        {% load crispy_forms_tags %}
+        {% crispy form %}
 
     {% else %}
-    <div class="alert alert-danger">
-        {{ too_many_registrations_error|linebreaks }}
-    </div>
+
+        <div class="alert alert-danger">
+            {{ too_many_registrations_error|linebreaks }}
+        </div>
 
     {% endif %}
 {% endblock %}

@@ -1,9 +1,18 @@
 from django import template
 
+from register.forms import open_for_registration as open_registration
 from register.models import HandoutEvent, Candidate, Bicycle
 
 
 register = template.Library()
+
+
+@register.simple_tag
+def open_for_registration():
+    if open_registration():
+        return "OPEN"
+    else:
+        return ""
 
 
 @register.inclusion_tag('staff/event_sidebar.html')
