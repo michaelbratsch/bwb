@@ -13,11 +13,17 @@
 
 
 {% block body_block %}
-<div class="page-header">
-    <h2>
-        Overview of all bicycles that have been handed out so far.
-    </h2>
-</div>
+    <div class="page-header">
+        <h2>
+            Overview of all bicycles that have been handed out so far.
+        </h2>
+    </div>
     {% crispy filter.form %}
+    {{ filter|length }}
+    {% if filter|length == 1 %}
+    match
+    {% else %}
+    matches
+    {% endif %}
     {% render_table bicycles %}
 {% endblock %}
