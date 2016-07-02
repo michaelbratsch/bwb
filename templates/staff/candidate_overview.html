@@ -16,11 +16,7 @@
             Overview of all people that are registered in the database.
         </h2>
     </div>
-    <form action="" method="get">
-        {{ filter.form|crispy }}
-        <input type="submit" />
-    </form>
-    <br>
+    {% crispy filter.form filter.helper %}
     {% render_table candidates_table %}
     <br><br>
     <a href="{% url 'staff:create_candidate' %}" class="btn btn-info"

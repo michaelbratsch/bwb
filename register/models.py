@@ -60,8 +60,8 @@ class Candidate(models.Model):
                                  default=WAITING)
 
     def __unicode__(self):
-        return "%s %s %s %s" % (self.status, self.first_name, self.last_name,
-                                self.date_of_birth)
+        return "%s %s %s %s" % (self.first_name, self.last_name,
+                                self.date_of_birth, self.get_status_display())
 
     @property
     def has_bicycle(self):
