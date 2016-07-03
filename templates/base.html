@@ -40,6 +40,8 @@
                 </div>
             </div>
         </div>
+        
+        {% include "base_footer.html" %}
 
         <!-- External sources. Placed at the end of the document so the pages load faster -->
 
@@ -70,8 +72,5 @@
         <link href="{% static 'css/base.css' %}" rel="stylesheet"
         property="stylesheet">
 
-        <img src="{% static 'logo/bwb_with_text.svg' %}" class="footer-image" alt="Bikes without Borders" height="96">
-
-        {% include "base_footer.html" %}
     </body>
 </html>
