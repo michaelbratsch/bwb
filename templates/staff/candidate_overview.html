@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_candidate_view.html' %}
+{% extends 'base.html' %}
 
 {% load staticfiles %}
 {% load render_table from django_tables2 %}
@@ -21,8 +21,8 @@
     {% crispy filter.form filter.helper %}
     <p><div class="row">
         <div class="col-xs-12 col-md-6 text-left">
-            {{ filter|length }}
-            {% if filter|length == 1 %}
+            {{ candidates.rows|length }}
+            {% if candidates.rows|length == 1 %}
             match
             {% else %}
             matches
@@ -33,5 +33,5 @@
              role="button"> Add new person </a>
         </div>
     </div></p>
-    {% render_table candidates_table %}
+    {% render_table candidates %}
 {% endblock %}

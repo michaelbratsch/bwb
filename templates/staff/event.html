@@ -1,45 +1,44 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_event_view.html' %}
+{% extends 'base.html' %}
 
 {% load staticfiles %}
 {% load render_table from django_tables2 %}
+
 
 {% block head_block %}
     <link href="{% static 'django_tables2/bootstrap.css' %}" rel="stylesheet" />
 {% endblock %}
 
-{% block body_block %}
-    {% if total_number_of_candidates == 0 %}
-        <div class="page-header">
-            <h2>
-                For the event on {{ event.due_date }}
-                are currently no people invited.
-            </h2>
-        </div>
-    {% else %}
-        <div class="page-header">
-            <h2>
-                For the event on {{ event.due_date }} are the following
-                {{ number_of_candidates }} people invited.
-            </h2>
-        </div>
-        {% render_table candidate_table %}
-    {% endif %}
 
-    <div class="form-group row">
-        <div class="col-xs-3">
+{% block body_block %}
+    <div class="page-header">
+        <h2>
+            Candidates invited to event on {{ event.due_date }}
+        </h2>
+    </div>
+    <p><div class="row">
+        <div class="col-xs-12 col-md-6 text-left">
+            {{ candidates.rows|length }}
+            {% if candidates.rows|length == 1 %}
+            invitation
+            {% else %}
+            invitations
+            {% endif %}
+        </div>
+        <div class="col-xs-12 col-md-6 text-right">
             <a href="{% url 'staff:invite' event_id=event.id %}"
-            class="btn btn-info btn-block" role="button">
+            class="btn btn-info" role="button">
                 Invite additional people
             </a>
         </div>
-    </div>
+    </div></p>
+    {% render_table candidates %}
     <div style="line-height:50%;"><br></div>
     <div class="form-group row">
         <div class="col-xs-3">
             <a href="{% url 'staff:event_overview' %}"
-            class="btn btn-info btn-block" role="button">
+            class="btn btn-info" role="button">
                 Back
             </a>
         </div>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_bicycle_view.html' %}
+{% extends 'base.html' %}
 
 {% load staticfiles %}
 {% load render_table from django_tables2 %}
@@ -19,8 +19,8 @@
         </h2>
     </div>
     {% crispy filter.form %}
-    {{ filter|length }}
-    {% if filter|length == 1 %}
+    {{ bicycles.rows|length }}
+    {% if bicycles.rows|length == 1 %}
     match
     {% else %}
     matches

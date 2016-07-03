@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_event_view.html' %}
+{% extends 'base.html' %}
 
 {% load staticfiles %}
+{% load render_table from django_tables2 %}
+{% load crispy_forms_tags %}
+
+
+{% block head_block %}
+    <link href="{% static 'django_tables2/bootstrap.css' %}" rel="stylesheet" />
+{% endblock %}
+
 
 {% block body_block %}
-<div class="page-header">
-    <h2>
-        Overview of all events to handout new bicycles.
-    </h2>
-</div>
-<h3>
-    Existing events can be selected on the left.
-    <br><br>
-    <a href="{% url 'staff:create_event' %}" class="btn btn-info" role="button">
-        Create new event
-    </a>
-</h3>
+    <div class="page-header">
+        <h2>
+            Overview of all events to handout new bicycles.
+        </h2>
+    </div>
+    <p><div class="row">
+        <div class="col-xs-12 col-md-6 text-left">
+            {{ handoutevents.rows|length }}
+            {% if handoutevents.rows|length == 1 %}
+            event
+            {% else %}
+            events
+            {% endif %}
+        </div>
+        <div class="col-xs-12 col-md-6 text-right">
+            <a href="{% url 'staff:create_event' %}" class="btn btn-info"
+             role="button">
+                Create new event
+            </a>
+        </div>
+    </div></p>
+    {% render_table handoutevents %}
 {% endblock %}
