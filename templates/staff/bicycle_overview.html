@@ -21,9 +21,9 @@
     {% crispy filter.form %}
     {{ bicycles.rows|length }}
     {% if bicycles.rows|length == 1 %}
-    match
+    registered bicycle
     {% else %}
-    matches
+    registered bicycles
     {% endif %}
     {% render_table bicycles %}
 {% endblock %}
