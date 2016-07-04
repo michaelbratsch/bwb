@@ -31,7 +31,12 @@
         Is registered with the following data:
         <div style="line-height:40%;"><br></div>
         {{ candidate.user_registration.get_bicycle_kind_display }}<br>
-        {{ candidate.user_registration.email }}<br>
+        {{ candidate.user_registration.email }}
+        {% if candidate.user_registration.email_validated %}
+            (validated)<br>
+        {% else %}
+            (not validated)<br>
+        {% endif %}
         {{ candidate.user_registration.mobile_number }}<br>
         {{ candidate.user_registration.date_of_registration }}<br>
     {% else %}
