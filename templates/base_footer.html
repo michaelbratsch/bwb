@@ -1,0 +1,21 @@
+{% load i18n %}
+{% load staticfiles %}
+<link href="{% static 'css/base.css' %}" rel="stylesheet"
+property="stylesheet">
+<link href="{% static 'css/base_footer.css' %}" rel="stylesheet"
+property="stylesheet">
+
+<footer class="footer">
+    <div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-md-6 text-muted">
+            <a href="{% url 'legal' %}">
+                {% load i18n %}{% trans "Legal notice" %}
+            </a>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <img src="{% static 'logo/bwb_with_text.svg' %}" class="pull-right" alt="Bikes without Borders" height="96">
+        </div>
+    </div>
+</div>
+</footer>

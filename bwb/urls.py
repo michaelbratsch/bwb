@@ -19,7 +19,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.contrib.auth.views import logout, login
 
-from .views import GreetingsView
+from .views import GreetingsView, LegalView
 
 
 urlpatterns = i18n_patterns(
@@ -30,5 +30,6 @@ urlpatterns = i18n_patterns(
     url(r'^admin/', admin.site.urls),
     url(r'^register/', include('register.urls', namespace='register')),
     url(r'^staff/', include('staff.urls', namespace='staff')),
-    url(r'^$', GreetingsView.as_view(), name='index')
+    url(r'^$', GreetingsView.as_view(), name='index'),
+    url(r'^legal.html$', LegalView.as_view(), name='legal')
 )

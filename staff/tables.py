@@ -6,7 +6,7 @@ from django.utils.html import format_html
 
 import django_tables2 as tables
 from register.email import get_url_parameter
-from register.models import Bicycle, Candidate, UserRegistration
+from register.models import Bicycle, Candidate, HandoutEvent, UserRegistration
 
 
 def format_date(value):
@@ -96,3 +96,32 @@ class BicycleTable(tables.Table):
         template = 'django_tables2/bootstrap.html'
         empty_text = "There are currently no bicycles in the database."
         sequence = ('id', 'bicycle_number', '...')
+
+
+class HandoutEventTable(tables.Table):
+    invitations = tables.Column(
+        verbose_name='Invitations',
+        accessor='invitations')
+    handed_out = tables.Column(
+        verbose_name='Bikes handed out',
+        accessor='invitations')
+
+    def render_invitations(self, value):
+        return len(value.all())
+
+    def render_handed_out(self, value):
+        candidate_status = [
+            invitation.candidate.get_status() for invitation in value.all()
+        ]
+        return candidate_status.count(Candidate.WITH_BICYCLE)
+
+    def render_id(self, value):
+        event_url = (reverse_lazy('staff:event', kwargs={'event_id': value}))
+        return format_html('<a href="%s">%s</a>' % (event_url, value))
+
+    class Meta(object):
+        model = HandoutEvent
+        attrs = {'class': 'bootstrap', 'width': '100%'}
+        template = 'django_tables2/bootstrap.html'
+        empty_text = "There are currently no events in the database."
+        sequence = ('id', 'due_date', '...')

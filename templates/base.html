@@ -40,6 +40,8 @@
                 </div>
             </div>
         </div>
+        
+        {% include "base_footer.html" %}
 
         <!-- External sources. Placed at the end of the document so the pages load faster -->
 
@@ -69,7 +71,6 @@
         {% load staticfiles %}
         <link href="{% static 'css/base.css' %}" rel="stylesheet"
         property="stylesheet">
-        <img src="{% static 'logo/bwb_with_text.svg' %}" alt="BwB-Logo"
-        class="background-image" width="250">
+
     </body>
 </html>

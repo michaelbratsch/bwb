@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 
-{% extends 'staff/base_candidate_view.html' %}
+{% extends 'base.html' %}
 
 {% load staticfiles %}
 {% load render_table from django_tables2 %}
 {% load crispy_forms_tags %}
 
+
 {% block head_block %}
     <link href="{% static 'django_tables2/bootstrap.css' %}" rel="stylesheet" />
 {% endblock %}
+
 
 {% block body_block %}
     <div class="page-header">
@@ -17,8 +19,19 @@
         </h2>
     </div>
     {% crispy filter.form filter.helper %}
-    {% render_table candidates_table %}
-    <br><br>
-    <a href="{% url 'staff:create_candidate' %}" class="btn btn-info"
-    role="button"> Add new person </a>
+    <p><div class="row">
+        <div class="col-xs-12 col-md-6 text-left">
+            {{ candidates.rows|length }}
+            {% if candidates.rows|length == 1 %}
+            matching candidate
+            {% else %}
+            matching candidates
+            {% endif %}
+        </div>
+        <div class="col-xs-12 col-md-6 text-right">
+            <a href="{% url 'staff:create_candidate' %}" class="btn btn-info"
+             role="button"> Add new person </a>
+        </div>
+    </div></p>
+    {% render_table candidates %}
 {% endblock %}

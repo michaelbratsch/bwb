@@ -3,8 +3,11 @@ from crispy_forms.layout import Submit, Layout, Field, Div
 from django import forms
 from django.forms.fields import DateField
 from django.forms.widgets import SelectDateWidget
-from django_filters import FilterSet, CharFilter
+from django_filters import FilterSet
 from django_filters.filters import ChoiceFilter, MethodFilter
+from django.db.models import Q
+from operator import or_
+from functools import reduce
 
 from register.models import Candidate, Bicycle
 
@@ -13,9 +16,9 @@ EMPTY_CHOICE = ('', '---------'),
 
 
 class CandidateFilter(FilterSet):
-    first_name = CharFilter(lookup_expr='icontains')
-    last_name = CharFilter(lookup_expr='icontains')
-    status = ChoiceFilter(choices=EMPTY_CHOICE + Candidate.CANDIDATE_STATUS)
+    name = MethodFilter(action='name_filter', help_text="")
+    status = ChoiceFilter(choices=EMPTY_CHOICE + Candidate.CANDIDATE_STATUS,
+                          help_text="")
 
     def __init__(self, *args, **kwargs):
         super(CandidateFilter, self).__init__(*args, **kwargs)
@@ -23,12 +26,10 @@ class CandidateFilter(FilterSet):
         self.helper = FormHelper()
         self.helper.form_method = 'get'
 
-        layout = Div(Div(Field('first_name'),
-                         css_class="col-xs-12 col-md-4"),
-                     Div(Field('last_name'),
-                         css_class="col-xs-12 col-md-4"),
+        layout = Div(Div(Field('name'),
+                         css_class='col-xs-12 col-md-6'),
                      Div(Field('status'),
-                         css_class="col-xs-12 col-md-4"))
+                         css_class='col-xs-12 col-md-6'))
 
         self.helper.layout = Layout(*layout)
 
@@ -37,7 +38,17 @@ class CandidateFilter(FilterSet):
 
     class Meta:
         model = Candidate
-        fields = ['first_name', 'last_name', 'status']
+        fields = ['name', 'status']
+
+    def name_filter(self, queryset, value):
+        if value:
+            return queryset.filter(
+                    reduce(or_, (Q(first_name__icontains=name) |
+                                 Q(last_name__icontains=name)
+                                 for name in value.split()))
+            )
+        else:
+            return queryset
 
 
 class HandoutDateWidget(SelectDateWidget):
@@ -59,9 +70,9 @@ class BicycleForm(forms.Form):
         self.helper.form_method = 'get'
 
         layout = Div(Div(Field('date_of_handout_begin'),
-                         css_class="col-xs-12 col-md-6"),
+                         css_class='col-xs-12 col-md-6'),
                      Div(Field('date_of_handout_end'),
-                         css_class="col-xs-12 col-md-6"))
+                         css_class='col-xs-12 col-md-6'))
 
         self.helper.layout = Layout(*layout)
 
@@ -75,8 +86,9 @@ class BicycleForm(forms.Form):
 
 
 class BicycleFilter(FilterSet):
-    date_of_handout_begin = MethodFilter(widget=HandoutDateWidget)
-    date_of_handout_end = MethodFilter(widget=HandoutDateWidget)
+    date_of_handout_begin = MethodFilter(widget=HandoutDateWidget,
+                                         help_text="")
+    date_of_handout_end = MethodFilter(widget=HandoutDateWidget, help_text="")
 
     class Meta:
         form = BicycleForm

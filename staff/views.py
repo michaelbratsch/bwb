@@ -15,6 +15,7 @@ from staff.forms import CreateCandidateForm, DeleteCandidateForm
 from staff.forms import HandoverForm, EventForm, InviteForm, RefundForm
 from staff.forms import ModifyCandidateForm, InviteCandidateForm
 from staff.tables import CandidateTable, BicycleTable, EventTable
+from staff.tables import HandoutEventTable
 
 
 class ManageView(TemplateView):
@@ -36,6 +37,14 @@ class BicycleOverviewView(View):
 
 class EventOverviewView(TemplateView):
     template_name = 'staff/event_overview.html'
+
+    def get(self, request, *args, **kwargs):
+        queryset = HandoutEvent.objects.all()
+        table = HandoutEventTable(queryset)
+        RequestConfig(request, paginate={'per_page': 40}).configure(table)
+
+        context_dict = {'handoutevents': table}
+        return render(request, self.template_name, context_dict)
 
 
 class CreateEventView(FormView):
@@ -117,8 +126,7 @@ class EventView(View):
             candidate_table)
 
         context_dict = {
-            'number_of_candidates': len(invited_candidates),
-            'candidate_table': candidate_table,
+            'candidates': candidate_table,
             'event': event}
         return render(request, self.template_name, context_dict)
 
@@ -133,7 +141,7 @@ class CandidateOverviewView(View):
         RequestConfig(request, paginate={'per_page': 40}).configure(
             candidates_table)
 
-        context_dict = {'candidates_table': candidates_table,
+        context_dict = {'candidates': candidates_table,
                         'filter': matches}
         return render(request, self.template_name, context_dict)
 
