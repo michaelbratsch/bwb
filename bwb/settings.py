@@ -10,26 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-from django.utils.translation import ugettext_lazy
 import os
 
-# pylint: disable=unused-import
-# Email section
+from django.utils.translation import ugettext_lazy
+
 from .email_settings import EMAIL_FROM_ADDRESS  # noqa @UnusedImport
 from .email_settings import EMAIL_HOST  # noqa @UnusedImport
 from .email_settings import EMAIL_HOST_PASSWORD  # noqa @UnusedImport
 from .email_settings import EMAIL_HOST_USER  # noqa @UnusedImport
 from .email_settings import EMAIL_PORT  # noqa @UnusedImport
 from .email_settings import EMAIL_USE_TLS  # noqa @UnusedImport
-# SECURITY WARNING: keep the secret key used in production secret!
 from .secret_key import SECRET_KEY  # noqa @UnusedImport
-# SMS section
 from .sms_settings import SMS_GATEWAY_ADDRESS  # noqa @UnusedImport
 from .sms_settings import SMS_GATE_AUTH_METHOD  # noqa @UnusedImport
 from .sms_settings import SMS_GATE_PASSWORD  # noqa @UnusedImport
 from .sms_settings import SMS_GATE_USER  # noqa @UnusedImport
 
 
+# pylint: disable=unused-import
+# Email section
+# SECURITY WARNING: keep the secret key used in production secret!
+# SMS section
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -64,16 +65,15 @@ INSTALLED_APPS = [
     'django_filters'
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware'
 ]
 
 ROOT_URLCONF = 'bwb.urls'

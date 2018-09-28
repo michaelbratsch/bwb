@@ -17,9 +17,9 @@
         <link href="{% static 'css/base.css' %}" rel="stylesheet">
 
         <!-- ToDo: use custom stylesheet -->
-        <link href="https://getbootstrap.com/dist/css/bootstrap.min.css"
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         rel="stylesheet">
-        <link href="https://getbootstrap.com/examples/dashboard/dashboard.css"
+        <link href="https://getbootstrap.com/docs/3.3.7/examples/dashboard/dashboard.css"
         rel="stylesheet">
 
         {% load staticfiles %}
@@ -33,10 +33,12 @@
         {% include "base_navbar.html" %}
 
         <div class="container-fluid">
-            {% block side_bar_block %}{% endblock %}
-            <div class="col-sm-9 col-sm-offset-3 col-md-8 col-md-offset-2 main">
-                <div>
-                    {% block body_block %}{% endblock %}
+            <div class="row">
+                {% block side_bar_block %}{% endblock %}
+                <div class="col-sm-9 col-sm-offset-3 col-md-8 col-md-offset-2 main">
+                    <div>
+                        {% block body_block %}{% endblock %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -53,12 +55,12 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/locale/de.js"></script>
 
          <!-- Bootstrap -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css"
         property="stylesheet">
 
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-        <script src="https://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
+	<!--<script src="https://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>-->
 
         <!-- Datetimepicker -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>

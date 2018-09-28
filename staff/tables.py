@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.conf.global_settings import SHORT_DATE_FORMAT
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.utils import formats
 from django.utils.html import format_html
 
@@ -52,12 +52,7 @@ class EventTable(tables.Table):
         return format_html("<br>".join(date_of_handout))
 
     def render_wanted_bicycle(self, value):
-        def get_display_value(value):
-            for number, display_string in UserRegistration.BICYCLE_CHOICES:
-                if number == value:
-                    return display_string
-            assert False, "Key not found"
-        return get_display_value(value)
+        return value
 
     def render_bicycle(self, value):
         return value.short_str()

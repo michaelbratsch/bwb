@@ -1,11 +1,12 @@
-from django.core.urlresolvers import reverse_lazy
+import random
+
 from django.http import Http404
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse_lazy
 from django.views.generic import View, FormView
 from django.views.generic.base import TemplateView
 from django_tables2 import RequestConfig
-import random
 
 from register.email import send_message_after_invitation
 from register.models import Candidate, Bicycle, HandoutEvent, SiteConfiguration

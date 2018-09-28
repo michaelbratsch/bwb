@@ -1,11 +1,12 @@
+import logging
+
 from django.conf import settings
 from django.conf.global_settings import DATETIME_FORMAT
 from django.core.mail import EmailMessage, send_mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import translation, formats
 from django.utils.translation import ugettext
 
-import logging
 
 LOGGER = logging.getLogger(__name__)
 

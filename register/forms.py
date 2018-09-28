@@ -1,6 +1,7 @@
+from datetime import datetime
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, HTML, Div
-from datetime import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.widgets import SelectDateWidget, TextInput
@@ -216,6 +217,7 @@ class RegistrationForm(forms.ModelForm):
 
         first_name = cleaned_data.get('first_name')
         last_name = cleaned_data.get('last_name')
+
         date_of_birth = cleaned_data.get('date_of_birth')
 
         if Candidate.get_matching(first_name=first_name,

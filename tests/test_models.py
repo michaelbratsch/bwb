@@ -1,22 +1,36 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from faker import Faker
+import phonenumbers
+
 from hypothesis import given, settings, HealthCheck
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.extra.django.models import models
+from hypothesis.strategies import (
+    just,
+    text,
+    characters,
+    builds,
+    lists,
+    sampled_from
+)
 from hypothesis.strategies import integers, random_module
-from hypothesis.strategies import just, text, builds, lists, sampled_from
-import phonenumbers
-
-from faker import Faker
-
 from register.forms import parse_mobile_number, MOBILE_PHONE_PREFIXES
 from register.models import Candidate, UserRegistration, MAX_NAME_LENGTH
 
 
+def shrink(x):
+    if '\x00' in x:
+        return ''
+    return x.strip()
+
+
 # filter text that only contains of whitespace
-name_strategy = text(min_size=1, max_size=MAX_NAME_LENGTH).filter(lambda x:
-                                                                  x.strip())
-date_strategy = builds(target=Faker('de').date)
+name_strategy = text(min_size=1, max_size=MAX_NAME_LENGTH).filter(
+    lambda x: shrink(x))
+
+
+date_strategy = builds(Faker('de').date)
 
 bicycle_kind_strategy = sampled_from(
     [value for value, name in UserRegistration.BICYCLE_CHOICES])
@@ -33,27 +47,19 @@ def create_email_address():
         else:
             return email
 
-email_strategy = builds(target=create_email_address)
+
+email_strategy = builds(create_email_address)
 
 
-def create_mobile_number():
-    prefix = sampled_from(MOBILE_PHONE_PREFIXES).example()
-    number_strat = integers(min_value=1000000, max_value=99999999)
-    counter = 0
-    while True:
-        number = number_strat.example()
-        mobile_number = '%s%s' % (prefix, number)
+def create_mobile_number(prefix, number):
+    total_number = '%s%s' % (prefix, number)
 
-        try:
-            return parse_mobile_number(mobile_number)
-        except ValidationError:
-            pass
-
-        counter += 1
-        assert counter < 10000, 'No number matching for prefix ' + prefix
+    try:
+        return parse_mobile_number(total_number)
+    except ValidationError:
+        return None
 
 
-# this is just a verifier
 def valid_mobile_number(number):
     parsed_number = phonenumbers.parse(number, 'DE')
 
@@ -61,7 +67,10 @@ def valid_mobile_number(number):
         parsed_number, 'de'), parsed_number
     return True
 
-phone_strategy = builds(target=create_mobile_number)
+
+phone_strategy = builds(create_mobile_number,
+                        sampled_from(MOBILE_PHONE_PREFIXES),
+                        integers(min_value=1000000, max_value=99999999)).filter(lambda x: x is not None)
 phone_strategy_clean = phone_strategy.filter(lambda x:
                                              valid_mobile_number(x))
 
@@ -78,6 +87,7 @@ def generate_email_registration(candidate):
                   email=email_strategy,
                   candidate=just(candidate))
 
+
 candidate_with_email = models(**candidate_dict).flatmap(
     generate_email_registration)
 
@@ -86,6 +96,7 @@ def generate_phone_registration(candidate):
     return models(model=UserRegistration,
                   mobile_number=phone_strategy_clean,
                   candidate=just(candidate))
+
 
 candidate_with_phone = models(**candidate_dict).flatmap(
     generate_phone_registration)
@@ -96,6 +107,7 @@ def generate_email_and_phone_registration(candidate):
                   email=email_strategy,
                   mobile_number=phone_strategy_clean,
                   candidate=just(candidate))
+
 
 candidate_with_email_and_phone = models(**candidate_dict).flatmap(
     generate_email_and_phone_registration)

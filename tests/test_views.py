@@ -1,19 +1,28 @@
 from django.core import mail
-from django.core.urlresolvers import reverse
 from django.core.validators import EmailValidator
 from django.forms.fields import Field
+from django.urls import reverse
 from django.utils.html import escape
+
+from bwb.sms_settings import SMS_GATEWAY_ADDRESS
 from hypothesis import given, settings, HealthCheck, example
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from hypothesis.strategies import random_module
-
-from bwb.sms_settings import SMS_GATEWAY_ADDRESS
-from register.forms import INVALID_NUMBER, MULTIPLE_REGISTRATION_ERROR,\
-    INVALID_MOBILE_NUMBER, BAD_FORMAT_NUMBER, TERMS_AND_CONDITIONS_ERROR,\
-    EMAIL_OR_PHONE_ERROR, TOO_MANY_REGISTRATIONS_ERROR
+from register.forms import (
+    INVALID_NUMBER,
+    MULTIPLE_REGISTRATION_ERROR,
+    INVALID_MOBILE_NUMBER,
+    BAD_FORMAT_NUMBER,
+    TERMS_AND_CONDITIONS_ERROR,
+    EMAIL_OR_PHONE_ERROR,
+    TOO_MANY_REGISTRATIONS_ERROR)
 from register.models import Candidate, SiteConfiguration
-from tests.test_models import name_strategy, email_strategy, date_strategy,\
-    bicycle_kind_strategy, phone_strategy_clean
+from tests.test_models import (
+    name_strategy,
+    email_strategy,
+    date_strategy,
+    bicycle_kind_strategy,
+    phone_strategy_clean)
 
 
 class ContactViewTestCase(HypothesisTestCase):
@@ -27,9 +36,11 @@ class ContactViewTestCase(HypothesisTestCase):
 
     def successful_post(self, post_dict, number_of_emails=1):
         post_dict['agree'] = "True"
+
         response = self.client.post(self.url, post_dict)
 
         last_candidate = Candidate.objects.last()
+
         self.assertEqual(post_dict['first_name'].strip(),
                          last_candidate.first_name)
         self.assertEqual(post_dict['last_name'].strip(),
@@ -56,8 +67,7 @@ class ContactViewTestCase(HypothesisTestCase):
            last_name=name_strategy,
            date_of_birth=date_strategy,
            bicycle_kind=bicycle_kind_strategy,
-           email=email_strategy,
-           dummy=random_module())
+           email=email_strategy)
     @example(first_name='Lore',
              last_name='Seibel',
              date_of_birth='2001-01-12',
@@ -146,7 +156,8 @@ class ContactViewTestCase(HypothesisTestCase):
                                post_dict=post_dict,
                                empty_outbox=False)
 
-    @settings(suppress_health_check=[HealthCheck.too_slow])
+    @settings(suppress_health_check=[HealthCheck.too_slow],
+              deadline=600)
     @given(first_name=name_strategy,
            last_name=name_strategy,
            date_of_birth=date_strategy,
@@ -156,7 +167,8 @@ class ContactViewTestCase(HypothesisTestCase):
     def test_registering_twice_with_email(self, **kwargs):
         self.check_registering_twice(kwargs)
 
-    @settings(suppress_health_check=[HealthCheck.too_slow])
+    @settings(suppress_health_check=[HealthCheck.too_slow],
+              deadline=600)
     @given(first_name=name_strategy,
            last_name=name_strategy,
            date_of_birth=date_strategy,

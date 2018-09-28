@@ -1,23 +1,21 @@
+from functools import reduce
+from operator import or_
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Div
 from django import forms
+from django.db.models import Q
 from django.forms.fields import DateField
 from django.forms.widgets import SelectDateWidget
 from django_filters import FilterSet
-from django_filters.filters import ChoiceFilter, MethodFilter
-from django.db.models import Q
-from operator import or_
-from functools import reduce
+from django_filters.filters import ChoiceFilter, CharFilter
 
 from register.models import Candidate, Bicycle
 
 
-EMPTY_CHOICE = ('', '---------'),
-
-
 class CandidateFilter(FilterSet):
-    name = MethodFilter(action='name_filter', help_text="")
-    status = ChoiceFilter(choices=EMPTY_CHOICE + Candidate.CANDIDATE_STATUS,
+    name = CharFilter(method='name_filter')
+    status = ChoiceFilter(choices=Candidate.CANDIDATE_STATUS,
                           help_text="")
 
     def __init__(self, *args, **kwargs):
@@ -40,12 +38,12 @@ class CandidateFilter(FilterSet):
         model = Candidate
         fields = ['name', 'status']
 
-    def name_filter(self, queryset, value):
+    def name_filter(self, queryset, name, value):
         if value:
             return queryset.filter(
-                    reduce(or_, (Q(first_name__icontains=name) |
-                                 Q(last_name__icontains=name)
-                                 for name in value.split()))
+                reduce(or_, (Q(first_name__icontains=name) |
+                             Q(last_name__icontains=name)
+                             for name in value.split()))
             )
         else:
             return queryset
@@ -86,9 +84,12 @@ class BicycleForm(forms.Form):
 
 
 class BicycleFilter(FilterSet):
-    date_of_handout_begin = MethodFilter(widget=HandoutDateWidget,
-                                         help_text="")
-    date_of_handout_end = MethodFilter(widget=HandoutDateWidget, help_text="")
+    date_of_handout_begin = CharFilter(method='date_of_handout_begin',
+                                       widget=HandoutDateWidget,
+                                       help_text="")
+    date_of_handout_end = CharFilter(method='date_of_handout_end',
+                                     widget=HandoutDateWidget,
+                                     help_text="")
 
     class Meta:
         form = BicycleForm
@@ -96,10 +97,10 @@ class BicycleFilter(FilterSet):
         fields = ['date_of_handout_begin', 'date_of_handout_end']
 
     # pylint: disable= no-self-use
-    def filter_date_of_handout_begin(self, queryset, value):
+    def filter_date_of_handout_begin(self, queryset, name, value):
         return queryset.filter(
             date_of_handout__gt=DateField().to_python(value))
 
-    def filter_date_of_handout_end(self, queryset, value):
+    def filter_date_of_handout_end(self, queryset, name, value):
         return queryset.filter(
             date_of_handout__date__lte=DateField().to_python(value))

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 from datetime import timedelta
-from django.utils.dateparse import parse_date
 import os
 import random
 
+from django.utils.dateparse import parse_date
 from faker import Faker
 
 
@@ -50,6 +50,7 @@ def add_event(due_date):
 def add_bicycle():
     b = Bicycle.objects.create()
     return b
+
 
 # Start execution here!
 if __name__ == '__main__':
