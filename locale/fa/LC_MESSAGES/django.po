@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-05 19:02+0000\n"
+"POT-Creation-Date: 2018-09-28 10:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,73 +18,73 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: bwb/settings.py:135
+#: bwb/settings.py:137 bwb/settings_prod.py:137
 msgid "English"
 msgstr ""
 
-#: bwb/settings.py:136
+#: bwb/settings.py:138 bwb/settings_prod.py:138
 msgid "German"
 msgstr ""
 
-#: bwb/settings.py:137
+#: bwb/settings.py:139 bwb/settings_prod.py:139
 msgid "French"
 msgstr ""
 
-#: bwb/settings.py:138
+#: bwb/settings.py:140 bwb/settings_prod.py:140
 msgid "Arabic"
 msgstr ""
 
-#: bwb/settings.py:139
+#: bwb/settings.py:141 bwb/settings_prod.py:141
 msgid "Persian"
 msgstr ""
 
-#: register/email.py:66 register/email.py:89
+#: register/email.py:79 register/email.py:102
 msgid "Hello"
 msgstr ""
 
-#: register/email.py:69
+#: register/email.py:82
 msgid "We have a "
 msgstr ""
 
-#: register/email.py:71
+#: register/email.py:84
 msgid " that is reserved for you. Please come by on "
 msgstr ""
 
-#: register/email.py:73
+#: register/email.py:86
 msgid ", so that we can fix it together with your help."
 msgstr ""
 
-#: register/email.py:76
+#: register/email.py:89
 msgid "Your,"
 msgstr ""
 
-#: register/email.py:76 templates/register/thanks.html:38
+#: register/email.py:89 templates/register/thanks.html:34
 msgid "BwB-Team"
 msgstr ""
 
-#: register/email.py:80
+#: register/email.py:93
 msgid "BwB - Get your bike"
 msgstr ""
 
-#: register/email.py:101 register/email.py:107
+#: register/email.py:114 register/email.py:120
 msgid "Thank you for registering for a bike."
 msgstr ""
 
-#: register/email.py:102
+#: register/email.py:115
 msgid ""
 "To verify your email address and to check your current number in line, "
 "please click the following link:"
 msgstr ""
 
-#: register/email.py:108
+#: register/email.py:121
 msgid "You will be notified when your bike is ready."
 msgstr ""
 
-#: register/email.py:110
+#: register/email.py:123
 msgid "We hope to see you soon!"
 msgstr ""
 
-#: register/email.py:113
+#: register/email.py:126
 msgid "BwB - Registration"
 msgstr ""
 
@@ -120,155 +120,167 @@ msgstr ""
 msgid "Please fill out email or mobile phone number."
 msgstr ""
 
-#: register/forms.py:115
+#: register/forms.py:116
 msgid "Email"
 msgstr ""
 
-#: register/forms.py:119
+#: register/forms.py:120
 msgid "Mobile phone number"
 msgstr ""
 
-#: register/forms.py:123
+#: register/forms.py:124
 msgid "Bicycle kind"
 msgstr ""
 
-#: register/forms.py:126
+#: register/forms.py:127
 msgid "Agree with Terms and Conditions"
 msgstr ""
 
-#: register/forms.py:132 staff/forms.py:18 staff/forms.py:111
+#: register/forms.py:133 staff/forms.py:18 staff/forms.py:125
 msgid "First name"
 msgstr ""
 
-#: register/forms.py:133 staff/forms.py:19 staff/forms.py:112
+#: register/forms.py:134 staff/forms.py:19 staff/forms.py:126
 msgid "Last name"
 msgstr ""
 
-#: register/forms.py:134 staff/forms.py:20 staff/forms.py:113
+#: register/forms.py:135 staff/forms.py:20 staff/forms.py:127
 msgid "Date of birth"
 msgstr ""
 
-#: register/forms.py:143
+#: register/forms.py:144
 msgid "You can only buy one bike per person."
 msgstr ""
 
-#: register/forms.py:144
+#: register/forms.py:145
 msgid "Please do not register twice."
 msgstr ""
 
-#: register/forms.py:145
+#: register/forms.py:146
 msgid "If you want a bike for your children, please also register them."
 msgstr ""
 
-#: register/forms.py:147
+#: register/forms.py:148
 msgid "We do not sell new bikes."
 msgstr ""
 
-#: register/forms.py:148
+#: register/forms.py:149
 msgid "All bikes are donated and used."
 msgstr ""
 
-#: register/forms.py:149
+#: register/forms.py:150
 msgid "We only sell road-worthy bikes."
 msgstr ""
 
-#: register/forms.py:150
+#: register/forms.py:151
 msgid "You can resell your bike to us, if you do not need it anymore."
 msgstr ""
 
-#: register/forms.py:152
+#: register/forms.py:153
 msgid ""
 "Our bikes always need repair work. Please bring some time and help us to "
 "repair your bike."
 msgstr ""
 
-#: register/forms.py:156
+#: register/forms.py:157
 msgid "Terms of use"
 msgstr ""
 
-#: register/forms.py:157
+#: register/forms.py:158
 msgid "Our terms of use are the following:"
 msgstr ""
 
-#: register/forms.py:185
+#: register/forms.py:188
 msgid "Submit"
 msgstr ""
 
-#: templates/base.html:14 templates/base_navbar.html:22
+#: templates/base.html:14 templates/base_navbar.html:21
 msgid "Bikes without Borders"
 msgstr ""
 
-#: templates/base_navbar.html:27
+#: templates/base_footer.html:13
+msgid "Legal notice"
+msgstr ""
+
+#: templates/base_navbar.html:26
 msgid "1 How?"
 msgstr ""
 
-#: templates/base_navbar.html:28
+#: templates/base_navbar.html:27
 msgid "2 Register"
 msgstr ""
 
-#: templates/base_navbar.html:29
+#: templates/base_navbar.html:28
 msgid "3 Finish"
 msgstr ""
 
-#: templates/index.html:10
+#: templates/index.html:8
 msgid "Welcome"
 msgstr ""
 
-#: templates/index.html:11
+#: templates/index.html:9
 msgid "you want to register for a „Bike without Borders“ Bike?"
 msgstr ""
 
-#: templates/index.html:18
+#: templates/index.html:15
 msgid "Please choose your language first!"
 msgstr ""
 
-#: templates/register/current_in_line.html:10
-msgid ""
-"Thank you for validating your\n"
-"            email address."
+#: templates/legal.html:9
+msgid "Impressum"
 msgstr ""
 
-#: templates/register/current_in_line.html:14
-msgid "Currently you are number"
+#: templates/register/current_in_line.html:7
+msgid "Hello "
+msgstr ""
+
+#: templates/register/current_in_line.html:11
+msgid ""
+"Thank you for validating your\n"
+"        email address."
 msgstr ""
 
 #: templates/register/current_in_line.html:15
+msgid "Currently you are number"
+msgstr ""
+
+#: templates/register/current_in_line.html:16
 msgid "in line waiting for a"
 msgstr ""
 
-#: templates/register/greeting.html:8
+#: templates/register/greeting.html:7
 msgid "How does it work?"
 msgstr ""
 
-#: templates/register/greeting.html:11
+#: templates/register/greeting.html:10
 msgid ""
 "BwB volunteers repair and sell donated bikes\n"
-"        together with refugees for refugees."
+"    together with refugees for refugees."
 msgstr ""
 
-#: templates/register/greeting.html:15
+#: templates/register/greeting.html:14
 msgid ""
 "Register online with your email address or your\n"
 "            phone number: you are now on our waiting list."
 msgstr ""
 
-#: templates/register/greeting.html:19
+#: templates/register/greeting.html:18
 msgid "Wait until you get invitation from us by email or sms."
 msgstr ""
 
-#: templates/register/greeting.html:22
+#: templates/register/greeting.html:21
 msgid "Confirm the invitation, if you have time to pick up your bike."
 msgstr ""
 
-#: templates/register/greeting.html:25
+#: templates/register/greeting.html:24
 msgid "Come to our Workshop and bring your passport or registration document."
 msgstr ""
 
-#: templates/register/greeting.html:28
+#: templates/register/greeting.html:27
 msgid "Repair your bike together with us, buy it for 10€ and get a lock."
 msgstr ""
 
-#: templates/register/greeting.html:36
+#: templates/register/greeting.html:40
 msgid "Register now!"
 msgstr ""
 
@@ -276,46 +288,46 @@ msgstr ""
 msgid "Register for a bike"
 msgstr ""
 
-#: templates/register/registration.html:10
-msgid "To register, please fill out the following form."
+#: templates/register/registration.html:23
+msgid "To register, please fill out the following form:"
 msgstr ""
 
-#: templates/register/thanks.html:10
+#: templates/register/thanks.html:7
 msgid "Congratulations"
 msgstr ""
 
-#: templates/register/thanks.html:16
+#: templates/register/thanks.html:11
 msgid "You are now registered for a"
 msgstr ""
 
-#: templates/register/thanks.html:17
+#: templates/register/thanks.html:13
 msgid "and officially on our waiting list. We also sent you an"
 msgstr ""
 
-#: templates/register/thanks.html:19
+#: templates/register/thanks.html:15
 msgid ""
 "email with a link to confirm your email address\n"
-"            and to check you current status."
+"        and to check you current status."
 msgstr ""
 
-#: templates/register/thanks.html:22 templates/register/thanks.html:29
+#: templates/register/thanks.html:18 templates/register/thanks.html:25
 msgid "SMS."
 msgstr ""
 
-#: templates/register/thanks.html:24
+#: templates/register/thanks.html:20
 msgid ""
 "Please wait until your bike is prepared for you and\n"
-"        you received an invitation from us by"
+"    you received an invitation from us by"
 msgstr ""
 
-#: templates/register/thanks.html:27
+#: templates/register/thanks.html:23
 msgid "email."
 msgstr ""
 
-#: templates/register/thanks.html:32
+#: templates/register/thanks.html:28
 msgid "If you have further questions, send us an email:"
 msgstr ""
 
-#: templates/register/thanks.html:36
+#: templates/register/thanks.html:32
 msgid "Your"
 msgstr ""
