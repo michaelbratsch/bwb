@@ -15,19 +15,15 @@ Including another URLconf
 """
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
-from django.contrib.auth import logout, login
-from django.urls import include, re_path, path
+from django.contrib.auth import views as auth_views
+from django.urls import include, re_path
 
-from .views import GreetingsView, LegalView
-
-def logout_view(request):
-    logout(request)
-    # Redirect to a success page.
+from bwb.views import GreetingsView, LegalView
 
 urlpatterns = i18n_patterns(
-    re_path(r'^login/$', view=login, kwargs={'template_name': 'login.html'},
-            name='login'),
-    re_path(r'^logout/$', view=logout_view, name='logout'),
+    re_path(r'^login/$', view=auth_views.LoginView.as_view(),
+            kwargs={'template_name': 'login.html'}, name='login'),
+    re_path(r'^logout/$', view=auth_views.LogoutView.as_view(), name='logout'),
     re_path(r'^i18n/', include('django.conf.urls.i18n'), name='set_language'),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^register/', include(('register.urls', 'register'))),

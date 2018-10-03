@@ -5,3 +5,5 @@ django_solo
 django_tables
 django_filter
 django-phonenumber-field
+phonenumbers
+faker

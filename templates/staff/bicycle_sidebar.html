@@ -4,6 +4,8 @@
 <link href="{% static 'css/base_sidebar.css' %}" rel="stylesheet" />
 
 {% if bicycles %}
+    <!-- Fixes that first line is hiding in navbar. -->
+    p {margin: 0em;}
     <ul class="nav nav-sidebar">
         {% for b in bicycles %}
             {% if b.id == bicycle_id %}

@@ -19,7 +19,7 @@
         <!-- ToDo: use custom stylesheet -->
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         rel="stylesheet">
-        <link href="https://getbootstrap.com/docs/3.3.7/examples/dashboard/dashboard.css"
+            <link href="https://getbootstrap.com/docs/3.3.7/examples/dashboard/dashboard.css"
         rel="stylesheet">
 
         {% load staticfiles %}
@@ -31,6 +31,9 @@
 
     <body>
         {% include "base_navbar.html" %}
+
+        <!-- Fixes that first line is hiding in navbar. -->
+        p {margin: 0em;}
 
         <div class="container-fluid">
             <div class="row">

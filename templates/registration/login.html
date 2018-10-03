@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% block body_block %}
+
+<form class="form-signin" role="form" method="post" action=".">
+    {% csrf_token %}
+
+    <h2 class="form-signin-heading">
+        Please enter your credentials for the staff area!
+    </h2>
+
+    <div class="col-xs-4">
+        <input class="form-control" placeholder="Username" id="id_username"
+        maxlength="254" name="username" type="text" required autofocus=""/>
+
+        <div class="col-xs-3" style="height:10px;"></div>
+
+        <input class="form-control" placeholder="Password" id="id_password"
+        name="password" type="password" required />
+
+        <div class="col-xs-3" style="height:10px;"></div>
+
+        <button class="btn btn-lg btn-info btn-block" type="submit"
+        value="Submit">
+            Login
+        </button>
+    </div>
+</form>
+
+{% endblock %}
