@@ -1,0 +1,7 @@
+django
+django_tables2
+django_crispy_forms
+django_solo
+django_tables
+django_filter
+django-phonenumber-field
